@@ -1,3 +1,21 @@
+window.addEventListener('error', (e) => {
+  const errMsg =
+    e.message || (e.target instanceof HTMLScriptElement ? '资源加载失败: ' + e.target.src : '未知错误')
+  console.error('全局错误:', errMsg, e.error)
+  document.body.innerHTML = `<div style="color:red; padding:20px; font-size:20px; background:#fff; z-index:9999; position:relative;">
+       <h2>页面崩溃了，错误信息：</h2>
+       <pre>${errMsg}</pre>
+     </div>`
+})
+
+window.addEventListener('unhandledrejection', (e) => {
+  console.error('未处理的 Promise 拒绝:', e.reason)
+  document.body.innerHTML = `<div style="color:red; padding:20px; font-size:20px; background:#fff; z-index:9999; position:relative;">
+       <h2>Promise 崩溃了，错误信息：</h2>
+       <pre>${e.reason}</pre>
+     </div>`
+})
+
 // app-system 独立调试入口；host 只消费 ./routes 与组件 expose，不加载本文件
 import type { RouteRecordRaw } from 'vue-router'
 import { bootstrapApp } from '@art/app-base'
