@@ -38,6 +38,46 @@ function elementPlusSharedSubpath(): Plugin {
   }
 }
 
+/**
+ * [构建兼容] 动态路由的 CSS 预加载依赖会被压缩器丢弃。
+ *
+ * Vite 为动态 import 生成的 __vitePreload 依赖在 minify 后不再保留，异步路由的
+ * scoped CSS 因而不会随组件加载。构建结束时把所有 CSS 资源显式挂到 index.html，
+ * 保证样式与首屏一起加载（CSS 仍然保持独立文件，cssCodeSplit 不变）。
+ */
+function injectAllCssLinks(base: string): Plugin {
+  return {
+    name: 'art:inject-all-css-links',
+    apply: 'build',
+    enforce: 'post',
+    writeBundle(outputOptions, bundle) {
+      const dir = outputOptions.dir
+      if (!dir) return
+
+      const htmlPath = path.join(dir, 'index.html')
+      if (!fs.existsSync(htmlPath)) return
+
+      const cssFiles = Object.keys(bundle)
+        .filter((fileName) => fileName.endsWith('.css'))
+        .sort()
+      if (cssFiles.length === 0) return
+
+      const prefix = base.endsWith('/') ? base : `${base}/`
+      const html = fs.readFileSync(htmlPath, 'utf-8')
+      const existing = new Set(
+        [...html.matchAll(/href="([^"]+\.css)"/g)].map((match) => match[1].replace(/^\.?\//, ''))
+      )
+      const links = cssFiles
+        .filter((fileName) => !existing.has(fileName))
+        .map((fileName) => `    <link rel="stylesheet" crossorigin href="${prefix}${fileName}">`)
+        .join('\n')
+
+      if (!links) return
+      fs.writeFileSync(htmlPath, html.replace('</head>', `${links}\n  </head>`))
+    }
+  }
+}
+
 /** app 根目录（vite 以 app 目录为 cwd 运行） */
 const rootDir = process.cwd()
 
@@ -205,7 +245,8 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
         ext: '.gz',
         threshold: 10240,
         deleteOriginFile: false
-      })
+      }),
+      injectAllCssLinks(env.VITE_BASE_URL || '/')
     ],
     optimizeDeps: {
       include: kind === 'main' ? MAIN_OPTIMIZE_DEPS : REMOTE_OPTIMIZE_DEPS
