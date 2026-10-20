@@ -1,14 +1,15 @@
 import { defineConfig, type ConfigEnv, type UserConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { federation } from 'vite-plugin-federation'
-import { createBaseConfig } from './base.ts'
+import { createBaseConfig, loadAppEnv } from './base.ts'
 import { mfSharedConfig } from './federation.ts'
 import { createRemotes } from './remotes.ts'
 
 export function createMainConfig() {
   return defineConfig(({ mode }: ConfigEnv): UserConfig => {
     const isDev = mode === 'development'
-    const base = createBaseConfig({ mode, kind: 'main' })
+    const env = loadAppEnv(mode)
+    const base = createBaseConfig({ mode, kind: 'main', env })
 
     return {
       ...base,
@@ -20,7 +21,7 @@ export function createMainConfig() {
         // Module Federation（v2 C1）
         federation({
           name: 'app-main',
-          remotes: createRemotes(isDev),
+          remotes: createRemotes(isDev, env),
           shared: mfSharedConfig,
           // v2 偏差登记：插件默认 version-first 会在宿主 initializeSharing 时对全部
           // remotes 执行 initRemoteModule（MF 核心主动预热），导致 boot 期拉取远端

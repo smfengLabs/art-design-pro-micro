@@ -98,11 +98,19 @@ function parseEnvFile(file: string): Record<string, string> {
   return result
 }
 
+/** 加载 app 环境变量；app 级 env 覆盖根 .env.shared（v2 B5） */
+export function loadAppEnv(mode: string): Record<string, string> {
+  const appEnv = loadEnv(mode, rootDir)
+  return { ...parseEnvFile(path.resolve(rootDir, '../..', '.env.shared')), ...appEnv }
+}
+
 export interface BaseConfigContext {
   /** vite mode（development / production） */
   mode: string
   /** 应用形态：main = host，remote = 远端子应用 */
   kind: 'main' | 'remote'
+  /** 预加载的环境变量；不传时由 createBaseConfig 读取 */
+  env?: Record<string, string>
 }
 
 /**
@@ -160,9 +168,7 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
   const { mode, kind } = context
   const isDev = mode === 'development'
 
-  // app 级 env 覆盖根 .env.shared（v2 B5：默认值下沉，app 可覆写）
-  const appEnv = loadEnv(mode, rootDir)
-  const env = { ...parseEnvFile(path.resolve(rootDir, '../..', '.env.shared')), ...appEnv }
+  const env = context.env ?? loadAppEnv(mode)
 
   console.log(`🔧 [app-config] kind=${kind} mode=${mode}`)
   console.log(`📡 API_URL = ${env.VITE_API_URL}`)
@@ -173,7 +179,7 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       // 联邦/压缩链路下常量缺失，导致运行时函数被错误 tree-shake。
       'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
       __APP_VERSION__: createVersionDefine(),
-      __MF_REMOTE_REGISTRY__: JSON.stringify(createRemoteRegistry(isDev).routeSources)
+      __MF_REMOTE_REGISTRY__: JSON.stringify(createRemoteRegistry(isDev, env).routeSources)
     },
     base: env.VITE_BASE_URL,
     server: {
