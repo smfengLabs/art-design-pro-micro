@@ -155,12 +155,16 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       target: 'esnext',
       outDir: 'dist',
       chunkSizeWarningLimit: 2000,
-      // 临时故障隔离：关闭压缩，确认 vue-i18n 的函数是否在压缩/树摇阶段丢失。
-      minify: false,
+      minify: 'terser',
       terserOptions: {
         compress: {
           drop_console: true,
           drop_debugger: true
+        },
+        mangle: {
+          // 避免把 MF 共享模块的导入绑定重命名为 `$`，与 Vue 共享模块导出的 `$` 冲突，
+          // 导致 `const _directive_ripple = resolveDirective('ripple')` 的导入被错误移除。
+          reserved: ['$']
         }
       },
       dynamicImportVarsOptions: {
