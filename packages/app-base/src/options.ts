@@ -17,6 +17,10 @@ export interface LocalComponents {
 export interface AppBootstrapOptions {
   /** 应用名（日志与错误提示） */
   appName?: string
+  /** 当前应用编码；缺省时读取 VITE_APP_CODE */
+  appCode?: string
+  /** 是否独立运行（子应用单飞）；开启后菜单只处理本应用数据 */
+  standalone?: boolean
   /** 根组件 */
   App: Component
   /** 静态路由（createHostRouter 初始路由表，兼容 origin 风格 AppRouteRecord 与 vue-router RouteRecordRaw） */

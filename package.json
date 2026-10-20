@@ -14,7 +14,8 @@
     "typecheck": "turbo typecheck",
     "depcruise": "depcruise . --config .dependency-cruiser.js",
     "depcruise:graph": "depcruise . --config .dependency-cruiser.js --output-type dot > docs/dependency-graph.dot",
-    "audit:dist": "node scripts/audit-dist.mjs"
+    "audit:dist": "node scripts/audit-dist.mjs",
+    "iconify:offline": "node scripts/generate-iconify-offline.mjs"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.14",

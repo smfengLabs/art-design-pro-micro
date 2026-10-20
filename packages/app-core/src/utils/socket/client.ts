@@ -78,6 +78,12 @@ export default class WebSocketClient {
 
   /** 初始化连接（URL 未配置时安全跳过，不发连接、不抛错） */
   init(): void {
+    const configuredUrl = (import.meta.env.VITE_WS_URL as string | undefined)?.trim()
+    // 生产环境绝不根据页面域名推导 WebSocket 地址；未显式配置时直接禁用实时同步。
+    if (import.meta.env.PROD && !configuredUrl) {
+      console.info('[WebSocket] 生产环境未配置 VITE_WS_URL，跳过实时同步连接')
+      return
+    }
     if (!this.url) {
       console.info('[WebSocket] URL 未配置，跳过实时同步连接（多端数据同步不启用）')
       return

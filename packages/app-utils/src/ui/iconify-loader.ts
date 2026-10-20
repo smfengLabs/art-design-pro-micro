@@ -1,16 +1,8 @@
-// import { addCollection } from '@iconify/vue'
+import { addCollection, type IconifyJSON } from '@iconify/vue/offline'
+import offlineCollections from './iconify-offline.json'
 
-// // 导入离线图标数据
-
-// // 系统必要图标库
-// import riIcons from '@iconify-json/ri/icons.json'
-
-// // 演示图标库（可选，生产环境可移除）
-// import svgSpinners from '@iconify-json/svg-spinners/icons.json'
-// import lineMd from '@iconify-json/line-md/icons.json'
-
-// // 注册离线图标集
-
-// addCollection(riIcons)
-// addCollection(svgSpinners)
-// addCollection(lineMd)
+// 离线图标数据由 scripts/generate-iconify-offline.mjs 从源码静态扫描生成。
+// 只打包实际使用的图标，避免引入整包图标集，也避免运行时请求 Iconify 外部 API。
+for (const collection of offlineCollections) {
+  addCollection(collection as unknown as IconifyJSON)
+}

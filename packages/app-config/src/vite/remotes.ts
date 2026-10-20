@@ -31,11 +31,21 @@ function resolveRemoteEntries(isDev: boolean, env: RemoteEnv = {}): RemoteRegist
   if (isDev) return remoteRegistry.dev
 
   const appSystemUrl = env.VITE_REMOTE_APP_SYSTEM_URL?.trim()
-  return remoteRegistry.prod.map((entry) =>
+  const entries = remoteRegistry.prod.map((entry) =>
     entry.alias === 'app-system' && appSystemUrl
       ? { ...entry, manifestUrl: appSystemUrl }
       : entry
   )
+
+  for (const entry of entries) {
+    if (!/^https?:\/\//i.test(entry.manifestUrl)) {
+      throw new Error(
+        `[MF] 生产环境 remote "${entry.alias}" 必须使用绝对地址，当前为: ${entry.manifestUrl}`
+      )
+    }
+  }
+
+  return entries
 }
 
 /** 静态注册表（define 注入 __MF_REMOTE_REGISTRY__） */

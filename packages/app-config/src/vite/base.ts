@@ -152,13 +152,14 @@ const MAIN_OPTIMIZE_DEPS = [
   'element-plus/es',
   // vdp 为 MF 共享项，宿主须在启动时即预构建提供者（避免列设置弹层首开触发再优化）
   'vue-draggable-plus',
+  '@iconify/vue/offline',
   ...elementPlusStyleDeps()
 ]
 
 /** remote（app-system：element-plus + 图标依赖） */
 const REMOTE_OPTIMIZE_DEPS = [
   '@element-plus/icons-vue',
-  '@iconify/vue',
+  '@iconify/vue/offline',
   'element-plus/es',
   'vue-draggable-plus',
   ...elementPlusStyleDeps()

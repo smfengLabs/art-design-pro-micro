@@ -35,6 +35,24 @@ let routeInitInProgress = false
 let componentGlob: ComponentGlob = {}
 let layoutComponent: (() => Promise<any>) | undefined
 let iframeComponent: (() => Promise<any>) | undefined
+let appCode = ''
+let standaloneApp = false
+
+/** 注入当前应用身份与运行形态（bootstrapApp 装配期调用） */
+export function setAppScope(code: string, standalone: boolean): void {
+  appCode = code || ''
+  standaloneApp = standalone === true
+}
+
+/** 当前应用编码（VITE_APP_CODE 或 bootstrapApp 显式配置） */
+export function getAppCode(): string {
+  return appCode
+}
+
+/** 是否为子应用独立运行（Standalone）模式 */
+export function isStandaloneApp(): boolean {
+  return standaloneApp
+}
 
 /**
  * 首页路径（登录后默认重定向的落点）

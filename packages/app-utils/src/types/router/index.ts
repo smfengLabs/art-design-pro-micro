@@ -52,6 +52,8 @@ export interface RouteMeta extends Record<string | number | symbol, unknown> {
  */
 export interface AppRouteRecord extends Omit<RouteRecordRaw, 'meta' | 'children' | 'component'> {
   id?: number
+  /** 菜单所属应用编码（后端菜单按应用隔离时使用） */
+  appCode?: string
   meta: RouteMeta
   children?: AppRouteRecord[]
   component?: string | RouteRecordRaw['component'] | (() => Promise<any>)

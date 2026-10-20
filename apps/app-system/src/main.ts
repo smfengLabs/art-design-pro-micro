@@ -48,6 +48,8 @@ const standaloneStaticRoutes: RouteRecordRaw[] = [
 
 bootstrapApp({
   appName: 'app-system',
+  appCode: 'app_system',
+  standalone: true,
   App,
   staticRoutes: standaloneStaticRoutes,
   homePath: '/system/user',

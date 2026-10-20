@@ -14,7 +14,8 @@ import {
   setRemoteRouteSources,
   setComponentGlob,
   setLayoutComponent,
-  setIframeComponent
+  setIframeComponent,
+  setAppScope
 } from '@art/app-core/bootstrap'
 import { initRemoteHmr } from './remote-hmr'
 import type { AppBootstrapOptions } from './options'
@@ -22,6 +23,8 @@ import type { AppBootstrapOptions } from './options'
 export async function bootstrapApp(options: AppBootstrapOptions): Promise<void> {
   const {
     App,
+    appCode = (import.meta.env.VITE_APP_CODE as string | undefined) || '',
+    standalone = false,
     staticRoutes,
     homePath = '',
     asyncRouteSource = [],
@@ -29,6 +32,7 @@ export async function bootstrapApp(options: AppBootstrapOptions): Promise<void> 
     dynamicRemotes = [],
     localComponents = {}
   } = options
+  setAppScope(appCode, standalone)
   setStaticRoutes(staticRoutes)
   setHomePagePath(homePath)
   setAsyncRouteSource(asyncRouteSource)

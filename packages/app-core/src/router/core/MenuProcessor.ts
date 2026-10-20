@@ -3,9 +3,11 @@ import { useUserStore } from '../../store/modules/user'
 import { useAppMode } from '../../hooks/core/useAppMode'
 import { fetchGetMenuList } from '@art/app-api'
 import {
+  getAppCode,
   getAsyncRouteSource,
   getLayoutComponent,
   getRemoteRouteSources,
+  isStandaloneApp,
   setRouteNameIndex
 } from '../runtime'
 import type { RouteNameIndex } from '../runtime'
@@ -18,7 +20,7 @@ async function collectRouteCandidates(): Promise<AppRouteRecord[]> {
 
   candidates.push(...getAsyncRouteSource())
 
-  const remoteSources = getRemoteRouteSources()
+  const remoteSources = isStandaloneApp() ? [] : getRemoteRouteSources()
   const results = await Promise.allSettled(
     remoteSources.map(async (source) => {
       if (!source.load) return []
@@ -68,7 +70,9 @@ export class MenuProcessor {
     const { isFrontendMode } = useAppMode()
 
     let menuList: AppRouteRecord[]
-    if (isFrontendMode.value) {
+    // 独立运行（Standalone）时菜单只来自本应用 asyncRouteSource（systemRoutes），
+    // 不消费后端全平台菜单，也不加载任何 host remote 路由源。
+    if (isFrontendMode.value || isStandaloneApp()) {
       menuList = await this.processFrontendMenu()
     } else {
       menuList = await this.processBackendMenu()
@@ -102,11 +106,40 @@ export class MenuProcessor {
     const index = buildRouteNameIndex(candidates)
     setRouteNameIndex(index)
 
-    const list = await fetchGetMenuList()
-
+    const rawList = await fetchGetMenuList()
+    const appCode = getAppCode()
+    const list =
+      isStandaloneApp() && appCode ? this.filterMenusByAppCode(rawList, appCode) : rawList
     const resolved = this.resolveComponentsByName(list, index)
 
     return this.filterEmptyMenus(resolved)
+  }
+
+  /**
+   * 独立运行（Standalone）时只保留当前应用的菜单。
+   * 后端可能返回全平台菜单；显式带 appCode 的节点必须与当前应用一致，
+   * 父节点在子节点被过滤为空时一并剔除，避免渲染空目录。
+   */
+  private filterMenusByAppCode(menuList: AppRouteRecord[], appCode: string): AppRouteRecord[] {
+    return menuList.reduce((acc: AppRouteRecord[], item) => {
+      if (item.appCode && item.appCode !== appCode) {
+        return acc
+      }
+
+      const hadChildren = Boolean(item.children?.length)
+      const filtered: AppRouteRecord = { ...item }
+
+      if (item.children?.length) {
+        filtered.children = this.filterMenusByAppCode(item.children, appCode)
+      }
+
+      if (hadChildren && !filtered.children?.length) {
+        return acc
+      }
+
+      acc.push(filtered)
+      return acc
+    }, [])
   }
 
   // 不补 children 键，保留“有 children = 目录”的判别语义

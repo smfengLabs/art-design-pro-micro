@@ -65,7 +65,10 @@ export const mfSharedConfig = {
   // 运行时强耦合的 UI 库：内部依赖渲染期 currentInstance/onMounted 与 ref 归一化，
   // 若被远端 dev 预打包成独立副本会携带第二个 Vue 运行时（拖拽 Sortable 初始化失败、
   // @iconify/vue 图标数据更新失效）。与 element-plus 同理纳入共享，复用 provider 单例。
-  '@iconify/vue': { singleton: true, requiredVersion: getCatalogVersion('@iconify/vue') },
+  '@iconify/vue/offline': {
+    singleton: true,
+    requiredVersion: getCatalogVersion('@iconify/vue')
+  },
   'vue-draggable-plus': {
     singleton: true,
     requiredVersion: getCatalogVersion('vue-draggable-plus')

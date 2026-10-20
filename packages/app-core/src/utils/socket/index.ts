@@ -21,20 +21,15 @@ interface ProtocolMessage {
  * 计算 WebSocket 端点（含鉴权 token 查询参数）
  *
  * 端点来源：import.meta.env.VITE_WS_URL（显式配置）。
- * 未配置时：生产构建按同源 /ws 约定推导；开发环境返回空串（调用方跳过建连）。
+ * 未配置时直接返回空串，绝不根据当前页面域名推导 /ws；
+ * 避免生产环境向不存在的同源端点发起连接并产生大量 404/重连日志。
  * token 以查询参数携带（浏览器 WebSocket 无法自定义 Header，这是常规做法）。
  *
  * @returns 完整 WS URL；无法解析时返回空字符串（调用方据此跳过建连）
  */
 function resolveWebSocketUrl(): string {
   const token = useUserStore().accessToken
-  // 端点优先级：VITE_WS_URL（显式配置）。
-  // 未显式配置时：生产构建按同源 /ws 约定推导；开发环境直接跳过，
-  // 避免本地没有 WS 服务时产生大量连接失败/重连日志，干扰开发。
-  let endpoint = (import.meta.env.VITE_WS_URL as string | undefined) || ''
-  if (!endpoint && import.meta.env.PROD) {
-    endpoint = window.location.origin.replace(/^http/, 'ws') + '/ws'
-  }
+  const endpoint = (import.meta.env.VITE_WS_URL as string | undefined)?.trim() || ''
   if (!endpoint) return ''
 
   const sep = endpoint.includes('?') ? '&' : '?'
@@ -59,7 +54,7 @@ export function initSocket(): void {
   const url = resolveWebSocketUrl()
   if (!url) {
     if (!skipLogPrinted) {
-      console.info('[WebSocket] 未配置 VITE_WS_URL，多端实时同步未启用（开发环境正常现象）')
+      console.info('[WebSocket] 未配置 VITE_WS_URL，多端实时同步未启用')
       skipLogPrinted = true
     }
     return
