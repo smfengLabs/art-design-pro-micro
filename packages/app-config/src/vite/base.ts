@@ -129,6 +129,9 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
 
   return {
     define: {
+      // vue-i18n 的 ESM Bundler 产物依赖该常量裁剪生产分支；显式注入可避免
+      // 联邦/压缩链路下常量缺失，导致运行时函数被错误 tree-shake。
+      'process.env.NODE_ENV': JSON.stringify(isDev ? 'development' : 'production'),
       __APP_VERSION__: createVersionDefine(),
       __MF_REMOTE_REGISTRY__: JSON.stringify(createRemoteRegistry(isDev).routeSources)
     },
@@ -152,7 +155,8 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       target: 'esnext',
       outDir: 'dist',
       chunkSizeWarningLimit: 2000,
-      minify: 'terser',
+      // 临时故障隔离：关闭压缩，确认 vue-i18n 的函数是否在压缩/树摇阶段丢失。
+      minify: false,
       terserOptions: {
         compress: {
           drop_console: true,

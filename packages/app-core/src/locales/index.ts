@@ -1,4 +1,8 @@
-import { createI18n } from 'vue-i18n'
+// 显式指向 ESM Bundler 产物：避免生产构建按包 exports 解析到被拆分的运行时入口，
+// 导致 vue-i18n 内部函数在压缩后被错误 tree-shake（线上白屏：e is not a function）。
+// vue-i18n 未给 dist 子路径导出类型声明，运行时实例仍由下方 I18n 类型约束。
+// @ts-expect-error vue-i18n dist subpath has no declaration file
+import { createI18n } from 'vue-i18n/dist/vue-i18n.esm-bundler.js'
 import type { I18n, I18nOptions } from 'vue-i18n'
 import { LanguageEnum } from '@art/app-utils'
 import { getSystemStorage } from '../utils/storage/storage-legacy'

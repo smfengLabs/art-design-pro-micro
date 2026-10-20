@@ -60,11 +60,7 @@ export const mfSharedConfig = {
     singleton: true,
     requiredVersion: getCatalogVersion('pinia-plugin-persistedstate')
   },
-  'vue-i18n': { singleton: true, requiredVersion: getCatalogVersion('vue-i18n') },
-  '@vue/reactivity': { singleton: true, requiredVersion: getCatalogVersion('@vue/reactivity') },
-  '@vue/runtime-core': { singleton: true, requiredVersion: getCatalogVersion('vue') },
-  '@vue/runtime-dom': { singleton: true, requiredVersion: getCatalogVersion('vue') },
-  '@vue/shared': { singleton: true, requiredVersion: getCatalogVersion('vue') },
+  'vue-i18n': { singleton: true, requiredVersion: '^9.14.0' },
   'element-plus': { singleton: true, requiredVersion: getCatalogVersion('element-plus') },
   // 运行时强耦合的 UI 库：内部依赖渲染期 currentInstance/onMounted 与 ref 归一化，
   // 若被远端 dev 预打包成独立副本会携带第二个 Vue 运行时（拖拽 Sortable 初始化失败、
