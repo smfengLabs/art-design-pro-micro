@@ -2,6 +2,9 @@ import App from './App.vue'
 import { bootstrapApp, createRemoteRouteSources } from '@art/app-base'
 import { staticRoutes } from './routes/static'
 import { asyncRoutes as localAsyncRoutes } from './routes/local-async'
+// Element Plus 通过 Module Federation 共享时，按需样式不会随共享组件加载，
+// 需要主应用全局引入一次基础样式。
+import 'element-plus/dist/index.css'
 import '@styles/core/tailwind.css'
 import '@styles/index.scss'
 

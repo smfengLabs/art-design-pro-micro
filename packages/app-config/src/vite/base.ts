@@ -155,6 +155,7 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       target: 'esnext',
       outDir: 'dist',
       chunkSizeWarningLimit: 2000,
+      cssCodeSplit: true,
       minify: 'terser',
       terserOptions: {
         compress: {

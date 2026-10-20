@@ -4,6 +4,9 @@ import { bootstrapApp } from '@art/app-base'
 import { RouteName } from '@art/app-utils'
 import App from './App.vue'
 import { systemRoutes } from './routes'
+// Element Plus 组件通过 Module Federation 共享，按需样式插件无法拦截其内部样式导入，
+// 因此必须全局引入一次，避免远程/独立运行时组件样式丢失。
+import 'element-plus/dist/index.css'
 import '@styles/core/tailwind.css'
 import '@styles/index.scss'
 
