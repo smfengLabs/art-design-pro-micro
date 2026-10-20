@@ -1,0 +1,41 @@
+{
+  "name": "@art/app-core",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./bootstrap": "./src/bootstrap.ts",
+    "./locales": "./src/locales/index.ts",
+    "./store/modules/user": "./src/store/modules/user.ts",
+    "./hooks/core/useTheme": "./src/hooks/core/useTheme.ts",
+    "./utils/storage": "./src/utils/storage/index.ts",
+    "./utils/ui/animation": "./src/utils/ui/animation.ts"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@art/app-api": "workspace:*",
+    "@art/app-utils": "workspace:*",
+    "element-plus": "catalog:",
+    "highlight.js": "^11.10.0",
+    "nprogress": "^0.2.0",
+    "pinia-plugin-persistedstate": "catalog:"
+  },
+  "peerDependencies": {
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-router": "catalog:"
+  },
+  "devDependencies": {
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-router": "catalog:"
+  }
+}

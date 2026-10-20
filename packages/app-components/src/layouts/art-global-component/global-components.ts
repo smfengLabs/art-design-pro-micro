@@ -1,0 +1,81 @@
+/**
+ * 全局组件配置（@art/app-components/layouts 版）
+ *
+ * origin `src/config/modules/component.ts` 原样迁移，组件路径由 `@/components/core/**`
+ * 改写为包内相对路径。由 art-global-component 消费（设置面板/搜索/锁屏等浮层）。
+ *
+ * @module app-components/layouts/global-components
+ */
+import { defineAsyncComponent } from 'vue'
+
+export const globalComponentsConfig: GlobalComponentConfig[] = [
+  {
+    name: '设置面板',
+    key: 'settings-panel',
+    component: defineAsyncComponent(() => import('../art-settings-panel/index.vue')),
+    enabled: true
+  },
+  {
+    name: '全局搜索',
+    key: 'global-search',
+    component: defineAsyncComponent(() => import('../art-global-search/index.vue')),
+    enabled: true
+  },
+  {
+    name: '锁屏',
+    key: 'screen-lock',
+    component: defineAsyncComponent(() => import('../art-screen-lock/index.vue')),
+    enabled: true
+  },
+  {
+    name: '聊天窗口',
+    key: 'chat-window',
+    component: defineAsyncComponent(() => import('../art-chat-window/index.vue')),
+    enabled: true
+  },
+  {
+    name: '礼花效果',
+    key: 'fireworks-effect',
+    component: defineAsyncComponent(() => import('../art-fireworks-effect/index.vue')),
+    enabled: true
+  },
+  {
+    name: '水印效果',
+    key: 'watermark',
+    component: defineAsyncComponent(() => import('../../others/art-watermark/index.vue')),
+    enabled: true
+  }
+]
+
+/**
+ * 全局组件配置接口
+ */
+export interface GlobalComponentConfig {
+  /** 组件名称 */
+  name: string
+  /** 组件标识 */
+  key: string
+  /** 组件 */
+  component: any
+  /** 是否启用 */
+  enabled?: boolean
+  /** 组件描述 */
+  description?: string
+}
+
+/**
+ * 获取启用的全局组件
+ * @returns 已启用的组件配置列表
+ */
+export const getEnabledGlobalComponents = () => {
+  return globalComponentsConfig.filter((config) => config.enabled !== false)
+}
+
+/**
+ * 根据 key 获取组件配置
+ * @param key 组件标识
+ * @returns 组件配置对象
+ */
+export const getGlobalComponentByKey = (key: string) => {
+  return globalComponentsConfig.find((config) => config.key === key)
+}

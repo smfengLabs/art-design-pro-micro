@@ -1,0 +1,25 @@
+interface UpgradeLog {
+  version: string // 版本号
+  title: string // 更新标题
+  date: string // 更新日期
+  detail?: string[] // 更新内容
+  requireReLogin?: boolean // 是否需要重新登录
+  remark?: string // 备注
+}
+
+export const upgradeLogList = ref<UpgradeLog[]>([
+  {
+    version: 'v1.0.0',
+    title: '微前端架构开源首发',
+    date: '2026-10-20',
+    detail: [
+      '重构：基于 Monorepo + Vite + Module Federation 2.0 的底层架构',
+      '新增：主应用与子应用独立登录、独立部署能力',
+      '新增：全局 WebSocket 单例与跨端数据实时同步',
+      '优化：移除核心依赖 vueuse，重写原生 ResizeObserver 解决微前端高度计算断裂问题',
+      '优化：解决微前端下 ArtTable 高度计算失效与分页遮挡问题',
+      '优化：废除 mf:// 字符串协议，实现标准 RouteRecordRaw[] 路由契约',
+      '构建：内建 dependency-cruiser 依赖门禁与产物审计脚本，彻底杜绝双实例'
+    ]
+  }
+])

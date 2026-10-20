@@ -1,0 +1,29 @@
+{
+  "name": "app-system",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit -p tsconfig.json && vite build",
+    "serve": "vite preview",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@art/app-api": "workspace:*",
+    "@art/app-base": "workspace:*",
+    "@art/app-components": "workspace:*",
+    "@art/app-config": "workspace:*",
+    "@art/app-core": "workspace:*",
+    "@art/app-utils": "workspace:*",
+    "@element-plus/icons-vue": "^2.3.2",
+    "@iconify/vue": "catalog:",
+    "@vueuse/core": "^13.9.0",
+    "element-plus": "catalog:",
+    "pinia": "catalog:",
+    "vue": "catalog:",
+    "vue-draggable-plus": "catalog:",
+    "vue-i18n": "catalog:",
+    "vue-router": "catalog:"
+  }
+}

@@ -1,0 +1,30 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# ── 单版本锁（B5/C3）：shared 内核依赖统一由 catalog 提供 ──
+# requiredVersion（federation.ts）与本表同步，杜绝手写第二份版本号。
+allowBuilds:
+  '@parcel/watcher': true
+  core-js: true
+  es5-ext: true
+  esbuild: true
+
+catalog:
+  vue: ^3.5.21
+  vue-router: ^4.5.1
+  pinia: ^3.0.3
+  pinia-plugin-persistedstate: ^4.3.0
+  vue-i18n: ^9.14.0
+  element-plus: ^2.11.2
+  axios: ^1.12.2
+  mitt: ^3.0.1
+  '@vue/reactivity': ^3.5.21
+  # 运行时强耦合包（依赖宿主 Vue 的 currentInstance/onMounted/ref 归一化，须走 loadShare 单例）：
+  '@iconify/vue': ^5.0.3
+  vue-draggable-plus: ^0.6.0
+
+# pnpm 10+ 默认阻止依赖执行构建脚本；以下为白名单（安装期需要 postinstall 的常用包）
+
+patchedDependencies:
+  vite-plugin-federation@1.0.2: patches/vite-plugin-federation@1.0.2.patch

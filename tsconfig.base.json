@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "jsx": "preserve",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "useDefineForClassFields": true,
+    "baseUrl": ".",
+    "paths": {
+      "@art/app-utils": ["packages/app-utils/src/index.ts"],
+      "@art/app-api": ["packages/app-api/src/index.ts"],
+      "@art/app-core": ["packages/app-core/src/index.ts"],
+      "@art/app-core/bootstrap": ["packages/app-core/src/bootstrap.ts"],
+      "@art/app-components": ["packages/app-components/src/index.ts"],
+      "@art/app-components/layouts": ["packages/app-components/src/layouts/index.ts"],
+      "@art/app-components/auth/login": ["packages/app-components/src/auth/login/index.vue"],
+      "@art/app-components/auth/register": ["packages/app-components/src/auth/register/index.vue"],
+      "@art/app-components/auth/forget-password": ["packages/app-components/src/auth/forget-password/index.vue"],
+      "@art/app-components/theme/theme-svg": ["packages/app-components/src/theme/theme-svg/index.vue"],
+      "@art/app-base": ["packages/app-base/src/index.ts"],
+      "@art/app-config": ["packages/app-config/src/index.ts"]
+    }
+  }
+}

@@ -1,0 +1,59 @@
+diff --git a/dist/index.js b/dist/index.js
+index b291605131ff62f4152f846fa1a52d8330afaa92..ee3231ef89f3417deab45c1086ad98d2048174b4 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -500,7 +500,11 @@ import ${JSON.stringify(entrySrc)};
+         _command === "serve" && inject === "html" && !clientInjected && !id.includes("node_modules") && /\.(js|ts|mjs|vue|jsx|tsx)(\?|$)/.test(id);
+         if (shouldInject) {
+           clientInjected = true;
+-          const injection = `import ${JSON.stringify(getEntryPath())};
++          const entryPathForInjection = getEntryPath();
++          const injection = String(entryPathForInjection).includes("SSR_REMOTE_ENTRY_ID") ? `if (typeof window === "undefined") {
++  await import(${JSON.stringify(entryPathForInjection)});
++}
++` : `import ${JSON.stringify(entryPathForInjection)};
+ `;
+           return mapCodeToCodeWithSourcemap(injection + code);
+         }
+@@ -2977,7 +2981,7 @@ function getNamedExportsViaRegex(source, filePath, visited) {
+   visited = visited || /* @__PURE__ */ new Set();
+   if (filePath) visited.add(filePath);
+   const declRegex = new RegExp(
+-    `export\\s+(?:async\\s+)?(?:function(?:\\*\\s*|\\s+\\*?\\s*)|const\\s+|let\\s+|var\\s+|class\\s+)(${JS_IDENTIFIER_PATTERN})`,
++    `export\\s+(?:async\\s+)?(?:function(?:\\*\\s*|\\s+\\*?\\s*)|const\\s+enum\\s+|const\\s+|let\\s+|var\\s+|class\\s+|enum\\s+)(${JS_IDENTIFIER_PATTERN})`,
+     "gu"
+   );
+   let match;
+@@ -3145,11 +3149,11 @@ function getSharedImportSource(pkg, shareItem) {
+ var LOAD_SHARE_TAG = "__loadShare__";
+ var loadShareCacheMap = {};
+ function shouldUseEsmLoadShare(pkg, command, isRolldown) {
+-  return command === "build" || !!isRolldown || pkg === "lit" || pkg.startsWith("lit/");
++  return true;
+ }
+ function shouldSkipServePrebuildWarmup(pkg, command) {
+   if (command === "build") return false;
+-  return pkg === "lit" || pkg.startsWith("lit/") || pkg === "vue" || pkg.startsWith("vue/");
++  return true;
+ }
+ function getLoadShareImportId(pkg, isRolldown, command) {
+   if (!loadShareCacheMap[pkg]) {
+@@ -4084,6 +4088,7 @@ var Manifest = () => {
+     );
+     const shared = Array.from(getUsedShares()).map((shareKey) => {
+       const shareItem = getNormalizeShareItem(shareKey);
++      if (!shareItem) return null;
+       const assets = preloadMap[shareKey] || createEmptyAssetMap();
+       return {
+         id: `${name2}:${shareKey}`,
+@@ -5243,6 +5248,10 @@ function getPackageDependencies(pkg) {
+   return [];
+ }
+ function excludeSharedSubDependencies(shared) {
++  // [mf-patch] 禁用 dev 子依赖共享自动裁剪：裁剪会让远端图（element-plus/@art/app-utils 等）
++  // 直接引入自身预打包运行时模块，与宿主经 loadShare 的共享运行时形成双实例（跨运行时崩溃）。
++  // 保持与生产构建一致的完整共享清单，符合 C3 单例契约。
++  return;
+   const sharedKeys = new Set(Object.keys(shared));
+   for (const parentKey of sharedKeys) {
+     const deps = getPackageDependencies(parentKey);

@@ -1,0 +1,29 @@
+node_modules
+.DS_Store
+dist
+dist-ssr
+*.local
+*.log
+.turbo
+.cursorrules
+
+# unplugin-auto-import 的 eslint 配置产物（未启用则不存在）
+.auto-import.json
+
+# 说明：apps/*/src/types/import/ 下的 auto-imports.d.ts 与 components.d.ts 为
+# unplugin 生成物，但刻意随源码提交（不加忽略）——保证 fresh clone 首次
+# pnpm typecheck / build 无需先启动 vite 即可通过（vue-tsc 先于 vite 生成这一步）
+
+# Module Federation 运行时缓存 / 生成的远端类型
+apps/*/@mf-types
+apps/*/.__mf__temp
+apps/*/.mf
+
+# 官方原版参考源码（不参与构建与发布）
+origin-code/
+
+# Editor
+.idea
+.vscode/*
+!.vscode/extensions.json
+art-design-pro-micro-frontend-plan-v2.md
