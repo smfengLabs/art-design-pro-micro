@@ -58,17 +58,11 @@
 
   const formRef = ref<FormInstance>()
 
-  /**
-   * 弹窗显示状态双向绑定
-   */
   const visible = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
   })
 
-  /**
-   * 表单验证规则
-   */
   const rules = reactive<FormRules>({
     roleName: [
       { required: true, message: '请输入角色名称', trigger: 'blur' },
@@ -81,9 +75,6 @@
     description: [{ required: true, message: '请输入角色描述', trigger: 'blur' }]
   })
 
-  /**
-   * 表单数据
-   */
   const form = reactive<RoleListItem>({
     roleId: 0,
     roleName: '',
@@ -93,9 +84,6 @@
     enabled: true
   })
 
-  /**
-   * 监听弹窗打开，初始化表单数据
-   */
   watch(
     () => props.modelValue,
     (newVal) => {
@@ -103,9 +91,6 @@
     }
   )
 
-  /**
-   * 监听角色数据变化，更新表单
-   */
   watch(
     () => props.roleData,
     (newData) => {
@@ -114,10 +99,6 @@
     { deep: true }
   )
 
-  /**
-   * 初始化表单数据
-   * 根据弹窗类型填充表单或重置表单
-   */
   const initForm = () => {
     if (props.dialogType === 'edit' && props.roleData) {
       Object.assign(form, props.roleData)
@@ -133,18 +114,11 @@
     }
   }
 
-  /**
-   * 关闭弹窗并重置表单
-   */
   const handleClose = () => {
     visible.value = false
     formRef.value?.resetFields()
   }
 
-  /**
-   * 提交表单
-   * 验证通过后调用接口保存数据
-   */
   const handleSubmit = async () => {
     if (!formRef.value) return
 

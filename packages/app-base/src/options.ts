@@ -1,8 +1,3 @@
-/**
- * bootstrapApp 装配参数（v2 G2）
- *
- * @module app-base/options
- */
 import type { Component } from 'vue'
 import type { RouteRecordRaw } from 'vue-router'
 import type { AppRouteRecord } from '@art/app-utils'

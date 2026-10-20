@@ -1,4 +1,3 @@
-<!-- 右键菜单 -->
 <template>
   <div class="menu-right">
     <Transition name="context-menu" @before-enter="onBeforeEnter" @after-leave="onAfterLeave">
@@ -9,7 +8,6 @@
       >
         <ul class="menu-list m-0 list-none" :style="menuListStyle">
           <template v-for="item in menuItems" :key="item.key">
-            <!-- 普通菜单项 -->
             <li
               v-if="!item.children"
               class="menu-item relative flex-c c-p select-none rounded text-xs transition-colors duration-150 hover:bg-g-200"
@@ -28,7 +26,6 @@
               >
             </li>
 
-            <!-- 子菜单 -->
             <li
               v-else
               class="menu-item submenu relative flex-c c-p select-none rounded text-xs transition-colors duration-150 hover:bg-g-200"
@@ -143,11 +140,9 @@
   const visible = ref(false)
   const position = ref({ x: 0, y: 0 })
 
-  // 用于清理定时器和事件监听器
   let showTimer: number | null = null
   let eventListenersAdded = false
 
-  // 计算菜单样式
   const menuStyle = computed(
     (): CSSProperties => ({
       position: 'fixed' as const,
@@ -158,14 +153,12 @@
     })
   )
 
-  // 计算菜单列表样式
   const menuListStyle = computed(
     (): CSSProperties => ({
       padding: `${props.menuPadding}px`
     })
   )
 
-  // 计算菜单项样式
   const menuItemStyle = computed(
     (): CSSProperties => ({
       height: `${props.itemHeight}px`,
@@ -174,7 +167,6 @@
     })
   )
 
-  // 计算子菜单列表样式
   const submenuListStyle = computed(
     (): CSSProperties => ({
       minWidth: `${props.submenuWidth}px`,
@@ -183,7 +175,6 @@
     })
   )
 
-  // 计算菜单高度（用于边界检测）
   const calculateMenuHeight = (): number => {
     let totalHeight = props.menuPadding * 2 // 上下内边距
 
@@ -197,7 +188,6 @@
     return totalHeight
   }
 
-  // 优化的位置计算函数
   const calculatePosition = (e: MouseEvent) => {
     const screenWidth = window.innerWidth
     const screenHeight = window.innerHeight
@@ -216,7 +206,6 @@
       y = Math.max(props.boundaryDistance, screenHeight - menuHeight - props.boundaryDistance)
     }
 
-    // 确保不会超出边界
     x = Math.max(
       props.boundaryDistance,
       Math.min(x, screenWidth - props.menuWidth - props.boundaryDistance)
@@ -229,7 +218,6 @@
     return { x, y }
   }
 
-  // 添加事件监听器
   const addEventListeners = () => {
     if (eventListenersAdded) return
 
@@ -239,7 +227,6 @@
     eventListenersAdded = true
   }
 
-  // 移除事件监听器
   const removeEventListeners = () => {
     if (!eventListenersAdded) return
 
@@ -249,9 +236,7 @@
     eventListenersAdded = false
   }
 
-  // 处理文档点击事件
   const handleDocumentClick = (e: Event) => {
-    // 检查点击是否在菜单内部
     const target = e.target as Element
     const menuElement = document.querySelector('.context-menu')
     if (menuElement && menuElement.contains(target)) {
@@ -260,12 +245,10 @@
     hide()
   }
 
-  // 处理文档右键事件
   const handleDocumentContextmenu = () => {
     hide()
   }
 
-  // 处理键盘事件
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       hide()
@@ -276,13 +259,11 @@
     e.preventDefault()
     e.stopPropagation()
 
-    // 清理之前的定时器
     if (showTimer) {
       window.clearTimeout(showTimer)
       showTimer = null
     }
 
-    // 计算位置
     position.value = calculatePosition(e)
     visible.value = true
 
@@ -303,13 +284,11 @@
     visible.value = false
     emit('hide')
 
-    // 清理定时器
     if (showTimer) {
       window.clearTimeout(showTimer)
       showTimer = null
     }
 
-    // 移除事件监听器
     removeEventListeners()
   }
 
@@ -319,7 +298,6 @@
     hide()
   }
 
-  // 动画钩子函数
   const onBeforeEnter = (el: Element) => {
     const element = el as HTMLElement
     element.style.transformOrigin = 'top left'
@@ -334,7 +312,6 @@
     }
   }
 
-  // 组件卸载时清理资源
   onUnmounted(() => {
     removeEventListeners()
     if (showTimer) {
@@ -343,7 +320,6 @@
     }
   })
 
-  // 导出方法供父组件调用
   defineExpose({
     show,
     hide,
@@ -397,7 +373,6 @@
     transform: rotate(90deg);
   }
 
-  /* 动画样式 */
   .context-menu-enter-active,
   .context-menu-leave-active {
     transition: all v-bind('props.animationDuration + "ms"') ease-out;

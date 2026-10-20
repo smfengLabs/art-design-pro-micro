@@ -1,63 +1,10 @@
-/**
- * useChart - ECharts 图表管理
- *
- * 提供完整的 ECharts 图表生命周期管理和配置能力，简化图表开发流程。
- * 自动处理图表初始化、更新、销毁、主题切换、响应式调整等复杂逻辑。
- *
- * ## 核心功能
- *
- * 1. 图表生命周期管理 - 自动处理初始化、更新、销毁，支持延迟加载和可见性检测
- * 2. 主题自动适配 - 响应系统主题变化，自动更新图表样式和配色
- * 3. 响应式调整 - 监听窗口大小、菜单展开等变化，自动调整图表尺寸
- * 4. 空状态处理 - 优雅的空数据展示，自动显示"暂无数据"提示
- * 5. 样式配置统一 - 提供坐标轴、图例、提示框等统一的样式配置方法
- * 6. 性能优化 - 防抖处理、样式缓存、requestAnimationFrame 优化
- * 7. 高级组件抽象 - useChartComponent 提供更高层次的图表组件封装
- *
- * ## 使用示例
- *
- * ```typescript
- * // 基础用法
- * const {
- *   chartRef,
- *   initChart,
- *   updateChart,
- *   getAxisLineStyle,
- *   getTooltipStyle
- * } = useChart()
- *
- * onMounted(() => {
- *   initChart({
- *     xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed'] },
- *     yAxis: { type: 'value' },
- *     series: [{ data: [120, 200, 150], type: 'bar' }]
- *   })
- * })
- *
- * // 高级用法 - 组件抽象
- * const chart = useChartComponent({
- *   props,
- *   generateOptions: () => ({
- *     // ECharts 配置
- *   }),
- *   checkEmpty: () => data.value.length === 0,
- *   watchSources: [() => props.data]
- * })
- * ```
- *
- * @module useChart
- * @author Art Design Pro Team
- */
-
 import { echarts, type EChartsOption } from '@/plugins/echarts'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '@art/app-core'
 import { getCssVar } from '@art/app-core'
 import type { BaseChartProps, ChartThemeConfig, UseChartOptions } from '@art/app-utils'
 
-// 图表主题配置
 export const useChartOps = (): ChartThemeConfig => ({
-  /** */
   chartHeight: '16rem',
   /** 字体大小 */
   fontSize: 13,
@@ -77,7 +24,6 @@ export const useChartOps = (): ChartThemeConfig => ({
   ]
 })
 
-// 常量定义
 const RESIZE_DELAYS = [50, 100, 200, 350] as const
 const MENU_RESIZE_DELAYS = [50, 100, 200] as const
 const RESIZE_DEBOUNCE_DELAY = 100
@@ -97,7 +43,6 @@ export function useChart(options: UseChartOptions = {}) {
   let isDestroyed = false
   let emptyStateDiv: HTMLElement | null = null
 
-  // 清理定时器的统一方法
   const clearTimers = () => {
     if (resizeTimeoutId) {
       clearTimeout(resizeTimeoutId)
@@ -120,7 +65,6 @@ export function useChart(options: UseChartOptions = {}) {
     })
   }
 
-  // 防抖的resize处理（用于窗口resize事件）
   const debouncedResize = () => {
     if (resizeTimeoutId) {
       clearTimeout(resizeTimeoutId)
@@ -131,9 +75,7 @@ export function useChart(options: UseChartOptions = {}) {
     }, RESIZE_DEBOUNCE_DELAY)
   }
 
-  // 多延迟resize处理 - 统一方法
   const multiDelayResize = (delays: readonly number[]) => {
-    // 立即调用一次，快速响应
     nextTick(requestAnimationResize)
 
     // 使用延迟时间，确保图表正确适应变化
@@ -142,7 +84,6 @@ export function useChart(options: UseChartOptions = {}) {
     })
   }
 
-  // 收缩菜单时，重新计算图表大小（仅在图表存在时监听）
   let menuOpenStopHandle: (() => void) | null = null
   let menuTypeStopHandle: (() => void) | null = null
 
@@ -161,13 +102,11 @@ export function useChart(options: UseChartOptions = {}) {
     menuTypeStopHandle = null
   }
 
-  // 主题变化时重新设置图表选项
   let themeStopHandle: (() => void) | null = null
 
   const setupThemeWatcher = () => {
     if (autoTheme) {
       themeStopHandle = watch(isDark, () => {
-        // 更新空状态样式
         emptyStateManager.updateStyle()
 
         if (chart && !isDestroyed) {
@@ -190,7 +129,6 @@ export function useChart(options: UseChartOptions = {}) {
     themeStopHandle = null
   }
 
-  // 样式生成器 - 统一的样式配置
   const createLineStyle = (color: string, width = 1, type?: 'solid' | 'dashed') => ({
     color,
     width,
@@ -212,7 +150,6 @@ export function useChart(options: UseChartOptions = {}) {
     styleCache.lastDarkValue = isDark.value
   }
 
-  // 坐标轴线样式
   const getAxisLineStyle = (show: boolean = true) => {
     if (styleCache.lastDarkValue !== isDark.value) {
       clearStyleCache()
@@ -226,7 +163,6 @@ export function useChart(options: UseChartOptions = {}) {
     return styleCache.axisLine
   }
 
-  // 分割线样式
   const getSplitLineStyle = (show: boolean = true) => {
     if (styleCache.lastDarkValue !== isDark.value) {
       clearStyleCache()
@@ -240,7 +176,6 @@ export function useChart(options: UseChartOptions = {}) {
     return styleCache.splitLine
   }
 
-  // 坐标轴标签样式
   const getAxisLabelStyle = (show: boolean = true) => {
     if (styleCache.lastDarkValue !== isDark.value) {
       clearStyleCache()
@@ -261,14 +196,12 @@ export function useChart(options: UseChartOptions = {}) {
     show: false
   })
 
-  // 获取动画配置
   const getAnimationConfig = (animationDelay: number = 50, animationDuration: number = 1500) => ({
     animationDelay: (idx: number) => idx * animationDelay + 200,
     animationDuration: (idx: number) => animationDuration - idx * 50,
     animationEasing: 'quarticOut' as const
   })
 
-  // 获取统一的 tooltip 配置
   const getTooltipStyle = (trigger: 'item' | 'axis' = 'axis', customOptions: any = {}) => ({
     trigger,
     backgroundColor: isDark.value ? 'rgba(0, 0, 0, 0.8)' : 'rgba(255, 255, 255, 0.9)',
@@ -280,7 +213,6 @@ export function useChart(options: UseChartOptions = {}) {
     ...customOptions
   })
 
-  // 获取统一的图例配置
   const getLegendStyle = (
     position: 'bottom' | 'top' | 'left' | 'right' = 'bottom',
     customOptions: any = {}
@@ -295,7 +227,6 @@ export function useChart(options: UseChartOptions = {}) {
       ...customOptions
     }
 
-    // 根据位置设置不同的配置
     switch (position) {
       case 'bottom':
         return {
@@ -334,7 +265,6 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 根据图例位置计算 grid 配置
   const getGridWithLegend = (
     showLegend: boolean,
     legendPosition: 'bottom' | 'top' | 'left' | 'right' = 'bottom',
@@ -353,7 +283,6 @@ export function useChart(options: UseChartOptions = {}) {
       return defaultGrid
     }
 
-    // 根据图例位置调整 grid
     switch (legendPosition) {
       case 'bottom':
         return {
@@ -380,7 +309,6 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 创建IntersectionObserver
   const createIntersectionObserver = () => {
     if (intersectionObserver || !chartRef.value) return
 
@@ -392,12 +320,10 @@ export function useChart(options: UseChartOptions = {}) {
             requestAnimationFrame(() => {
               if (!isDestroyed && pendingOptions) {
                 try {
-                  // 元素变为可见，初始化图表
                   if (!chart) {
                     chart = echarts.init(entry.target as HTMLElement)
                   }
 
-                  // 触发自定义事件，让组件处理动画逻辑
                   const event = new CustomEvent('chartVisible', {
                     detail: { options: pendingOptions }
                   })
@@ -419,7 +345,6 @@ export function useChart(options: UseChartOptions = {}) {
     intersectionObserver.observe(chartRef.value)
   }
 
-  // 清理IntersectionObserver
   const cleanupIntersectionObserver = () => {
     if (intersectionObserver) {
       intersectionObserver.disconnect()
@@ -427,17 +352,14 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 检查容器是否可见
   const isContainerVisible = (element: HTMLElement): boolean => {
     const rect = element.getBoundingClientRect()
     return rect.width > 0 && rect.height > 0 && rect.top < window.innerHeight && rect.bottom > 0
   }
 
-  // 图表初始化核心逻辑
   const performChartInit = (options: EChartsOption) => {
     if (!chart && chartRef.value && !isDestroyed) {
       chart = echarts.init(chartRef.value)
-      // 图表创建后立即设置监听器
       setupMenuWatchers()
       setupThemeWatcher()
     }
@@ -447,7 +369,6 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 空状态管理器
   const emptyStateManager = {
     create: () => {
       if (!chartRef.value || emptyStateDiv) return
@@ -470,7 +391,6 @@ export function useChart(options: UseChartOptions = {}) {
       `
       emptyStateDiv.innerHTML = `<span>暂无数据</span>`
 
-      // 确保父容器有相对定位
       if (
         chartRef.value.style.position !== 'relative' &&
         chartRef.value.style.position !== 'absolute'
@@ -495,7 +415,6 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 初始化图表
   const initChart = (options: EChartsOption = {}, isEmpty: boolean = false) => {
     if (!chartRef.value || isDestroyed) return
 
@@ -503,19 +422,16 @@ export function useChart(options: UseChartOptions = {}) {
 
     try {
       if (isEmpty) {
-        // 处理空数据情况 - 显示自定义空状态div
         if (chart) {
           chart.clear()
         }
         emptyStateManager.create()
         return
       } else {
-        // 有数据时移除空状态div
         emptyStateManager.remove()
       }
 
       if (isContainerVisible(chartRef.value)) {
-        // 容器可见，正常初始化
         if (initDelay > 0) {
           setTimeout(() => performChartInit(mergedOptions), initDelay)
         } else {
@@ -531,13 +447,11 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 更新图表
   const updateChart = (options: EChartsOption) => {
     if (isDestroyed) return
 
     try {
       if (!chart) {
-        // 如果图表不存在，先初始化
         initChart(options)
         return
       }
@@ -547,7 +461,6 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 处理窗口大小变化
   const handleResize = () => {
     if (chart && !isDestroyed) {
       try {
@@ -558,7 +471,6 @@ export function useChart(options: UseChartOptions = {}) {
     }
   }
 
-  // 销毁图表
   const destroyChart = () => {
     isDestroyed = true
 
@@ -572,7 +484,6 @@ export function useChart(options: UseChartOptions = {}) {
       }
     }
 
-    // 清理所有监听器和资源
     cleanupMenuWatchers()
     cleanupThemeWatcher()
     emptyStateManager.remove()
@@ -582,10 +493,8 @@ export function useChart(options: UseChartOptions = {}) {
     pendingOptions = null
   }
 
-  // 获取图表实例
   const getChartInstance = () => chart
 
-  // 获取图表是否已初始化
   const isChartInitialized = () => chart !== null
 
   onMounted(() => {
@@ -622,7 +531,6 @@ export function useChart(options: UseChartOptions = {}) {
   }
 }
 
-// 高级图表组件抽象
 interface UseChartComponentOptions<T extends BaseChartProps> {
   /** Props响应式对象 */
   props: T
@@ -651,31 +559,26 @@ export function useChartComponent<T extends BaseChartProps>(options: UseChartCom
   const chart = useChart(chartOptions)
   const { chartRef, initChart, isDark, emptyStateManager } = chart
 
-  // 检查是否为空数据
   const isEmpty = computed(() => {
     if (props.isEmpty) return true
     if (checkEmpty) return checkEmpty()
     return false
   })
 
-  // 更新图表
   const updateChart = () => {
     nextTick(() => {
       if (isEmpty.value) {
-        // 处理空数据情况 - 显示自定义空状态div
         if (chart.getChartInstance()) {
           chart.getChartInstance()?.clear()
         }
         emptyStateManager.create()
       } else {
-        // 有数据时移除空状态div并初始化图表
         emptyStateManager.remove()
         initChart(generateOptions())
       }
     })
   }
 
-  // 处理图表进入可视区域时的逻辑
   const handleChartVisible = () => {
     if (onVisible) {
       onVisible()
@@ -684,18 +587,14 @@ export function useChartComponent<T extends BaseChartProps>(options: UseChartCom
     }
   }
 
-  // 存储监听器停止函数
   const stopHandles: (() => void)[] = []
 
-  // 设置数据监听
   const setupWatchers = () => {
-    // 监听自定义数据源
     if (watchSources.length > 0) {
       const stopHandle = watch(watchSources, updateChart, { deep: true })
       stopHandles.push(stopHandle)
     }
 
-    // 监听主题变化
     const themeStopHandle = watch(isDark, () => {
       emptyStateManager.updateStyle()
       updateChart()
@@ -703,36 +602,29 @@ export function useChartComponent<T extends BaseChartProps>(options: UseChartCom
     stopHandles.push(themeStopHandle)
   }
 
-  // 清理所有监听器
   const cleanupWatchers = () => {
     stopHandles.forEach((stop) => stop())
     stopHandles.length = 0
   }
 
-  // 设置生命周期
   const setupLifecycle = () => {
     onMounted(() => {
       updateChart()
 
-      // 监听图表可见事件
       if (chartRef.value) {
         chartRef.value.addEventListener('chartVisible', handleChartVisible)
       }
     })
 
     onBeforeUnmount(() => {
-      // 清理事件监听器
       if (chartRef.value) {
         chartRef.value.removeEventListener('chartVisible', handleChartVisible)
       }
-      // 清理所有监听器
       cleanupWatchers()
-      // 清理空状态div
       emptyStateManager.remove()
     })
   }
 
-  // 初始化
   setupWatchers()
   setupLifecycle()
 

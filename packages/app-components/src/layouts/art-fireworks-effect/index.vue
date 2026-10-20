@@ -17,10 +17,6 @@
 
   defineOptions({ name: 'ArtFireworksEffect' })
 
-  /**
-   * 烟花系统配置接口
-   * 定义了烟花效果的所有可配置参数
-   */
   interface FireworkConfig {
     /** 对象池大小 - 预先创建的粒子对象数量 */
     readonly POOL_SIZE: number
@@ -65,10 +61,6 @@
     readonly SHAPES: readonly string[]
   }
 
-  /**
-   * 单个烟花粒子对象
-   * 包含粒子的位置、速度、外观等所有属性
-   */
   interface Firework {
     /** X坐标位置 */
     x: number
@@ -96,24 +88,14 @@
     imageUrl?: string
   }
 
-  /**
-   * 图片缓存接口
-   * 用于缓存预加载的图片资源
-   */
   interface ImageCache {
     [url: string]: HTMLImageElement
   }
 
-  /**
-   * 烟花效果的全局配置
-   * 使用 as const 确保配置的不可变性
-   */
   const CONFIG: FireworkConfig = {
-    // 性能相关配置
     POOL_SIZE: 600, // 对象池大小，影响同时存在的最大粒子数
     PARTICLES_PER_BURST: 200, // 每次爆炸的粒子数量，影响视觉效果密度
 
-    // 粒子尺寸配置
     SIZES: {
       RECTANGLE: { WIDTH: 24, HEIGHT: 12 }, // 矩形粒子尺寸
       SQUARE: { SIZE: 12 }, // 正方形粒子尺寸
@@ -123,21 +105,18 @@
       IMAGE: { WIDTH: 30, HEIGHT: 30 } // 图片粒子尺寸
     },
 
-    // 旋转动画配置
     ROTATION: {
       BASE_SPEED: 2, // 基础旋转速度
       RANDOM_SPEED: 3, // 额外随机旋转速度范围
       DECAY: 0.98 // 旋转速度衰减系数 (越小衰减越快)
     },
 
-    // 物理效果配置
     PHYSICS: {
       GRAVITY: 0.525, // 重力加速度，影响粒子下落速度
       VELOCITY_THRESHOLD: 10, // 速度阈值，超过时开始透明度衰减
       OPACITY_DECAY: 0.02 // 透明度衰减速度，影响粒子消失快慢
     },
 
-    // 粒子颜色配置 - 使用RGBA格式支持透明度
     COLORS: [
       'rgba(255, 68, 68, 1)', // 红色系
       'rgba(255, 68, 68, 0.9)',
@@ -154,7 +133,6 @@
       'rgba(250, 198, 122, 0.8)' // 金色系
     ],
 
-    // 粒子形状配置 - 矩形出现概率更高，营造更丰富的视觉效果
     SHAPES: [
       'rectangle',
       'rectangle',
@@ -174,10 +152,6 @@
   /** Canvas 2D 绘制上下文 */
   const ctx = ref<CanvasRenderingContext2D | null>(null)
 
-  /**
-   * 烟花系统核心类
-   * 负责管理粒子生命周期、渲染和动画
-   */
   class FireworkSystem {
     /** 粒子对象池 - 预先创建的粒子对象数组 */
     private particlePool: Firework[] = []
@@ -198,20 +172,12 @@
       this.initializePool()
     }
 
-    /**
-     * 初始化对象池
-     * 预先创建指定数量的粒子对象，避免运行时频繁创建
-     */
     private initializePool(): void {
       for (let i = 0; i < CONFIG.POOL_SIZE; i++) {
         this.particlePool.push(this.createParticle())
       }
     }
 
-    /**
-     * 创建一个新的粒子对象
-     * 返回初始化状态的粒子
-     */
     private createParticle(): Firework {
       return {
         x: 0,
@@ -228,11 +194,7 @@
       }
     }
 
-    /**
-     * 从对象池获取可用粒子 (性能优化版本)
-     * 使用循环索引而非Array.find()，时间复杂度从O(n)降至O(1)
-     * @returns 可用的粒子对象或null
-     */
+    // 循环索引分配，避免 Array.find() 的 O(n) 开销
     private getAvailableParticle(): Firework | null {
       for (let i = 0; i < CONFIG.POOL_SIZE; i++) {
         const index = (this.poolIndex + i) % CONFIG.POOL_SIZE
@@ -247,13 +209,7 @@
       return null
     }
 
-    /**
-     * 预加载单个图片资源
-     * @param url 图片URL
-     * @returns Promise<HTMLImageElement>
-     */
     async preloadImage(url: string): Promise<HTMLImageElement> {
-      // 如果已缓存，直接返回
       if (this.imageCache[url]) {
         return this.imageCache[url]
       }
@@ -270,10 +226,6 @@
       })
     }
 
-    /**
-     * 预加载所有需要的图片资源
-     * 在组件初始化时调用，确保图片ready
-     */
     async preloadAllImages(): Promise<void> {
       const imageUrls = [bp, sd, yd]
       try {
@@ -283,16 +235,10 @@
       }
     }
 
-    /**
-     * 创建烟花爆炸效果
-     * @param imageUrl 可选的图片URL，如果提供则使用图片粒子
-     */
     createFirework(imageUrl?: string): void {
-      // 随机确定爆炸起始位置
       const startX = Math.random() * this.canvasWidth
       const startY = this.canvasHeight
 
-      // 根据是否有图片确定可用形状
       const availableShapes = imageUrl && this.imageCache[imageUrl] ? ['image'] : CONFIG.SHAPES
 
       // 批量创建粒子数组，减少频繁的数组操作
@@ -302,7 +248,6 @@
         const particle = this.getAvailableParticle()
         if (!particle) continue
 
-        // 计算粒子发射角度和速度 (恢复原始算法)
         const angle = (Math.PI * i) / (CONFIG.PARTICLES_PER_BURST / 2) // 扇形分布
         const speed = (12 + Math.random() * 6) * 1.5 // 随机速度
         const spread = Math.random() * Math.PI * 2 // 360度随机扩散
@@ -330,10 +275,6 @@
       this.activeParticles.push(...particles)
     }
 
-    /**
-     * 更新所有粒子的物理状态 (性能优化版本)
-     * 包括位置、速度、旋转、透明度等
-     */
     private updateParticles(): void {
       const { GRAVITY, VELOCITY_THRESHOLD, OPACITY_DECAY } = CONFIG.PHYSICS
       const { DECAY } = CONFIG.ROTATION
@@ -342,12 +283,10 @@
       for (let i = this.activeParticles.length - 1; i >= 0; i--) {
         const particle = this.activeParticles[i]
 
-        // 更新粒子位置 (匀加速运动)
         particle.x += particle.vx
         particle.y += particle.vy
         particle.vy += GRAVITY // 重力影响
 
-        // 更新旋转状态
         particle.rotation += particle.rotationSpeed
         particle.rotationSpeed *= DECAY // 旋转速度衰减
 
@@ -360,28 +299,18 @@
           }
         }
 
-        // 边界检查 - 移除超出屏幕范围的粒子
         if (this.isOutOfBounds(particle)) {
           this.recycleParticle(i)
         }
       }
     }
 
-    /**
-     * 回收粒子到对象池
-     * @param index 要回收的粒子在活动数组中的索引
-     */
     private recycleParticle(index: number): void {
       const particle = this.activeParticles[index]
       particle.active = false // 标记为非活动状态
       this.activeParticles.splice(index, 1) // 从活动数组中移除
     }
 
-    /**
-     * 检查粒子是否超出屏幕边界
-     * @param particle 要检查的粒子
-     * @returns 是否超出边界
-     */
     private isOutOfBounds(particle: Firework): boolean {
       const margin = 100 // 边界缓冲区
       return (
@@ -392,31 +321,20 @@
       )
     }
 
-    /**
-     * 绘制单个粒子
-     * @param particle 要绘制的粒子对象
-     */
     private drawParticle(particle: Firework): void {
       if (!ctx.value) return
 
-      // 保存当前画布状态
       ctx.value.save()
       ctx.value.globalAlpha = particle.opacity // 设置透明度
       ctx.value.translate(particle.x, particle.y) // 移动到粒子位置
       ctx.value.rotate((particle.rotation * Math.PI) / 180) // 应用旋转
       ctx.value.scale(particle.scale, particle.scale) // 应用缩放
 
-      // 渲染粒子形状
       this.renderShape(particle)
 
-      // 恢复画布状态
       ctx.value.restore()
     }
 
-    /**
-     * 根据粒子类型渲染对应的形状
-     * @param particle 要渲染的粒子
-     */
     private renderShape(particle: Firework): void {
       if (!ctx.value) return
 
@@ -425,7 +343,6 @@
 
       switch (particle.shape) {
         case 'rectangle':
-          // 绘制矩形
           ctx.value.fillRect(
             -SIZES.RECTANGLE.WIDTH / 2,
             -SIZES.RECTANGLE.HEIGHT / 2,
@@ -435,7 +352,6 @@
           break
 
         case 'square':
-          // 绘制正方形
           ctx.value.fillRect(
             -SIZES.SQUARE.SIZE / 2,
             -SIZES.SQUARE.SIZE / 2,
@@ -445,14 +361,12 @@
           break
 
         case 'circle':
-          // 绘制圆形
           ctx.value.beginPath()
           ctx.value.arc(0, 0, SIZES.CIRCLE.SIZE / 2, 0, Math.PI * 2)
           ctx.value.fill()
           break
 
         case 'triangle':
-          // 绘制三角形
           ctx.value.beginPath()
           ctx.value.moveTo(0, -SIZES.TRIANGLE.SIZE)
           ctx.value.lineTo(SIZES.TRIANGLE.SIZE, SIZES.TRIANGLE.SIZE)
@@ -462,23 +376,17 @@
           break
 
         case 'oval':
-          // 绘制椭圆
           ctx.value.beginPath()
           ctx.value.ellipse(0, 0, SIZES.OVAL.WIDTH / 2, SIZES.OVAL.HEIGHT / 2, 0, 0, Math.PI * 2)
           ctx.value.fill()
           break
 
         case 'image':
-          // 绘制图片
           this.renderImage(particle)
           break
       }
     }
 
-    /**
-     * 渲染图片类型的粒子
-     * @param particle 包含图片URL的粒子对象
-     */
     private renderImage(particle: Firework): void {
       if (!ctx.value || !particle.imageUrl) return
 
@@ -489,56 +397,34 @@
       }
     }
 
-    /**
-     * 渲染所有活动粒子到画布
-     * 清除画布并重新绘制所有粒子
-     */
     private render(): void {
       if (!ctx.value || !canvasRef.value) return
 
-      // 清除整个画布
       ctx.value.clearRect(0, 0, this.canvasWidth, this.canvasHeight)
       // 设置混合模式为"变亮"，增强视觉效果
       ctx.value.globalCompositeOperation = 'lighter'
 
-      // 渲染所有活动粒子
       for (const particle of this.activeParticles) {
         this.drawParticle(particle)
       }
     }
 
-    /**
-     * 动画主循环
-     * 使用箭头函数保持this绑定
-     */
+    // 箭头函数保持 this 绑定
     private animate = (): void => {
-      this.updateParticles() // 更新粒子状态
-      this.render() // 渲染粒子
-      this.animationId = requestAnimationFrame(this.animate) // 请求下一帧
+      this.updateParticles()
+      this.render()
+      this.animationId = requestAnimationFrame(this.animate)
     }
 
-    /**
-     * 更新画布尺寸缓存
-     * 在窗口大小改变时调用
-     * @param width 新的画布宽度
-     * @param height 新的画布高度
-     */
     updateCanvasSize(width: number, height: number): void {
       this.canvasWidth = width
       this.canvasHeight = height
     }
 
-    /**
-     * 启动动画循环
-     */
     start(): void {
       this.animate()
     }
 
-    /**
-     * 停止动画循环
-     * 在组件卸载时调用，避免内存泄漏
-     */
     stop(): void {
       if (this.animationId) {
         cancelAnimationFrame(this.animationId)
@@ -546,11 +432,6 @@
       }
     }
 
-    /**
-     * 获取当前活动粒子数量
-     * 用于调试和性能监控
-     * @returns 活动粒子数量
-     */
     getActiveParticleCount(): number {
       return this.activeParticles.length
     }
@@ -559,11 +440,6 @@
   /** 烟花系统实例 */
   const fireworkSystem = new FireworkSystem()
 
-  /**
-   * 处理键盘快捷键
-   * 监听 Ctrl+Shift+P 或 Cmd+Shift+P 组合键触发烟花
-   * @param event 键盘事件对象
-   */
   const handleKeyPress = (event: KeyboardEvent): void => {
     const isFireworkShortcut =
       (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'p') ||
@@ -575,10 +451,6 @@
     }
   }
 
-  /**
-   * 调整Canvas画布大小
-   * 响应窗口大小变化，确保画布始终覆盖整个视口
-   */
   const resizeCanvas = (): void => {
     if (!canvasRef.value) return
 
@@ -588,45 +460,28 @@
     fireworkSystem.updateCanvasSize(innerWidth, innerHeight)
   }
 
-  /**
-   * 处理外部触发的烟花事件
-   * 通过 mittBus 事件总线接收触发指令
-   * @param event 事件数据，可能包含图片URL
-   */
   const handleFireworkTrigger: Handler<unknown> = (event: unknown) => {
     const imageUrl = event as string | undefined
     fireworkSystem.createFirework(imageUrl)
   }
 
-  /**
-   * 组件挂载时的初始化逻辑
-   */
   onMounted(async () => {
     if (!canvasRef.value) return
 
-    // 获取Canvas 2D绘制上下文
     ctx.value = canvasRef.value.getContext('2d')
     if (!ctx.value) return
 
-    // 设置初始画布大小
     resizeCanvas()
 
-    // 预加载所有图片资源
     await fireworkSystem.preloadAllImages()
 
-    // 启动动画循环
     fireworkSystem.start()
 
-    // 注册事件监听器
     useEventListener(window, 'keydown', handleKeyPress) // 键盘快捷键
     useEventListener(window, 'resize', resizeCanvas) // 窗口大小变化
     mittBus.on('triggerFireworks', handleFireworkTrigger) // 外部触发事件
   })
 
-  /**
-   * 组件卸载时的清理逻辑
-   * 停止动画循环并移除事件监听器，防止内存泄漏
-   */
   onUnmounted(() => {
     fireworkSystem.stop()
     mittBus.off('triggerFireworks', handleFireworkTrigger)

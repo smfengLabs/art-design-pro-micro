@@ -1,18 +1,3 @@
-/**
- * WebSocket 全局单例客户端（多端数据实时同步）
- *
- * 迁移自 origin-code/src/utils/socket/index.ts，改造为 app-core 全局单例服务：
- * - 单例模式：整个应用生命周期仅一个连接实例；
- * - 自动重连（指数退避 + 抖动 + 最大重试上限）；
- * - 心跳检测 + ping 保活；
- * - 消息队列：连接建立前暂存消息，重连后自动补发；
- * - URL 由调用方传入（鉴权 token 由装配层拼为查询参数），未传时 init() 安全跳过。
- *
- * 设计原则：本模块只负责「连接管理 + 原始消息回调」；对消息内容的解释
- * （如 DATA_UPDATE 判定与 mittBus 事件抛出）由 socket/index.ts 装配层负责。
- *
- * @module app-core/utils/socket/client
- */
 export interface WebSocketClientOptions {
   /** WebSocket 端点（须由调用方传入；缺省/空时 init() 安全跳过） */
   url?: string

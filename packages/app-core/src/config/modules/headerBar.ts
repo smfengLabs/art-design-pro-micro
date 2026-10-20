@@ -1,13 +1,3 @@
-/**
- * 顶部栏功能配置
- *
- * 统一管理顶部栏各个功能模块的启用状态。
- * 通过修改此配置文件可以快速启用或禁用顶部栏的功能按钮。
- *
- * @module config/headerBar
- * @author Art Design Pro Team
- */
-
 import { HeaderBarFeatureConfig } from '@art/app-utils'
 
 /**

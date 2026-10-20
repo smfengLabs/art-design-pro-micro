@@ -1,11 +1,3 @@
-/**
- * Federation 共享配置与版本注入（v2 C3）
- *
- * - requiredVersion 从 pnpm-workspace.yaml 的 catalog 段读取（单一版本源，杜绝手写第二份）
- * - __APP_VERSION__ 读取仓库根 VERSION 文件（缺失/空 fail-fast）
- *
- * @module app-config/vite/federation
- */
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -83,7 +75,6 @@ export const mfSharedConfig = {
     requiredVersion: getCatalogVersion('vue-draggable-plus')
   },
   axios: { singleton: true, requiredVersion: getCatalogVersion('axios') },
-  // ── workspace 内核包（模块级单例便于全局状态共享）──
   '@art/app-utils': { singleton: true, allowNodeModulesSuffixMatch: true },
   '@art/app-api': { singleton: true, allowNodeModulesSuffixMatch: true },
   '@art/app-core': { singleton: true, allowNodeModulesSuffixMatch: true },

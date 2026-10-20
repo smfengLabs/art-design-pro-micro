@@ -1,46 +1,3 @@
-/**
- * 颜色处理工具模块
- *
- * 提供完整的颜色格式转换和处理功能
- *
- * ## 主要功能
- *
- * - Hex 与 RGB/RGBA 格式互转
- * - 颜色混合计算
- * - 颜色变浅/变深处理
- * - Element Plus 主题色自动生成
- * - 颜色格式验证
- * - CSS 变量读取
- * - 暗黑模式颜色适配
- *
- * ## 使用场景
- *
- * - 主题色动态切换
- * - Element Plus 组件主题定制
- * - 颜色渐变生成
- * - 明暗主题颜色计算
- * - 颜色格式标准化
- *
- * ## 核心功能
- *
- * - hexToRgba: Hex 转 RGBA（支持透明度）
- * - hexToRgb: Hex 转 RGB 数组
- * - rgbToHex: RGB 转 Hex
- * - colourBlend: 两种颜色混合
- * - getLightColor: 生成变浅的颜色
- * - getDarkColor: 生成变深的颜色
- * - handleElementThemeColor: 处理 Element Plus 主题色
- * - setElementThemeColor: 设置完整的主题色系统
- *
- * ## 支持格式
- *
- * - Hex: #FFF, #FFFFFF
- * - RGB: rgb(255, 255, 255)
- * - RGBA: rgba(255, 255, 255, 0.5)
- *
- * @module utils/ui/colors
- * @author Art Design Pro Team
- */
 import { ElMessage } from 'element-plus'
 
 /**
@@ -95,10 +52,8 @@ export function hexToRgba(hex: string, opacity: number): RgbaResult {
     throw new Error('Invalid hex color format')
   }
 
-  // 移除可能存在的 # 前缀并转换为大写
   let cleanHex = hex.trim().replace(/^#/, '').toUpperCase()
 
-  // 如果是缩写形式（如 FFF），转换为完整形式
   if (cleanHex.length === 3) {
     cleanHex = cleanHex
       .split('')
@@ -106,13 +61,11 @@ export function hexToRgba(hex: string, opacity: number): RgbaResult {
       .join('')
   }
 
-  // 解析 RGB 值
   const [red, green, blue] = cleanHex.match(/\w\w/g)!.map((x) => parseInt(x, 16))
 
   // 确保 opacity 在有效范围内
   const validOpacity = Math.max(0, Math.min(1, opacity))
 
-  // 构建 RGBA 字符串
   const rgba = `rgba(${red}, ${green}, ${blue}, ${validOpacity.toFixed(2)})`
 
   return { red, green, blue, rgba }
@@ -132,7 +85,6 @@ export function hexToRgb(hexColor: string): number[] {
   const cleanHex = hexColor.replace(/^#/, '')
   let hex = cleanHex
 
-  // 处理缩写形式
   if (hex.length === 3) {
     hex = hex
       .split('')

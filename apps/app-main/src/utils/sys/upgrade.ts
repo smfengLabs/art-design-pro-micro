@@ -1,106 +1,43 @@
-/**
- * 系统版本升级管理模块
- *
- * 提供完整的应用版本升级检测和处理功能
- *
- * ## 主要功能
- *
- * - 版本号比较和升级检测
- * - 首次访问识别和处理
- * - 旧版本数据自动清理
- * - 升级日志展示和通知
- * - 强制重新登录控制（根据升级日志配置）
- * - 版本号规范化处理
- * - 旧存储结构迁移和清理
- * - 升级流程延迟执行（确保应用完全加载）
- *
- * ## 使用场景
- *
- * - 应用启动时自动检测版本升级
- * - 版本更新后清理旧数据
- * - 向用户展示版本更新内容
- * - 重大更新时要求用户重新登录
- * - 防止旧版本数据污染新版本
- *
- * ## 工作流程
- *
- * 1. 检查本地存储的版本号
- * 2. 与当前应用版本对比
- * 3. 查找并清理旧版本数据
- * 4. 展示升级通知（包含更新日志）
- * 5. 根据配置决定是否强制重新登录
- * 6. 更新本地版本号
- *
- * @module utils/sys/upgrade
- * @author Art Design Pro Team
- */
 import { upgradeLogList } from '@/mock/upgrade/changeLog'
 import { ElNotification } from 'element-plus'
 import { useUserStore } from '@art/app-core/store/modules/user'
 import { StorageConfig } from '@art/app-core/utils/storage'
 
-/**
- * 版本管理器
- * 负责处理版本比较、升级检测和数据清理
- */
 class VersionManager {
-  /**
-   * 规范化版本号字符串，移除前缀 'v'
-   */
   private normalizeVersion(version: string): string {
     return version.replace(/^v/, '')
   }
 
-  /**
-   * 获取存储的版本号
-   */
   private getStoredVersion(): string | null {
     return localStorage.getItem(StorageConfig.VERSION_KEY)
   }
 
-  /**
-   * 设置版本号到存储
-   */
   private setStoredVersion(version: string): void {
     localStorage.setItem(StorageConfig.VERSION_KEY, version)
   }
 
-  /**
-   * 检查是否应该跳过升级处理
-   */
   private shouldSkipUpgrade(): boolean {
     return StorageConfig.CURRENT_VERSION === StorageConfig.SKIP_UPGRADE_VERSION
   }
 
-  /**
-   * 检查是否为首次访问
-   */
   private isFirstVisit(storedVersion: string | null): boolean {
     return !storedVersion
   }
 
-  /**
-   * 检查版本是否相同
-   */
   private isSameVersion(storedVersion: string): boolean {
     return storedVersion === StorageConfig.CURRENT_VERSION
   }
 
-  /**
-   * 查找旧的存储结构
-   */
   private findLegacyStorage(): { oldSysKey: string | null; oldVersionKeys: string[] } {
     const storageKeys = Object.keys(localStorage)
     const currentVersionPrefix = StorageConfig.generateStorageKey('').slice(0, -1) // 移除末尾的 '-'
 
-    // 查找旧的单一存储结构
     const oldSysKey =
       storageKeys.find(
         (key) =>
           StorageConfig.isVersionedKey(key) && key !== currentVersionPrefix && !key.includes('-')
       ) || null
 
-    // 查找旧版本的分离存储键
     const oldVersionKeys = storageKeys.filter(
       (key) =>
         StorageConfig.isVersionedKey(key) &&
@@ -111,9 +48,6 @@ class VersionManager {
     return { oldSysKey, oldVersionKeys }
   }
 
-  /**
-   * 检查是否需要重新登录
-   */
   private shouldRequireReLogin(storedVersion: string): boolean {
     const normalizedCurrent = this.normalizeVersion(StorageConfig.CURRENT_VERSION)
     const normalizedStored = this.normalizeVersion(storedVersion)
@@ -126,9 +60,6 @@ class VersionManager {
     })
   }
 
-  /**
-   * 构建升级通知消息
-   */
   private buildUpgradeMessage(requireReLogin: boolean): string {
     const { title: content } = upgradeLogList.value[0]
 
@@ -148,9 +79,6 @@ class VersionManager {
     return messageParts.join('')
   }
 
-  /**
-   * 显示升级通知
-   */
   private showUpgradeNotification(message: string): void {
     ElNotification({
       title: '系统升级公告',
@@ -161,26 +89,18 @@ class VersionManager {
     })
   }
 
-  /**
-   * 清理旧版本数据
-   */
   private cleanupLegacyData(oldSysKey: string | null, oldVersionKeys: string[]): void {
-    // 清理旧的单一存储结构
     if (oldSysKey) {
       localStorage.removeItem(oldSysKey)
       console.info(`[Upgrade] 已清理旧存储: ${oldSysKey}`)
     }
 
-    // 清理旧版本的分离存储
     oldVersionKeys.forEach((key) => {
       localStorage.removeItem(key)
       console.info(`[Upgrade] 已清理旧存储: ${key}`)
     })
   }
 
-  /**
-   * 执行升级后的登出操作
-   */
   private performLogout(): void {
     try {
       useUserStore().logOut()
@@ -190,9 +110,6 @@ class VersionManager {
     }
   }
 
-  /**
-   * 执行升级流程
-   */
   private async executeUpgrade(
     storedVersion: string,
     legacyStorage: ReturnType<typeof this.findLegacyStorage>
@@ -206,16 +123,12 @@ class VersionManager {
       const requireReLogin = this.shouldRequireReLogin(storedVersion)
       const message = this.buildUpgradeMessage(requireReLogin)
 
-      // 显示升级通知
       this.showUpgradeNotification(message)
 
-      // 更新版本号
       this.setStoredVersion(StorageConfig.CURRENT_VERSION)
 
-      // 清理旧数据
       this.cleanupLegacyData(legacyStorage.oldSysKey, legacyStorage.oldVersionKeys)
 
-      // 执行登出（如果需要）
       if (requireReLogin) {
         this.performLogout()
       }
@@ -226,29 +139,22 @@ class VersionManager {
     }
   }
 
-  /**
-   * 系统升级处理主流程
-   */
   async processUpgrade(): Promise<void> {
-    // 跳过特定版本
     if (this.shouldSkipUpgrade()) {
       return
     }
 
     const storedVersion = this.getStoredVersion()
 
-    // 首次访问处理
     if (this.isFirstVisit(storedVersion)) {
       this.setStoredVersion(StorageConfig.CURRENT_VERSION)
       return
     }
 
-    // 版本相同，无需升级
     if (this.isSameVersion(storedVersion!)) {
       return
     }
 
-    // 检查是否有需要升级的旧数据
     const legacyStorage = this.findLegacyStorage()
     if (!legacyStorage.oldSysKey && legacyStorage.oldVersionKeys.length === 0) {
       this.setStoredVersion(StorageConfig.CURRENT_VERSION)
@@ -256,19 +162,15 @@ class VersionManager {
       return
     }
 
-    // 延迟执行升级流程，确保应用已完全加载
+    // 等应用挂载后再弹升级通知，避免阻塞首屏
     setTimeout(() => {
       this.executeUpgrade(storedVersion!, legacyStorage)
     }, StorageConfig.UPGRADE_DELAY)
   }
 }
 
-// 创建版本管理器实例
 const versionManager = new VersionManager()
 
-/**
- * 系统升级处理入口函数
- */
 export async function systemUpgrade(): Promise<void> {
   await versionManager.processUpgrade()
 }

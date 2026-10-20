@@ -6,14 +6,12 @@ import { useCommon } from '../../hooks/core/useCommon'
 import { loadingService } from '../../utils/ui/index'
 import { getPendingLoading, resetPendingLoading } from './beforeEach'
 
-/** 路由全局后置守卫 */
 export function setupAfterEachGuard(router: Router) {
   const { scrollToTop } = useCommon()
 
   router.afterEach(() => {
     scrollToTop()
 
-    // 关闭进度条
     const settingStore = useSettingStore()
     if (settingStore.showNprogress) {
       NProgress.done()
@@ -23,7 +21,6 @@ export function setupAfterEachGuard(router: Router) {
       }, 600)
     }
 
-    // 关闭 loading 效果
     if (getPendingLoading()) {
       nextTick(() => {
         loadingService.hideLoading()

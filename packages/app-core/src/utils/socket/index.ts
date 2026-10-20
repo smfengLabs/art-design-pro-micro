@@ -1,14 +1,3 @@
-/**
- * 全局 WebSocket 实时同步服务（多端数据同步装配层）
- *
- * 职责（连接管理见 ./client）：
- * - initSocket()：登录成功后建立连接（URL 含鉴权 token）；
- * - onMessage：收到 { "type": "DATA_UPDATE", "target": "system_user" } 时
- *   经 mittBus 抛出 'global-data-refresh' 事件，业务页面据此刷新表格；
- * - closeSocket()：登出时断开连接。
- *
- * @module app-core/utils/socket
- */
 import WebSocketClient from './client'
 import { mittBus } from '@art/app-utils'
 import { useUserStore } from '../../store/modules/user'

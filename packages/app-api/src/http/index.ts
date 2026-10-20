@@ -1,19 +1,3 @@
-/**
- * HTTP 请求封装模块
- * 基于 Axios 封装的 HTTP 请求工具，提供统一的请求/响应处理
- *
- * ## 主要功能
- *
- * - 请求/响应拦截器（自动添加 Token、统一错误处理）
- * - 401 未授权自动登出（带防抖机制）
- * - 请求失败自动重试（可配置）
- * - 统一的成功/错误消息提示
- * - 支持 GET/POST/PUT/DELETE 等常用方法
- *
- * @module utils/http
- * @author Art Design Pro Team
- */
-
 import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { getToken, triggerUnauthorized, setTokenProvider, onUnauthorized, setTranslator } from './context'
 import { ApiStatus } from '@art/app-utils'

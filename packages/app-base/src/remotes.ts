@@ -1,22 +1,8 @@
-/**
- * 静态远程路由源工厂
- *
- * 与 @art/app-config/vite/remotes.ts 注册表同源（构建期经 define 注入 __MF_REMOTE_REGISTRY__）；
- * 运行期将 { alias, manifestUrl, moduleId } 转为 app-core 可消费的 RemoteRouteSource。
- *
- * 稳定性契约（dev 抖动防护）：
- * - 路由源加载：3s 超时 + 1 次重试。远端 dev server 重新预构建依赖期间请求可能长时间
- *   挂起（不 settle），此处转为明确错误，经 MenuProcessor 的 Promise.allSettled 降级隔离，
- *   不会让路由守卫的全屏 loading 无限等待；
- * - 远端路由组件加载函数：包装同阈值超时。chunk 挂起时中止导航并走 router.onError 兜底
- *   （app-core 侧重置 loading / NProgress），避免「转圈卡死」。
- *
- * @module app-base/remotes
- */
 import { loadRemoteFromManifest } from 'vite-plugin-federation/runtime'
 import type { AppRouteRecord } from '@art/app-utils'
 import type { RemoteRouteSource } from '@art/app-core'
 
+// dev server 重预构建时远端请求可能挂起；超时 + 一次重试，避免守卫 loading 无限等待
 /** 单个远程加载（模块/chunk）的超时阈值（ms） */
 const REMOTE_LOAD_TIMEOUT = 3000
 /** 路由源加载超时后的重试次数（覆盖 dev server 重优化窗口的瞬态阻塞） */
@@ -31,7 +17,6 @@ export interface RemoteRegistryEntry {
   moduleId?: string
 }
 
-/** 延时工具 */
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }

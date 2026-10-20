@@ -101,32 +101,17 @@
 
   const { menuOpen } = storeToRefs(settingStore)
 
-  /**
-   * 过滤后的菜单项列表
-   * 只显示未隐藏的菜单项
-   */
   const filteredMenuItems = computed(() => filterRoutes(props.list))
 
-  /**
-   * 跳转到指定页面
-   * @param item 菜单项数据
-   */
   const goPage = (item: AppRouteRecord): void => {
     closeMenu()
     handleMenuJump(item)
   }
 
-  /**
-   * 关闭菜单
-   * 触发父组件的关闭事件
-   */
   const closeMenu = (): void => {
     emit('close')
   }
 
-  /**
-   * 判断菜单项本身是否可以作为可点击页面保留在菜单中
-   */
   const isNavigableRoute = (item: AppRouteRecord): boolean => {
     return !!(
       !item.meta.isHide &&
@@ -135,28 +120,19 @@
     )
   }
 
-  /**
-   * 递归过滤菜单路由，移除隐藏的菜单项
-   * 但如果父菜单本身就是可访问页面，则即使子菜单都被隐藏也应该保留
-   * @param items 菜单项数组
-   * @returns 过滤后的菜单项数组
-   */
   const filterRoutes = (items: AppRouteRecord[]): AppRouteRecord[] => {
     return items
       .filter((item) => {
-        // 如果当前项被隐藏，直接过滤掉
         if (item.meta.isHide) {
           return false
         }
 
-        // 如果有子菜单，递归过滤子菜单
         if (item.children && item.children.length > 0) {
           const filteredChildren = filterRoutes(item.children)
           // 目录菜单要求有可见子菜单；页面菜单则允许仅保留自身
           return filteredChildren.length > 0 || isNavigableRoute(item)
         }
 
-        // 叶子节点且未被隐藏，保留
         return isNavigableRoute(item)
       })
       .map((item) => ({
@@ -165,36 +141,18 @@
       }))
   }
 
-  /**
-   * 判断菜单项是否包含可见的子菜单
-   * @param item 菜单项数据
-   * @returns 是否包含可见的子菜单
-   */
   const hasChildren = (item: AppRouteRecord): boolean => {
     if (!item.children || item.children.length === 0) {
       return false
     }
-    // 递归检查是否有可见的子菜单
     const filteredChildren = filterRoutes(item.children)
     return filteredChildren.length > 0
   }
 
-  /**
-   * 判断是否为外部链接
-   * @param item 菜单项数据
-   * @returns 是否为外部链接
-   */
   const isExternalLink = (item: AppRouteRecord): boolean => {
     return !!(item.meta.link && !item.meta.isIframe)
   }
 
-  /**
-   * 生成唯一的 key
-   * 使用 path、title 和 index 组合确保唯一性
-   * @param item 菜单项数据
-   * @param index 索引
-   * @returns 唯一的 key
-   */
   const getUniqueKey = (item: AppRouteRecord, index: number): string => {
     return `${item.path || item.meta.title || 'menu'}-${props.level}-${index}`
   }

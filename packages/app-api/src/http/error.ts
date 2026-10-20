@@ -1,32 +1,8 @@
-/**
- * HTTP 错误处理模块
- *
- * 提供统一的 HTTP 请求错误处理机制
- *
- * ## 主要功能
- *
- * - 自定义 HttpError 错误类，封装错误信息、状态码、时间戳等
- * - 错误拦截和转换，将 Axios 错误转换为标准的 HttpError
- * - 错误消息国际化处理，根据状态码返回对应的多语言错误提示
- * - 错误日志记录，便于问题追踪和调试
- * - 错误和成功消息的统一展示
- * - 类型守卫函数，用于判断错误类型
- *
- * ## 使用场景
- *
- * - HTTP 请求拦截器中统一处理错误
- * - 业务代码中捕获和处理特定错误
- * - 错误日志收集和上报
- *
- * @module utils/http/error
- * @author Art Design Pro Team
- */
 import { AxiosError } from 'axios'
 import { ApiStatus } from '@art/app-utils'
 import { ElMessage } from 'element-plus'
 import { translate as $t } from './context'
 
-// 错误响应接口
 export interface ErrorResponse {
   /** 错误状态码 */
   code: number
@@ -36,7 +12,6 @@ export interface ErrorResponse {
   data?: unknown
 }
 
-// 错误日志数据接口
 export interface ErrorLogData {
   /** 错误状态码 */
   code: number
@@ -54,7 +29,6 @@ export interface ErrorLogData {
   stack?: string
 }
 
-// 自定义 HttpError 类
 export class HttpError extends Error {
   public readonly code: number
   public readonly data?: unknown
@@ -93,11 +67,6 @@ export class HttpError extends Error {
   }
 }
 
-/**
- * 获取错误消息
- * @param status 错误状态码
- * @returns 错误消息
- */
 const getErrorMessage = (status: number): string => {
   const errorMap: Record<number, string> = {
     [ApiStatus.unauthorized]: 'httpMsg.unauthorized',
@@ -114,13 +83,7 @@ const getErrorMessage = (status: number): string => {
   return $t(errorMap[status] || 'httpMsg.internalServerError')
 }
 
-/**
- * 处理错误
- * @param error 错误对象
- * @returns 错误对象
- */
 export function handleError(error: AxiosError<ErrorResponse>): never {
-  // 处理取消的请求
   if (error.code === 'ERR_CANCELED') {
     console.warn('Request cancelled:', error.message)
     throw new HttpError($t('httpMsg.requestCancelled'), ApiStatus.error)
@@ -130,7 +93,6 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   const errorMessage = error.response?.data?.msg || error.message
   const requestConfig = error.config
 
-  // 处理网络错误
   if (!error.response) {
     throw new HttpError($t('httpMsg.networkError'), ApiStatus.error, {
       url: requestConfig?.url,
@@ -138,7 +100,6 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
     })
   }
 
-  // 处理 HTTP 状态码错误
   const message = statusCode
     ? getErrorMessage(statusCode)
     : errorMessage || $t('httpMsg.requestFailed')
@@ -149,35 +110,19 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
   })
 }
 
-/**
- * 显示错误消息
- * @param error 错误对象
- * @param showMessage 是否显示错误消息
- */
 export function showError(error: HttpError, showMessage: boolean = true): void {
   if (showMessage) {
     ElMessage.error(error.message)
   }
-  // 记录错误日志
   console.error('[HTTP Error]', error.toLogData())
 }
 
-/**
- * 显示成功消息
- * @param message 成功消息
- * @param showMessage 是否显示消息
- */
 export function showSuccess(message: string, showMessage: boolean = true): void {
   if (showMessage) {
     ElMessage.success(message)
   }
 }
 
-/**
- * 判断是否为 HttpError 类型
- * @param error 错误对象
- * @returns 是否为 HttpError 类型
- */
 export const isHttpError = (error: unknown): error is HttpError => {
   return error instanceof HttpError
 }

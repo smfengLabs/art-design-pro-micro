@@ -1,6 +1,3 @@
-/**
- * 接口状态码
- */
 export enum ApiStatus {
   success = 200, // 成功
   error = 400, // 错误

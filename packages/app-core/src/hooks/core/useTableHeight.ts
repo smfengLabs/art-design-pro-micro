@@ -1,26 +1,6 @@
-/**
- * useTableHeight - 表格高度自动计算
- *
- * 自动计算表格容器的最佳高度，确保表格在不同布局场景下都能正确显示。
- * 根据表格头部、分页器等元素的高度动态调整容器高度，避免出现滚动条或布局错乱。
- *
- * ## 主要功能
- *
- * 1. 动态高度计算 - 根据表格头部、分页器高度自动计算容器高度
- * 2. 响应式更新 - 配置变化时自动重新计算高度
- * 3. 灵活配置 - 支持自定义各部分高度和间距
- * 4. 智能适配 - 无额外元素时自动使用 100% 高度
- *
- * @module useTableHeight
- * @author Art Design Pro Team
- */
-
 import { computed, ref, type Ref } from 'vue'
 import { useObservedElementHeight } from './useObservedElementHeight'
 
-/**
- * 表格高度计算器配置接口
- */
 interface TableHeightOptions {
   /** 是否显示表格头部 */
   showTableHeader: Ref<boolean>
@@ -32,19 +12,12 @@ interface TableHeightOptions {
   paginationSpacing: Ref<number>
 }
 
-/**
- * 表格高度计算器类
- */
 class TableHeightCalculator {
-  // 常量配置
   private static readonly DEFAULT_TABLE_HEADER_HEIGHT = 44
   private static readonly TABLE_HEADER_SPACING = 12
 
   constructor(private options: TableHeightOptions) {}
 
-  /**
-   * 计算容器高度
-   */
   calculate(): { height: string } {
     const offset = this.calculateOffset()
     return {
@@ -52,9 +25,6 @@ class TableHeightCalculator {
     }
   }
 
-  /**
-   * 计算偏移量
-   */
   private calculateOffset(): number {
     if (!this.options.showTableHeader.value) {
       return this.calculatePaginationOffset()
@@ -66,33 +36,16 @@ class TableHeightCalculator {
     return headerHeight + paginationOffset + TableHeightCalculator.TABLE_HEADER_SPACING
   }
 
-  /**
-   * 获取表格头部高度
-   */
   private getHeaderHeight(): number {
     return this.options.tableHeaderHeight.value || TableHeightCalculator.DEFAULT_TABLE_HEADER_HEIGHT
   }
 
-  /**
-   * 计算分页器偏移量
-   */
   private calculatePaginationOffset(): number {
     const { paginationHeight, paginationSpacing } = this.options
     return paginationHeight.value === 0 ? 0 : paginationHeight.value + paginationSpacing.value
   }
 }
 
-/**
- * 表格高度计算 Hook
- *
- * 提供表格容器高度的自动计算功能，支持：
- * - 表格头部高度
- * - 分页器高度
- * - 动态间距计算
- *
- * @param options 配置选项
- * @returns 容器高度计算结果
- */
 export function useTableHeight(options: TableHeightOptions) {
   const containerHeight = computed(() => {
     const calculator = new TableHeightCalculator(options)
@@ -105,16 +58,6 @@ export function useTableHeight(options: TableHeightOptions) {
   }
 }
 
-/**
- * 表格高度计算 Hook（自动观测版）
- *
- * 在 useTableHeight 基础上，接管"分页器 / 表格头部"两个元素的高度观测：
- * 组件只需传入元素 ref 与配置，即可获得随元素尺寸变化自动更新的容器高度样式。
- * 高度观测由 useObservedElementHeight 提供（原生 ResizeObserver，微前端可用）。
- *
- * @param options 配置选项
- * @returns 容器高度与内部高度状态
- */
 export interface TableAutoHeightOptions {
   /** 是否显示表格头部 */
   showTableHeader: Ref<boolean>
@@ -126,6 +69,7 @@ export interface TableAutoHeightOptions {
   tableHeaderRef: Ref<HTMLElement | undefined>
 }
 
+// 原生 ResizeObserver 观测表头/分页器，兼容微前端异步挂载
 export function useTableAutoHeight(options: TableAutoHeightOptions) {
   const paginationHeight = ref(0)
   const tableHeaderHeight = ref(0)

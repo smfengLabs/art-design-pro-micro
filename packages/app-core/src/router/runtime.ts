@@ -1,17 +1,3 @@
-/**
- * 路由运行时容器（单例桥）
- *
- * 设计动机（v2 B3 规则 6）：remote（app-system）的可达闭包不得触达宿主路由单例文件
- * （router/index.ts）与守卫装配文件，否则 remote 只要 import @art/app-core
- * 就会把宿主路由装配依赖一并拉进依赖图，破坏跨应用独立性。
- *
- * 因此：
- * - 所有路由单例状态集中在 runtime（零内部依赖的叶子模块）
- * - 宿主在 bootstrapApp 中调用 createHostRouter() 完成注册
- * - 跨层消费统一 getActiveRouter() / getStaticRoutes() 等访问器
- *
- * @module app-core/router/runtime
- */
 import type { Router, RouteRecordRaw } from 'vue-router'
 import type { AppRouteRecord } from '@art/app-utils'
 
@@ -38,6 +24,7 @@ export interface RemoteRouteSource {
   load?: () => Promise<AppRouteRecord[]>
 }
 
+// 跨应用共享的路由运行时；remote 不直接引用宿主 router 单例
 let activeRouter: Router | null = null
 let staticRoutes: Array<RouteRecordRaw | AppRouteRecord> = []
 let asyncRouteSource: Array<RouteRecordRaw | AppRouteRecord> = []
@@ -68,7 +55,6 @@ export function getHomePagePath(): string {
   return homePagePath
 }
 
-// ── 路由单例 ──
 export function setActiveRouter(router: Router): void {
   activeRouter = router
 }
@@ -80,7 +66,6 @@ export function getActiveRouter(): Router {
   return activeRouter
 }
 
-// ── 静态路由 ──
 export function setStaticRoutes(routes: Array<RouteRecordRaw | AppRouteRecord>): void {
   staticRoutes = routes || []
 }
@@ -89,7 +74,6 @@ export function getStaticRoutes(): Array<RouteRecordRaw | AppRouteRecord> {
   return staticRoutes
 }
 
-// ── 异步路由源（本地） ──
 export function setAsyncRouteSource(source: Array<RouteRecordRaw | AppRouteRecord>): void {
   asyncRouteSource = source || []
 }
@@ -99,7 +83,6 @@ export function getAsyncRouteSource(): AppRouteRecord[] {
   return asyncRouteSource as AppRouteRecord[]
 }
 
-// ── 远程路由源（MF） ──
 export function setRemoteRouteSources(sources: RemoteRouteSource[]): void {
   remoteRouteSources = sources || []
 }
@@ -108,7 +91,6 @@ export function getRemoteRouteSources(): RemoteRouteSource[] {
   return remoteRouteSources
 }
 
-// ── 路由名称索引（backend 模式跨应用组件解析锚点） ──
 
 /**
  * 路由名称索引条目
@@ -138,7 +120,6 @@ export function getRouteNameIndex(): RouteNameIndex {
   return routeNameIndex
 }
 
-// ── 路由注册器 ──
 export function setRouteRegistry(registry: RouteRegistryLike): void {
   routeRegistry = registry
 }
@@ -147,7 +128,6 @@ export function getRouteRegistry(): RouteRegistryLike | null {
   return routeRegistry
 }
 
-// ── 路由初始化状态标记 ──
 export function isRouteInitFailed(): boolean {
   return routeInitFailed
 }
@@ -170,7 +150,6 @@ export function resetRouteInitState(): void {
   routeInitInProgress = false
 }
 
-// ── 组件加载器注入（host 本地视图） ──
 export function setComponentGlob(glob: ComponentGlob): void {
   componentGlob = glob || {}
 }

@@ -1,24 +1,7 @@
-/**
- * app-system 路由契约（v2 E1/E2）
- *
- * - systemRoutes：system 域真实业务路由（RouteRecordRaw[]）
- *   · host（frontend 权限模式）：经 MF expose './routes' 由 MenuProcessor 聚合，
- *     组件已内联为可渲染函数，host 原样接受（无 mf:// 字符串解析）；
- *   · standalone：经 bootstrapApp 的 asyncRouteSource 注入本会话 router。
- * - default 导出即候选路由清单（E2 聚合入口）。
- *
- * E1 约定：一级路由 component 为 @art/app-components/layouts 共享壳；
- * 子路由一律 () => import('./views/system/**')；name 统一引用 @art/app-utils 的 RouteName。
- *
- * 开源前大扫除（2026-10-19）：演示性菜单（多级菜单 nested / 阶段一 Hello 演示页）
- * 已随视图物理删除，菜单仅保留 system 域自身业务（用户 / 角色 / 菜单 / 用户中心）。
- *
- * @module app-system/routes
- */
+// app-system 业务路由，host 聚合与 standalone 共用
 import type { RouteRecordRaw } from 'vue-router'
 import { RouteName } from '@art/app-utils'
 
-/** system 域业务路由（host 聚合与 standalone 共用） */
 export const systemRoutes: RouteRecordRaw[] = [
   {
     path: '/system',
@@ -85,5 +68,4 @@ export const systemRoutes: RouteRecordRaw[] = [
   }
 ]
 
-/** host 聚合入口（MF expose './routes'：default 导出即候选路由清单） */
 export default systemRoutes

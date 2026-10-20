@@ -1,12 +1,3 @@
-/**
- * Iframe 路由管理器
- *
- * 负责管理 iframe 类型的路由
- *
- * @module router/core/IframeRouteManager
- * @author Art Design Pro Team
- */
-
 import type { AppRouteRecord } from '@art/app-utils'
 
 export class IframeRouteManager {

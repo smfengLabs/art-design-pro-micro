@@ -1,37 +1,3 @@
-/**
- * 存储兼容性管理模块
- *
- * 提供完整的本地存储兼容性检查和数据验证功能
- *
- * 主要功能
- *
- * - 多版本存储数据检测和验证
- * - 新旧存储格式兼容处理
- * - 存储数据完整性校验
- * - 存储异常自动恢复（清理+登出）
- * - 登录状态验证
- * - 存储为空检测
- * - 版本号管理
- *
- * ## 使用场景
- *
- * - 应用启动时检查存储数据有效性
- * - 路由守卫中验证登录状态
- * - 版本升级时的数据兼容性检查
- * - 存储异常时的自动恢复
- * - 防止因存储数据损坏导致的系统异常
- *
- * ## 工作流程
- *
- * 1. 优先检查当前版本的存储数据
- * 2. 检查其他版本的存储数据
- * 3. 兼容旧格式的存储数据
- * 4. 验证数据完整性
- * 5. 异常时提示用户并执行登出
- *
- * @module utils/storage/storage
- * @author Art Design Pro Team
- */
 import { getActiveRouter } from '../../router/runtime'
 import { useUserStore } from '../../store/modules/user'
 import { ElMessage } from 'element-plus'
@@ -41,28 +7,15 @@ import {
   getSystemVersion as readSystemVersion
 } from './storage-legacy'
 
-/**
- * 存储兼容性管理器
- * 负责处理不同版本间的存储兼容性检查和数据验证
- */
 class StorageCompatibilityManager {
-  /**
-   * 获取系统版本号
-   */
   getSystemVersion(): string | null {
     return readSystemVersion()
   }
 
-  /**
-   * 获取系统存储数据（兼容旧格式）
-   */
   getSystemStorage(): any {
     return readSystemStorage()
   }
 
-  /**
-   * 检查当前版本是否有存储数据
-   */
   private hasCurrentVersionStorage(): boolean {
     const storageKeys = Object.keys(localStorage)
     const currentVersionPattern = StorageConfig.createCurrentVersionPattern()
@@ -72,9 +25,6 @@ class StorageCompatibilityManager {
     )
   }
 
-  /**
-   * 检查是否存在任何版本的存储数据
-   */
   private hasAnyVersionStorage(): boolean {
     const storageKeys = Object.keys(localStorage)
     const versionPattern = StorageConfig.createVersionPattern()
@@ -82,9 +32,6 @@ class StorageCompatibilityManager {
     return storageKeys.some((key) => versionPattern.test(key) && localStorage.getItem(key) !== null)
   }
 
-  /**
-   * 获取旧格式的本地存储数据
-   */
   private getLegacyStorageData(): Record<string, any> {
     try {
       const systemStorage = this.getSystemStorage()
@@ -95,9 +42,6 @@ class StorageCompatibilityManager {
     }
   }
 
-  /**
-   * 显示存储错误消息
-   */
   private showStorageError(): void {
     ElMessage({
       type: 'error',
@@ -107,9 +51,6 @@ class StorageCompatibilityManager {
     })
   }
 
-  /**
-   * 执行系统登出
-   */
   private performSystemLogout(): void {
     setTimeout(() => {
       try {
@@ -123,31 +64,21 @@ class StorageCompatibilityManager {
     }, StorageConfig.LOGOUT_DELAY)
   }
 
-  /**
-   * 处理存储异常
-   */
   private handleStorageError(): void {
     this.showStorageError()
     this.performSystemLogout()
   }
 
-  /**
-   * 验证存储数据完整性
-   * @param requireAuth 是否需要验证登录状态（默认 false）
-   */
   validateStorageData(requireAuth: boolean = false): boolean {
     try {
-      // 优先检查新版本存储结构
       if (this.hasCurrentVersionStorage()) {
         return true
       }
 
-      // 检查是否有任何版本的存储数据
       if (this.hasAnyVersionStorage()) {
         return true
       }
 
-      // 检查旧版本存储结构
       const legacyData = this.getLegacyStorageData()
       if (Object.keys(legacyData).length === 0) {
         // 只有在需要验证登录状态时才执行登出操作
@@ -172,29 +103,20 @@ class StorageCompatibilityManager {
     }
   }
 
-  /**
-   * 检查存储是否为空
-   */
   isStorageEmpty(): boolean {
     // 检查新版本存储结构
     if (this.hasCurrentVersionStorage()) {
       return false
     }
 
-    // 检查是否有任何版本的存储数据
     if (this.hasAnyVersionStorage()) {
       return false
     }
 
-    // 检查旧版本存储结构
     const legacyData = this.getLegacyStorageData()
     return Object.keys(legacyData).length === 0
   }
 
-  /**
-   * 检查存储兼容性
-   * @param requireAuth 是否需要验证登录状态（默认 false）
-   */
   checkCompatibility(requireAuth: boolean = false): boolean {
     try {
       const isValid = this.validateStorageData(requireAuth)
@@ -213,35 +135,20 @@ class StorageCompatibilityManager {
   }
 }
 
-// 创建存储兼容性管理器实例
 const storageManager = new StorageCompatibilityManager()
 
-/**
- * 获取系统存储数据
- */
 export function getSystemStorage(): any {
   return storageManager.getSystemStorage()
 }
 
-/**
- * 获取系统版本号
- */
 export function getSysVersion(): string | null {
   return storageManager.getSystemVersion()
 }
 
-/**
- * 验证本地存储数据
- * @param requireAuth 是否需要验证登录状态（默认 false）
- */
 export function validateStorageData(requireAuth: boolean = false): boolean {
   return storageManager.validateStorageData(requireAuth)
 }
 
-/**
- * 检查存储兼容性
- * @param requireAuth 是否需要验证登录状态（默认 false）
- */
 export function checkStorageCompatibility(requireAuth: boolean = false): boolean {
   return storageManager.checkCompatibility(requireAuth)
 }

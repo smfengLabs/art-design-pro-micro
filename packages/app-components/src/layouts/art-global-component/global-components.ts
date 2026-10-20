@@ -1,11 +1,3 @@
-/**
- * 全局组件配置（@art/app-components/layouts 版）
- *
- * origin `src/config/modules/component.ts` 原样迁移，组件路径由 `@/components/core/**`
- * 改写为包内相对路径。由 art-global-component 消费（设置面板/搜索/锁屏等浮层）。
- *
- * @module app-components/layouts/global-components
- */
 import { defineAsyncComponent } from 'vue'
 
 export const globalComponentsConfig: GlobalComponentConfig[] = [

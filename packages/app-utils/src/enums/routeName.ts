@@ -1,16 +1,3 @@
-/**
- * 路由名称枚举（微应用公共契约）
- *
- * - 框架路由：宿主与远程通用（与 origin staticRoutes 的 name 值保持一致）
- * - 系统模块路由：app-system 业务路由命名（阶段二起经远程注册）
- *
- * 注：system 域成员值对齐 origin 路由/组件名（User/Role/Menus/…）——
- * worktab 的 KeepAlive exclude 以组件名匹配缓存（defineOptions name 与路由 name 一致），
- * 值随 origin 保持不变，关闭标签页清理缓存行为与改造前逐一致
- * （v2 E3 示例中的 "SystemUser" 措辞按此落地：枚举成员名 SYSTEM_* 即唯一锚点，值 = origin 名）。
- *
- * @module app-utils/enums/routeName
- */
 export enum RouteName {
   /** 登录 */
   LOGIN = 'Login',

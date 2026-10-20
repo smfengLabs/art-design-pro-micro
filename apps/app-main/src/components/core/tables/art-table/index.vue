@@ -167,7 +167,6 @@
     }
   })
 
-  // 默认分页常量
   const DEFAULT_PAGINATION_OPTIONS: PaginationOptions = {
     pageSizes: [10, 20, 30, 50, 100],
     align: 'center',
@@ -178,7 +177,6 @@
     pagerCount: width.value > 1200 ? 7 : 5
   }
 
-  // 合并分页配置
   const mergedPaginationOptions = computed(() => ({
     ...DEFAULT_PAGINATION_OPTIONS,
     ...props.paginationOptions
@@ -186,14 +184,10 @@
 
   // 边框 (优先级：props > store)
   const border = computed(() => props.border ?? isBorder.value)
-  // 斑马纹
   const stripe = computed(() => props.stripe ?? isZebra.value)
-  // 表格尺寸
   const size = computed(() => props.size ?? tableSize.value)
-  // 数据是否为空
   const isEmpty = computed(() => props.data?.length === 0)
 
-  // 分页器与表格之间的间距常量（计算属性，响应 showTableHeader 变化）
   const PAGINATION_SPACING = computed(() => (props.showTableHeader ? 6 : 15))
 
   // 使用表格高度计算 Hook（内部以原生 ResizeObserver + rAF 补测观测元素尺寸，
@@ -205,19 +199,13 @@
     tableHeaderRef
   })
 
-  // 表格高度逻辑
   const height = computed(() => {
-    // 全屏模式下占满全屏
     if (isFullScreen.value) return '100%'
-    // 空数据且非加载状态时固定高度
     if (isEmpty.value && !props.loading) return props.emptyHeight
-    // 使用传入的高度
     if (props.height) return props.height
-    // 默认占满容器高度
     return '100%'
   })
 
-  // 表头背景颜色样式
   const headerCellStyle = computed(() => ({
     background: isHeaderBackground.value
       ? 'var(--el-fill-color-lighter)'
@@ -246,7 +234,6 @@
       : undefined
   }))
 
-  // 是否显示分页器
   const showPagination = computed(() => props.pagination && !isEmpty.value)
 
   // Element Plus 在部分场景会先用 $index = -1 进行预渲染。
@@ -258,7 +245,6 @@
   // 清理列属性，移除插槽相关的自定义属性，确保它们不会被 ElTableColumn 错误解释
   const cleanColumnProps = (col: ColumnOption) => {
     const columnProps = { ...col }
-    // 删除自定义的插槽控制属性
     delete columnProps.useHeaderSlot
     delete columnProps.headerSlotName
     delete columnProps.useSlot
@@ -266,12 +252,10 @@
     return columnProps
   }
 
-  // 分页大小变化
   const handleSizeChange = (val: number) => {
     emit('pagination:size-change', val)
   }
 
-  // 分页当前页变化
   const handleCurrentChange = (val: number) => {
     emit('pagination:current-change', val)
     scrollToTop() // 页码改变后滚动到表格顶部
@@ -279,7 +263,6 @@
 
   const { scrollToTop: scrollPageToTop } = useCommon()
 
-  // 滚动表格内容到顶部，并可以联动页面滚动到顶部
   const scrollToTop = () => {
     nextTick(() => {
       elTableRef.value?.setScrollTop(0) // 滚动 ElTable 内部滚动条到顶部
@@ -287,7 +270,6 @@
     })
   }
 
-  // 全局序号
   const getGlobalIndex = (index: number) => {
     if (!props.pagination) return index + 1
     const { current, size } = props.pagination
@@ -299,7 +281,6 @@
     (e: 'pagination:current-change', val: number): void
   }>()
 
-  // 查找并绑定表格头部元素 - 使用 VueUse 优化
   const findTableHeader = () => {
     if (!props.showTableHeader) {
       tableHeaderRef.value = undefined
@@ -310,24 +291,21 @@
     if (tableHeader) {
       tableHeaderRef.value = tableHeader
     } else {
-      // 如果找不到表格头部，设置为 undefined，useElementSize 会返回 0
       tableHeaderRef.value = undefined
     }
   }
 
   watchEffect(
     () => {
-      // 访问响应式数据以建立依赖追踪
+      // 数据变化后重新查找表头，触发高度重算
       void props.data?.length // 追踪数据变化
       const shouldShow = props.showTableHeader
 
-      // 只有在需要显示表格头部时才查找
       if (shouldShow) {
         nextTick(() => {
           findTableHeader()
         })
       } else {
-        // 不显示时清空引用
         tableHeaderRef.value = undefined
       }
     },

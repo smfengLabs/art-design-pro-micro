@@ -1,33 +1,9 @@
-/**
- * 国际化配置
- *
- * 基于 vue-i18n 实现的多语言国际化解决方案。
- * 支持中文和英文切换，自动从本地存储恢复用户的语言偏好。
- *
- * ## 主要功能
- *
- * - 多语言支持 - 支持中文（简体）和英文两种语言
- * - 语言切换 - 运行时动态切换语言，无需刷新页面
- * - 持久化存储 - 自动保存和恢复用户的语言偏好
- * - 全局注入 - 在任何组件中都可以使用 $t 函数进行翻译
- * - 类型安全 - 提供 TypeScript 类型支持
- *
- * ## 支持的语言
- *
- * - zh: 简体中文
- * - en: English
- *
- * @module locales
- * @author Art Design Pro Team
- */
-
 import { createI18n } from 'vue-i18n'
 import type { I18n, I18nOptions } from 'vue-i18n'
 import { LanguageEnum } from '@art/app-utils'
 import { getSystemStorage } from '../utils/storage/storage-legacy'
 import { StorageKeyManager } from '../utils/storage/storage-key-manager'
 
-// 同步导入语言文件
 import enMessages from './langs/en.json'
 import zhMessages from './langs/zh.json'
 
@@ -58,7 +34,6 @@ export const languageOptions = [
  * @returns 语言设置，如果获取失败则返回默认语言
  */
 const getDefaultLanguage = (): LanguageEnum => {
-  // 尝试从版本化的存储中获取语言设置
   try {
     const storageKey = storageKeyManager.getStorageKey('user')
     const userStore = localStorage.getItem(storageKey)
@@ -73,7 +48,6 @@ const getDefaultLanguage = (): LanguageEnum => {
     console.warn('[i18n] 从版本化存储获取语言设置失败:', error)
   }
 
-  // 尝试从系统存储中获取语言设置
   try {
     const sys = getSystemStorage()
     if (sys) {
@@ -86,7 +60,6 @@ const getDefaultLanguage = (): LanguageEnum => {
     console.warn('[i18n] 从系统存储获取语言设置失败:', error)
   }
 
-  // 返回默认语言
   return LanguageEnum.ZH
 }
 

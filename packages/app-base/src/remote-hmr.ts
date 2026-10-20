@@ -1,11 +1,3 @@
-/**
- * 动态 remote HMR（v2 D3）
- *
- * 动态 remote（registerManifestRemote 注册）dev server 就绪后接入「运行时手动挂载」：
- * 1) 注册（幂等）；2) 连接 → 3) 事件驱动。
- *
- * @module app-base/remote-hmr
- */
 import {
   connectRuntimeRemoteHmr,
   refreshRemote,

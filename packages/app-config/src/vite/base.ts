@@ -1,16 +1,3 @@
-/**
- * Vite 基础配置工厂（host/remote 共用）
- *
- * 形态对照 origin-code/vite.config.ts 逐项迁移：
- * define / base / server / resolve.alias / build / plugins / optimizeDeps / css。
- *
- * 微前端差异：
- * - 样式树与构建配置拆分到 @art/app-config（别名 '@styles' 指向本包 tailwind 目录）
- * - __APP_VERSION__ 读取仓库根 VERSION；__MF_REMOTE_REGISTRY__ 注入远程注册表
- * - app 级 .env 覆盖仓库根 .env.shared 默认值（v2 B5）
- *
- * @module app-config/vite/base
- */
 import fs from 'node:fs'
 import path from 'node:path'
 import { loadEnv, type Plugin, type UserConfig } from 'vite'
@@ -151,7 +138,6 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       proxy: createProxy(env),
       host: true
     },
-    // 路径别名
     resolve: {
       alias: {
         '@': resolvePath('src'),
@@ -169,9 +155,7 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       minify: 'terser',
       terserOptions: {
         compress: {
-          // 生产构建去除 console
           drop_console: true,
-          // 生产构建去除 debugger
           drop_debugger: true
         }
       },
@@ -186,7 +170,6 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       elementPlusSharedSubpath(),
       vue(),
       tailwindcss(),
-      // 自动导入依赖 API
       // 仅保留 Vue / Router / Pinia；Element Plus 没有官方 AutoImport preset，
       // 由下方 ElementPlusResolver 按需导入（ElMessage / ElLoading 等）。
       AutoImport({
@@ -199,16 +182,13 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
           globalsPropValue: true
         }
       }),
-      // 自动导入组件
       Components({
         dts: 'src/types/import/components.d.ts',
         resolvers: [ElementPlusResolver()]
       }),
-      // 按需导入组件样式
       ElementPlus({
         useSource: true
       }),
-      // 压缩
       viteCompression({
         verbose: false,
         disable: false,
@@ -218,13 +198,11 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
         deleteOriginFile: false
       })
     ],
-    // 预构建依赖（origin 全量；kind 拆分为 main/remote 两级）
     optimizeDeps: {
       include: kind === 'main' ? MAIN_OPTIMIZE_DEPS : REMOTE_OPTIMIZE_DEPS
     },
     css: {
       preprocessorOptions: {
-        // sass variable and mixin
         scss: {
           additionalData: `
             @use "@styles/core/el-light.scss" as *; 

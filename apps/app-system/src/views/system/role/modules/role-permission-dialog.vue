@@ -45,6 +45,7 @@
   type RoleListItem = Api.SystemManage.RoleListItem
 
   interface Props {
+    /** 弹窗显示状态双向绑定 */
     modelValue: boolean
     roleData?: RoleListItem
   }
@@ -66,17 +67,12 @@
   const isExpandAll = ref(true)
   const isSelectAll = ref(false)
 
-  /**
-   * 弹窗显示状态双向绑定
-   */
   const visible = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value)
   })
 
-  /**
-   * 菜单节点类型
-   */
+  /** 菜单树节点，authList 会展开为可选中的权限子节点 */
   interface MenuNode {
     id?: string | number
     name?: string
@@ -93,15 +89,10 @@
     [key: string]: any
   }
 
-  /**
-   * 处理菜单数据，将 authList 转换为树形子节点
-   * 递归处理菜单树，将权限列表展开为可选择的子节点
-   */
   const processedMenuList = computed(() => {
     const processNode = (node: MenuNode): MenuNode => {
       const processed = { ...node }
 
-      // 如果有 authList，将其转换为子节点
       if (node.meta?.authList?.length) {
         const authNodes = node.meta.authList.map((auth) => ({
           id: `${node.id}_${auth.authMark}`,
@@ -115,7 +106,6 @@
         processed.children = processed.children ? [...processed.children, ...authNodes] : authNodes
       }
 
-      // 递归处理子节点
       if (processed.children) {
         processed.children = processed.children.map(processNode)
       }
@@ -126,17 +116,11 @@
     return (menuList.value as any[]).map(processNode)
   })
 
-  /**
-   * 树形组件配置
-   */
   const defaultProps = {
     children: 'children',
     label: (data: any) => formatMenuTitle(data.meta?.title) || data.label || ''
   }
 
-  /**
-   * 监听弹窗打开，初始化权限数据
-   */
   watch(
     () => props.modelValue,
     (newVal) => {
@@ -145,17 +129,11 @@
     }
   )
 
-  /**
-   * 关闭弹窗并清空选中状态
-   */
   const handleClose = () => {
     visible.value = false
     treeRef.value?.setCheckedKeys([])
   }
 
-  /**
-   * 保存权限配置
-   */
   const savePermission = () => {
     // TODO: 调用保存权限接口
     ElMessage.success('权限保存成功')
@@ -163,9 +141,6 @@
     handleClose()
   }
 
-  /**
-   * 切换全部展开/收起状态
-   */
   const toggleExpandAll = () => {
     const tree = treeRef.value
     if (!tree) return
@@ -179,9 +154,6 @@
     isExpandAll.value = !isExpandAll.value
   }
 
-  /**
-   * 切换全选/取消全选状态
-   */
   const toggleSelectAll = () => {
     const tree = treeRef.value
     if (!tree) return
@@ -196,11 +168,6 @@
     isSelectAll.value = !isSelectAll.value
   }
 
-  /**
-   * 递归获取所有节点的 key
-   * @param nodes 节点列表
-   * @returns 所有节点的 key 数组
-   */
   const getAllNodeKeys = (nodes: MenuNode[]): string[] => {
     const keys: string[] = []
     const traverse = (nodeList: MenuNode[]): void => {
@@ -213,10 +180,6 @@
     return keys
   }
 
-  /**
-   * 处理树节点选中状态变化
-   * 同步更新全选按钮状态
-   */
   const handleTreeCheck = () => {
     const tree = treeRef.value
     if (!tree) return

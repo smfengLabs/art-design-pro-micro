@@ -1,12 +1,3 @@
-/**
- * 路由注册核心类
- *
- * 负责动态路由的注册、验证和管理
- *
- * @module router/core/RouteRegistry
- * @author Art Design Pro Team
- */
-
 import type { Router, RouteRecordRaw } from 'vue-router'
 import type { AppRouteRecord } from '@art/app-utils'
 import { ComponentLoader } from './ComponentLoader'
@@ -42,13 +33,11 @@ export class RouteRegistry {
       return
     }
 
-    // 验证路由配置
     const validationResult = this.validator.validate(menuList)
     if (!validationResult.valid) {
       throw new Error(`路由配置验证失败: ${validationResult.errors.join(', ')}`)
     }
 
-    // 转换并注册路由
     const removeRouteFns: (() => void)[] = []
 
     menuList.forEach((route) => {

@@ -1,12 +1,3 @@
-/**
- * 路由转换器
- *
- * 负责将菜单数据转换为 Vue Router 路由配置
- *
- * @module router/core/RouteTransformer
- * @author Art Design Pro Team
- */
-
 import type { RouteRecordRaw } from 'vue-router'
 import type { AppRouteRecord } from '@art/app-utils'
 import { ComponentLoader } from './ComponentLoader'
@@ -33,13 +24,11 @@ export class RouteTransformer {
   transform(route: AppRouteRecord, depth = 0): ConvertedRoute {
     const { component, children, ...routeConfig } = route
 
-    // 基础路由配置
     const converted: ConvertedRoute = {
       ...routeConfig,
       component: undefined
     }
 
-    // 处理不同类型的路由
     if (route.meta.isIframe) {
       this.handleIframeRoute(converted, route, depth)
     } else if (this.isFirstLevelRoute(route, depth)) {
@@ -48,7 +37,6 @@ export class RouteTransformer {
       this.handleNormalRoute(converted, component)
     }
 
-    // 递归处理子路由
     if (children?.length) {
       converted.children = children.map((child) => this.transform(child, depth + 1))
     }
@@ -102,7 +90,6 @@ export class RouteTransformer {
       targetRoute.component = this.componentLoader.loadIframe()
     }
 
-    // 记录 iframe 路由
     this.iframeManager.add(sourceRoute)
   }
 

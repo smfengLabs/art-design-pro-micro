@@ -1,19 +1,3 @@
-/**
- * 配置图片资源
- *
- * 统一管理设置中心使用的预览图片资源。
- * 包含主题样式、菜单布局、菜单风格的预览图。
- *
- * ## 图片分类
- *
- * - themeStyles: 系统主题预览图（亮色/暗色/自动）
- * - menuLayouts: 菜单布局预览图（左侧/顶部/混合/双栏）
- * - menuStyles: 菜单风格预览图（设计/暗色/亮色）
- *
- * @module config/assets/images
- * @author Art Design Pro Team
- */
-
 import lightTheme from './images/settings/theme_styles/light.png'
 import darkTheme from './images/settings/theme_styles/dark.png'
 import systemTheme from './images/settings/theme_styles/system.png'

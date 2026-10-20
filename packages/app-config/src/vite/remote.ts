@@ -1,10 +1,3 @@
-/**
- * Remote（app-system）Vite 配置工厂
- *
- * v2 C2：exposes './routes'（默认导出路由清单）；dev 开启 remoteHmr 供 host 接 HMR。
- *
- * @module app-config/vite/remote
- */
 import { defineConfig, type ConfigEnv, type UserConfig } from 'vite'
 import { federation } from 'vite-plugin-federation'
 import { createBaseConfig } from './base.ts'

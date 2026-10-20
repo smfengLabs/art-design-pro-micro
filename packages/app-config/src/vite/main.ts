@@ -1,11 +1,3 @@
-/**
- * Host（app-main）Vite 配置工厂
- *
- * v2 C1：静态 remote 走 federation remotes 段（dev: remote dev server manifest；
- * prod: 同域网关路径），与运行时 __MF_REMOTE_REGISTRY__ 同源（vite/remotes.ts）。
- *
- * @module app-config/vite/main
- */
 import { defineConfig, type ConfigEnv, type UserConfig } from 'vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { federation } from 'vite-plugin-federation'

@@ -1,4 +1,3 @@
-<!-- 个人中心页面 -->
 <template>
   <div class="w-full h-full p-0 bg-transparent border-none shadow-none">
     <div class="relative flex-b mt-2.5 max-md:block max-md:mt-1">
@@ -160,9 +159,6 @@
   const date = ref('')
   const ruleFormRef = ref<FormInstance>()
 
-  /**
-   * 用户信息表单
-   */
   const form = reactive({
     realName: 'John Snow',
     nikeName: '皮卡丘',
@@ -173,18 +169,12 @@
     des: 'Art Design Pro 是一款兼具设计美学与高效开发的后台系统.'
   })
 
-  /**
-   * 密码修改表单
-   */
   const pwdForm = reactive({
     password: '123456',
     newPassword: '123456',
     confirmPassword: '123456'
   })
 
-  /**
-   * 表单验证规则
-   */
   const rules = reactive<FormRules>({
     realName: [
       { required: true, message: '请输入姓名', trigger: 'blur' },
@@ -200,26 +190,17 @@
     sex: [{ required: true, message: '请选择性别', trigger: 'blur' }]
   })
 
-  /**
-   * 性别选项
-   */
   const options = [
     { value: '1', label: '男' },
     { value: '2', label: '女' }
   ]
 
-  /**
-   * 用户标签列表
-   */
   const lableList: Array<string> = ['专注设计', '很有想法', '辣~', '大长腿', '川妹子', '海纳百川']
 
   onMounted(() => {
     getDate()
   })
 
-  /**
-   * 根据当前时间获取问候语
-   */
   const getDate = () => {
     const h = new Date().getHours()
 
@@ -231,16 +212,10 @@
     else date.value = '很晚了，早点睡'
   }
 
-  /**
-   * 切换用户信息编辑状态
-   */
   const edit = () => {
     isEdit.value = !isEdit.value
   }
 
-  /**
-   * 切换密码编辑状态
-   */
   const editPwd = () => {
     isEditPwd.value = !isEditPwd.value
   }

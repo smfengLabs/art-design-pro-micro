@@ -1,42 +1,3 @@
-/**
- * 工作标签页状态管理模块
- *
- * 提供多标签页功能的完整状态管理
- *
- * ## 主要功能
- *
- * - 标签页打开和关闭
- * - 标签页固定和取消固定
- * - 批量关闭（左侧、右侧、其他、全部）
- * - 标签页缓存管理（KeepAlive）
- * - 标签页标题自定义
- * - 标签页路由验证
- * - 动态路由参数处理
- *
- * ## 使用场景
- *
- * - 多标签页导航
- * - 页面缓存控制
- * - 标签页右键菜单
- * - 固定常用页面
- * - 批量关闭标签
- *
- * ## 核心特性
- *
- * - 智能标签页复用（同路由名称复用）
- * - 固定标签页保护（不可关闭）
- * - KeepAlive 缓存排除管理
- * - 路由有效性验证
- * - 首页自动保留
- *
- * ## 持久化
- * - 使用 localStorage 存储
- * - 存储键：sys-v{version}-worktab
- * - 刷新页面保持标签状态
- *
- * @module store/modules/worktab
- * @author Art Design Pro Team
- */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { getActiveRouter } from '../../router/runtime'
@@ -50,48 +11,31 @@ interface WorktabState {
   keepAliveExclude: string[]
 }
 
-/**
- * 工作台标签页管理 Store
- */
 export const useWorktabStore = defineStore(
   'worktabStore',
   () => {
-    // 状态定义
     const current = ref<Partial<WorkTab>>({})
     const opened = ref<WorkTab[]>([])
     const keepAliveExclude = ref<string[]>([])
 
-    // 计算属性
     const hasOpenedTabs = computed(() => opened.value.length > 0)
     const hasMultipleTabs = computed(() => opened.value.length > 1)
     const currentTabIndex = computed(() =>
       current.value.path ? opened.value.findIndex((tab) => tab.path === current.value.path) : -1
     )
 
-    /**
-     * 查找标签页索引
-     */
     const findTabIndex = (path: string): number => {
       return opened.value.findIndex((tab) => tab.path === path)
     }
 
-    /**
-     * 获取标签页
-     */
     const getTab = (path: string): WorkTab | undefined => {
       return opened.value.find((tab) => tab.path === path)
     }
 
-    /**
-     * 检查标签页是否可关闭
-     */
     const isTabClosable = (tab: WorkTab): boolean => {
       return !tab.fixedTab
     }
 
-    /**
-     * 安全的路由跳转
-     */
     const safeRouterPush = (tab: Partial<WorkTab>): void => {
       if (!tab.path) {
         console.warn('尝试跳转到无效路径的标签页')
@@ -108,16 +52,12 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 打开或激活一个选项卡
-     */
     const openTab = (tab: WorkTab): void => {
       if (!tab.path) {
         console.warn('尝试打开无效的标签页')
         return
       }
 
-      // 从 keepAlive 排除列表中移除
       if (tab.name) {
         removeKeepAliveExclude(tab.name)
       }
@@ -132,7 +72,6 @@ export const useWorktabStore = defineStore(
       }
 
       if (existingIndex === -1) {
-        // 新增标签页
         const insertIndex = tab.fixedTab ? findFixedTabInsertIndex() : opened.value.length
         const newTab = { ...tab }
 
@@ -163,9 +102,6 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 查找固定标签页的插入位置
-     */
     const findFixedTabInsertIndex = (): number => {
       let insertIndex = 0
       for (let i = 0; i < opened.value.length; i++) {
@@ -178,9 +114,6 @@ export const useWorktabStore = defineStore(
       return insertIndex
     }
 
-    /**
-     * 关闭指定的选项卡
-     */
     const removeTab = (path: string): void => {
       const targetTab = getTab(path)
       const targetIndex = findTabIndex(path)
@@ -195,17 +128,14 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 从标签页列表中移除
       opened.value.splice(targetIndex, 1)
 
-      // 处理缓存排除
       if (targetTab?.name) {
         addKeepAliveExclude(targetTab)
       }
 
       const { homePath } = useCommon()
 
-      // 如果关闭后无标签页，跳转首页
       if (!hasOpenedTabs.value) {
         if (path !== homePath.value) {
           current.value = {}
@@ -214,7 +144,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 如果关闭的是当前激活标签，需要激活其他标签
       if (current.value.path === path) {
         const newIndex = targetIndex >= opened.value.length ? opened.value.length - 1 : targetIndex
         current.value = opened.value[newIndex]
@@ -222,9 +151,6 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 关闭左侧选项卡
-     */
     const removeLeft = (path: string): void => {
       const targetIndex = findTabIndex(path)
 
@@ -233,7 +159,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 获取左侧可关闭的标签页
       const leftTabs = opened.value.slice(0, targetIndex)
       const closableLeftTabs = leftTabs.filter(isTabClosable)
 
@@ -242,24 +167,18 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 标记为缓存排除
       markTabsToRemove(closableLeftTabs)
 
-      // 移除左侧可关闭的标签页
       opened.value = opened.value.filter(
         (tab, index) => index >= targetIndex || !isTabClosable(tab)
       )
 
-      // 确保当前标签是激活状态
       const targetTab = getTab(path)
       if (targetTab) {
         current.value = targetTab
       }
     }
 
-    /**
-     * 关闭右侧选项卡
-     */
     const removeRight = (path: string): void => {
       const targetIndex = findTabIndex(path)
 
@@ -268,7 +187,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 获取右侧可关闭的标签页
       const rightTabs = opened.value.slice(targetIndex + 1)
       const closableRightTabs = rightTabs.filter(isTabClosable)
 
@@ -277,24 +195,18 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 标记为缓存排除
       markTabsToRemove(closableRightTabs)
 
-      // 移除右侧可关闭的标签页
       opened.value = opened.value.filter(
         (tab, index) => index <= targetIndex || !isTabClosable(tab)
       )
 
-      // 确保当前标签是激活状态
       const targetTab = getTab(path)
       if (targetTab) {
         current.value = targetTab
       }
     }
 
-    /**
-     * 关闭其他选项卡
-     */
     const removeOthers = (path: string): void => {
       const targetTab = getTab(path)
 
@@ -303,7 +215,6 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 获取其他可关闭的标签页
       const otherTabs = opened.value.filter((tab) => tab.path !== path)
       const closableTabs = otherTabs.filter(isTabClosable)
 
@@ -312,24 +223,17 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 标记为缓存排除
       markTabsToRemove(closableTabs)
 
-      // 只保留当前标签和固定标签
       opened.value = opened.value.filter((tab) => tab.path === path || !isTabClosable(tab))
 
-      // 确保当前标签是激活状态
       current.value = targetTab
     }
 
-    /**
-     * 关闭所有可关闭的标签页
-     */
     const removeAll = (): void => {
       const { homePath } = useCommon()
       const hasFixedTabs = opened.value.some((tab) => tab.fixedTab)
 
-      // 获取可关闭的标签页
       const closableTabs = opened.value.filter((tab) => {
         if (!isTabClosable(tab)) return false
         // 如果有固定标签，则所有可关闭的都可以关闭；否则保留首页
@@ -341,15 +245,12 @@ export const useWorktabStore = defineStore(
         return
       }
 
-      // 标记为缓存排除
       markTabsToRemove(closableTabs)
 
-      // 保留不可关闭的标签页和首页（当没有固定标签时）
       opened.value = opened.value.filter((tab) => {
         return !isTabClosable(tab) || (!hasFixedTabs && tab.path === homePath.value)
       })
 
-      // 处理激活状态
       if (!hasOpenedTabs.value) {
         current.value = {}
         safeRouterPush({ path: homePath.value })
@@ -364,9 +265,6 @@ export const useWorktabStore = defineStore(
       safeRouterPush(targetTab)
     }
 
-    /**
-     * 将指定选项卡添加到 keepAlive 排除列表中
-     */
     const addKeepAliveExclude = (tab: WorkTab): void => {
       if (!tab.keepAlive || !tab.name) return
 
@@ -375,18 +273,12 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 从 keepAlive 排除列表中移除指定组件名称
-     */
     const removeKeepAliveExclude = (name: string): void => {
       if (!name) return
 
       keepAliveExclude.value = keepAliveExclude.value.filter((item) => item !== name)
     }
 
-    /**
-     * 将传入的一组选项卡的组件名称标记为排除缓存
-     */
     const markTabsToRemove = (tabs: WorkTab[]): void => {
       tabs.forEach((tab) => {
         if (tab.name) {
@@ -395,9 +287,6 @@ export const useWorktabStore = defineStore(
       })
     }
 
-    /**
-     * 切换指定标签页的固定状态
-     */
     const toggleFixedTab = (path: string): void => {
       const targetIndex = findTabIndex(path)
 
@@ -409,29 +298,22 @@ export const useWorktabStore = defineStore(
       const tab = { ...opened.value[targetIndex] }
       tab.fixedTab = !tab.fixedTab
 
-      // 移除原位置
       opened.value.splice(targetIndex, 1)
 
       if (tab.fixedTab) {
-        // 固定标签插入到所有固定标签的末尾
         const firstNonFixedIndex = opened.value.findIndex((t) => !t.fixedTab)
         const insertIndex = firstNonFixedIndex === -1 ? opened.value.length : firstNonFixedIndex
         opened.value.splice(insertIndex, 0, tab)
       } else {
-        // 非固定标签插入到所有固定标签后
         const fixedCount = opened.value.filter((t) => t.fixedTab).length
         opened.value.splice(fixedCount, 0, tab)
       }
 
-      // 更新当前标签引用
       if (current.value.path === path) {
         current.value = tab
       }
     }
 
-    /**
-     * 验证工作台标签页的路由有效性
-     */
     const validateWorktabs = (routerInstance: Router): void => {
       try {
         // 动态路由校验：优先使用路由 name 判断有效性；否则用 resolve 匹配参数化路径
@@ -454,7 +336,6 @@ export const useWorktabStore = defineStore(
           }
         }
 
-        // 过滤出有效的标签页
         const validTabs = opened.value.filter((tab) => isTabRouteValid(tab))
 
         if (validTabs.length !== opened.value.length) {
@@ -462,7 +343,6 @@ export const useWorktabStore = defineStore(
           opened.value = validTabs
         }
 
-        // 验证当前激活标签的有效性
         const isCurrentValid = current.value && isTabRouteValid(current.value)
 
         if (!isCurrentValid && validTabs.length > 0) {
@@ -476,18 +356,12 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 清空所有状态（用于登出等场景）
-     */
     const clearAll = (): void => {
       current.value = {}
       opened.value = []
       keepAliveExclude.value = []
     }
 
-    /**
-     * 获取状态快照（用于持久化存储）
-     */
     const getStateSnapshot = (): WorktabState => {
       return {
         current: { ...current.value },
@@ -496,17 +370,11 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 获取标签页标题
-     */
     const getTabTitle = (path: string): WorkTab | undefined => {
       const tab = getTab(path)
       return tab
     }
 
-    /**
-     * 更新标签页标题
-     */
     const updateTabTitle = (path: string, title: string): void => {
       const tab = getTab(path)
       if (tab) {
@@ -514,9 +382,6 @@ export const useWorktabStore = defineStore(
       }
     }
 
-    /**
-     * 重置标签页标题
-     */
     const resetTabTitle = (path: string): void => {
       const tab = getTab(path)
       if (tab) {
@@ -525,17 +390,14 @@ export const useWorktabStore = defineStore(
     }
 
     return {
-      // 状态
       current,
       opened,
       keepAliveExclude,
 
-      // 计算属性
       hasOpenedTabs,
       hasMultipleTabs,
       currentTabIndex,
 
-      // 方法
       openTab,
       removeTab,
       removeLeft,
@@ -547,7 +409,6 @@ export const useWorktabStore = defineStore(
       clearAll,
       getStateSnapshot,
 
-      // 工具方法
       findTabIndex,
       getTab,
       isTabClosable,

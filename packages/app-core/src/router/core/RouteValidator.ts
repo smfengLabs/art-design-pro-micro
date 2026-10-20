@@ -1,12 +1,3 @@
-/**
- * 路由验证器
- *
- * 负责验证路由配置的合法性
- *
- * @module router/core/RouteValidator
- * @author Art Design Pro Team
- */
-
 import type { AppRouteRecord } from '@art/app-utils'
 import { RoutesAlias } from '@art/app-utils'
 

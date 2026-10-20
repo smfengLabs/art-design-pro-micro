@@ -48,12 +48,6 @@
 
   const { width } = useWindowSize()
 
-  /**
-   * 创建带 tooltip 的表单标签
-   * @param label 标签文本
-   * @param tooltip 提示文本
-   * @returns 渲染函数
-   */
   const createLabelTooltip = (label: string, tooltip: string) => {
     return () =>
       h('span', { class: 'flex items-center' }, [
@@ -158,9 +152,6 @@
     authLabel: [{ required: true, message: '请输入权限标识', trigger: 'blur' }]
   })
 
-  /**
-   * 表单项配置
-   */
   const formItems = computed<FormItem[]>(() => {
     const baseItems: FormItem[] = [{ label: '菜单类型', key: 'menuType', span: 24 }]
 
@@ -266,26 +257,17 @@
     return isEdit.value ? `编辑${type}` : `新建${type}`
   })
 
-  /**
-   * 是否禁用菜单类型切换
-   */
   const disableMenuType = computed(() => {
     if (isEdit.value) return true
     if (!isEdit.value && form.menuType === 'menu' && props.lockType) return true
     return false
   })
 
-  /**
-   * 重置表单数据
-   */
   const resetForm = (): void => {
     formRef.value?.reset()
     form.menuType = 'menu'
   }
 
-  /**
-   * 加载表单数据（编辑模式）
-   */
   const loadFormData = (): void => {
     if (!props.editData) return
 
@@ -322,9 +304,6 @@
     }
   }
 
-  /**
-   * 提交表单
-   */
   const handleSubmit = async (): Promise<void> => {
     if (!formRef.value) return
 
@@ -338,24 +317,15 @@
     }
   }
 
-  /**
-   * 取消操作
-   */
   const handleCancel = (): void => {
     emit('update:visible', false)
   }
 
-  /**
-   * 对话框关闭后的回调
-   */
   const handleClosed = (): void => {
     resetForm()
     isEdit.value = false
   }
 
-  /**
-   * 监听对话框显示状态
-   */
   watch(
     () => props.visible,
     (newVal) => {
@@ -370,9 +340,6 @@
     }
   )
 
-  /**
-   * 监听菜单类型变化
-   */
   watch(
     () => props.type,
     (newType) => {

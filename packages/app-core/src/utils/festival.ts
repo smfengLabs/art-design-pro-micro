@@ -1,19 +1,6 @@
-/**
- * 节日匹配工具（纯逻辑，零 store 依赖）
- *
- * 从 useCeremony 提取：解开 store/modules/setting ↔ hooks/core/useCeremony
- * 之间的双向引用（depcruise no-circular）。
- *
- * @module utils/festival
- */
 import { festivalConfigList } from '../config/modules/festival'
 
-/**
- * 格式化日期为 YYYY-MM-DD（本地时区）
- *
- * 原生实现（替代 @vueuse/core useDateFormat），
- * 移除 app-core 对 vueuse 运行时 API 的依赖。
- */
+// 纯函数，避免 setting store 与 useCeremony 循环依赖
 function formatDate(date: Date): string {
   const year = date.getFullYear()
   const month = String(date.getMonth() + 1).padStart(2, '0')

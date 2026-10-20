@@ -1,12 +1,3 @@
-/**
- * system 域 API（迁移自 origin-code/src/api/system-manage.ts）
- *
- * 请求实例改为 @art/app-api 的 http：
- * - Token / 401 / i18n 翻译由 app-base 装配期注入（v2 B2）
- * - appCode 由请求拦截器对核心接口统一追加（应用身份契约）
- *
- * @module app-system/api/system-manage
- */
 import { http } from '@art/app-api'
 
 // 获取用户列表

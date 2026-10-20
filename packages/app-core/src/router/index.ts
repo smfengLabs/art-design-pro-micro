@@ -1,11 +1,3 @@
-/**
- * 宿主路由实例（唯一出口 createHostRouter）
- *
- * 单例经 router/runtime 暴露给跨层消费；
- * remote（app-system）可达闭包不得触达本文件（DAG 规则 6），改用 runtime.getActiveRouter()。
- *
- * @module app-core/router/index
- */
 import type { App } from 'vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'

@@ -1,13 +1,3 @@
-/**
- * 远程应用注册表（v2 C1/G6）
- *
- * - dev：remote dev server 的 manifest 地址
- * - prod：同域网关路径（生产部署由网关转发，域名表占位待确认）
- *
- * federation remotes 段与运行时 __MF_REMOTE_REGISTRY__ 均取自本文件（同源）。
- *
- * @module app-config/vite/remotes
- */
 export interface RemoteRegistryEntry {
   alias: string
   manifestUrl: string

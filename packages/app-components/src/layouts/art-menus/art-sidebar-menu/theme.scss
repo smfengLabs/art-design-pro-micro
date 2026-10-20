@@ -100,7 +100,6 @@ $popup-menu-radius: 6px;
 }
 
 .layout-sidebar {
-  // ---------------------- Modify default style ----------------------
 
   // 菜单折叠样式
   .menu-left-close {
@@ -151,7 +150,6 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // ---------------------- Design theme menu ----------------------
   .el-menu-design {
     @include theme-menu-base;
     @include menu-active(var(--theme-color), var(--el-color-primary-light-9));
@@ -162,7 +160,6 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // ---------------------- Dark theme menu ----------------------
   .el-menu-dark {
     @include theme-menu-base;
     @include menu-active(#fff, #27282d, #fff);
@@ -173,7 +170,6 @@ $popup-menu-radius: 6px;
     }
   }
 
-  // ---------------------- Light theme menu ----------------------
   .el-menu-light {
     .el-sub-menu__title,
     .el-menu-item {

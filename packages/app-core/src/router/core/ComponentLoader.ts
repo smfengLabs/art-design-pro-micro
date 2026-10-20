@@ -1,13 +1,3 @@
-/**
- * 组件加载器
- *
- * 动态加载 Vue 组件。
- * 宿主在装配期通过 runtime.setComponentGlob/setLayoutComponent/setIframeComponent
- * 注入本地视图 glob 与布局/Iframe 组件（原实现直接 import.meta.glob 与 @/views 静态导入，
- * 微前端化后由各应用自持视图，见 v2 E1）。
- *
- * @module router/core/ComponentLoader
- */
 import { h } from 'vue'
 import { RoutesAlias } from '@art/app-utils'
 import { getComponentGlob, getIframeComponent, getLayoutComponent } from '../runtime'

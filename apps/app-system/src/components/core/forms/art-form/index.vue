@@ -149,7 +149,6 @@
 
   const formInstance = useTemplateRef<FormInstance>('formRef')
 
-  // 表单项配置
   export interface FormItem {
     /** 表单项的唯一标识 */
     key: string
@@ -176,7 +175,6 @@
     /** 更多属性配置请参考 ElementPlus 官方文档 */
   }
 
-  // 表单配置
   interface FormProps {
     /** 表单数据 */
     items: FormItem[]
@@ -420,7 +418,6 @@
     return props
   }
 
-  // 获取插槽
   const getSlots = (item: FormItem) => {
     if (!item.slots) return {}
     const validSlots: Record<string, () => any> = {}
@@ -432,35 +429,23 @@
     return validSlots
   }
 
-  // 组件
   const getComponent = (item: FormItem) => {
-    // 优先使用 render 函数或组件渲染自定义组件
     if (item.render) {
       return item.render
     }
-    // 使用 type 获取预定义组件
     const { type } = item
     return componentMap[type as keyof typeof componentMap] || componentMap['input']
   }
 
-  /**
-   * 获取列宽 span 值
-   * 根据屏幕尺寸智能降级，避免小屏幕上表单项被压缩过小
-   */
+  // 小屏幕按 24 格降级，避免表单项被压缩过小
   const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
     return calculateResponsiveSpan(itemSpan, span.value, breakpoint)
   }
 
-  /**
-   * 可见的表单项
-   */
   const visibleFormItems = computed(() => {
     return props.items.filter((item) => !item.hidden)
   })
 
-  /**
-   * 操作按钮样式
-   */
   const actionButtonsStyle = computed(() => ({
     'justify-content': isMobile.value
       ? 'flex-end'
@@ -469,11 +454,7 @@
         : 'flex-end'
   }))
 
-  /**
-   * 处理重置事件
-   */
   const handleReset = () => {
-    // 重置表单字段（UI 层）
     formInstance.value?.resetFields()
 
     // 恢复初始表单值，保留默认值而不是简单清空。
@@ -482,13 +463,9 @@
     })
     Object.assign(modelValue.value, cloneModelValue(initialModelValue.value))
 
-    // 触发 reset 事件
     emit('reset')
   }
 
-  /**
-   * 处理提交事件
-   */
   const handleSubmit = () => {
     // 对外只抛出清洗后的结果，避免业务层重复过滤空值。
     emit('submit', getSanitizedOutput())
@@ -498,10 +475,8 @@
     ref: formInstance,
     validate: (...args: any[]) => formInstance.value?.validate(...args),
     reset: handleReset,
-    // 允许外部在不触发提交事件时主动获取清洗后的输出。
     getOutput: getSanitizedOutput
   })
 
-  // 解构 props 以便在模板中直接使用
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)
 </script>

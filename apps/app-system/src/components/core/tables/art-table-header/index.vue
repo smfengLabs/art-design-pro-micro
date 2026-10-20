@@ -147,7 +147,6 @@
     fullClass?: string
     /** 组件布局，子组件名用逗号分隔 */
     layout?: string
-    /** 加载中 */
     loading?: boolean
     /** 搜索栏显示状态 */
     showSearchBar?: boolean
@@ -173,10 +172,7 @@
     (e: 'update:showSearchBar', value: boolean): void
   }>()
 
-  /**
-   * 获取列的显示状态
-   * 优先使用 visible 字段，如果不存在则使用 checked 字段
-   */
+  // Element Plus 列配置可能来自 visible 或 checked，两套字段都要兼容
   const getColumnVisibility = (col: ColumnOption): boolean => {
     if (col.visible !== undefined) {
       return col.visible
@@ -184,10 +180,7 @@
     return col.checked ?? true
   }
 
-  /**
-   * 更新列的显示状态
-   * 同时更新 checked 和 visible 字段以保持兼容性
-   */
+  // 同步写入，避免旧版列配置只读 checked
   const updateColumnVisibility = (col: ColumnOption, value: boolean | string | number): void => {
     const boolValue = !!value
     col.checked = boolValue
@@ -204,27 +197,15 @@
   const tableStore = useTableStore()
   const { tableSize, isZebra, isBorder, isHeaderBackground } = storeToRefs(tableStore)
 
-  /** 解析 layout 属性，转换为数组 */
   const layoutItems = computed(() => {
     return props.layout.split(',').map((item) => item.trim())
   })
 
-  /**
-   * 检查组件是否应该显示
-   * @param componentName 组件名称
-   * @returns 是否显示
-   */
   const shouldShow = (componentName: string) => {
     return layoutItems.value.includes(componentName)
   }
 
-  /**
-   * 拖拽移动事件处理 - 防止固定列位置改变
-   * @param evt move事件对象
-   * @returns 是否允许移动
-   */
   const checkColumnMove = (event: any) => {
-    // 拖拽进入的目标 DOM 元素
     const toElement = event.related as HTMLElement
     // 如果目标位置是 fixed 列，则不允许移动
     if (toElement && toElement.classList.contains('fixed-column')) {
@@ -233,23 +214,16 @@
     return true
   }
 
-  /** 搜索事件处理 */
   const search = () => {
-    // 切换搜索栏显示状态
     emit('update:showSearchBar', !props.showSearchBar)
     emit('search')
   }
 
-  /** 刷新事件处理 */
   const refresh = () => {
     isManualRefresh.value = true
     emit('refresh')
   }
 
-  /**
-   * 表格大小变化处理
-   * @param command 表格大小枚举值
-   */
   const handleTableSizeChange = (command: TableSizeEnum) => {
     useTableStore().setTableSize(command)
   }
@@ -257,16 +231,12 @@
   /** 是否手动点击刷新 */
   const isManualRefresh = ref(false)
 
-  /** 加载中 */
   const isFullScreen = ref(false)
 
   /** 保存原始的 overflow 样式，用于退出全屏时恢复 */
   const originalOverflow = ref('')
 
-  /**
-   * 切换全屏状态
-   * 进入全屏时会隐藏页面滚动条，退出时恢复原状态
-   */
+  // 全屏时隐藏页面滚动条，卸载时恢复
   const toggleFullScreen = () => {
     const el = document.querySelector(`.${props.fullClass}`)
     if (!el) return
@@ -280,31 +250,24 @@
       el.classList.add('el-full-screen')
       tableStore.setIsFullScreen(true)
     } else {
-      // 退出全屏：恢复原始样式
       document.body.style.overflow = originalOverflow.value
       el.classList.remove('el-full-screen')
       tableStore.setIsFullScreen(false)
     }
   }
 
-  /**
-   * ESC键退出全屏的事件处理器
-   * 需要保存引用以便在组件卸载时正确移除监听器
-   */
+  // 保存引用，组件卸载时移除
   const handleEscapeKey = (e: KeyboardEvent) => {
     if (e.key === 'Escape' && isFullScreen.value) {
       toggleFullScreen()
     }
   }
 
-  /** 组件挂载时注册全局事件监听器 */
   onMounted(() => {
     document.addEventListener('keydown', handleEscapeKey)
   })
 
-  /** 组件卸载时清理资源 */
   onUnmounted(() => {
-    // 移除事件监听器
     document.removeEventListener('keydown', handleEscapeKey)
 
     // 如果组件在全屏状态下被卸载，恢复页面滚动状态
