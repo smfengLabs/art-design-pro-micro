@@ -20,8 +20,7 @@
     "release": "changeset publish",
     "depcruise": "depcruise . --config .dependency-cruiser.js",
     "depcruise:graph": "depcruise . --config .dependency-cruiser.js --output-type dot > docs/dependency-graph.dot",
-    "audit:dist": "node scripts/audit-dist.mjs",
-    "iconify:offline": "node scripts/generate-iconify-offline.mjs"
+    "audit:dist": "node scripts/audit-dist.mjs"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",
