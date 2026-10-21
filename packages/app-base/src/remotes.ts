@@ -1,5 +1,6 @@
 import { loadRemoteFromManifest } from 'vite-plugin-federation/runtime'
 import type { AppRouteRecord } from '@art/app-utils'
+import { markRemoteRouteAlias } from '@art/app-core'
 import type { RemoteRouteSource } from '@art/app-core'
 
 // dev server 重预构建时远端请求可能挂起；超时 + 一次重试，避免守卫 loading 无限等待
@@ -103,32 +104,58 @@ function wrapRouteComponents(routes: AppRouteRecord[], alias: string): AppRouteR
  * load 失败（网络/manifest 404/超时）由 MenuProcessor 侧 Promise.allSettled 隔离，不阻断宿主。
  */
 export function createRemoteRouteSources(registry: RemoteRegistryEntry[]): RemoteRouteSource[] {
-  return (registry || []).map((entry) => ({
-    alias: entry.alias,
-    load: async (): Promise<AppRouteRecord[]> => {
-      const moduleId = entry.moduleId ?? `${entry.alias}/routes`
-      const label = `[MF] 远程路由源加载（${entry.alias} ← ${entry.manifestUrl}）`
+  return (registry || []).map((entry) => {
+    const moduleId = entry.moduleId ?? `${entry.alias}/routes`
+    let preloadPromise: Promise<unknown> | null = null
 
-      let lastError: unknown
-      for (let attempt = 0; attempt <= REMOTE_SOURCE_RETRIES; attempt++) {
-        try {
-          const remoteModule = await withTimeout(
-            () => loadRemoteFromManifest(moduleId, entry.manifestUrl, { cacheTtl: 30_000 }),
-            label
-          )
-          // 兼容「expose 默认导出」与「直接返回值」两种形态
-          const routes = ((remoteModule as any)?.default ?? remoteModule) as AppRouteRecord[]
-          return Array.isArray(routes) ? wrapRouteComponents(routes, entry.alias) : routes
-        } catch (error) {
-          lastError = error
-          if (attempt < REMOTE_SOURCE_RETRIES) {
-            console.warn(`${label} 第 ${attempt + 1} 次失败，${REMOTE_RETRY_DELAY}ms 后重试：`, error)
-            await delay(REMOTE_RETRY_DELAY)
+    return {
+      alias: entry.alias,
+      load: async (): Promise<AppRouteRecord[]> => {
+        const label = `[MF] 远程路由源加载（${entry.alias} ← ${entry.manifestUrl}）`
+
+        let lastError: unknown
+        for (let attempt = 0; attempt <= REMOTE_SOURCE_RETRIES; attempt++) {
+          try {
+            const remoteModule = await withTimeout(
+              () => loadRemoteFromManifest(moduleId, entry.manifestUrl, { cacheTtl: 30_000 }),
+              label
+            )
+            // 兼容「expose 默认导出」与「直接返回值」两种形态
+            const routes = ((remoteModule as any)?.default ?? remoteModule) as AppRouteRecord[]
+            return Array.isArray(routes)
+              ? markRemoteRouteAlias(wrapRouteComponents(routes, entry.alias), entry.alias)
+              : routes
+          } catch (error) {
+            lastError = error
+            if (attempt < REMOTE_SOURCE_RETRIES) {
+              console.warn(`${label} 第 ${attempt + 1} 次失败，${REMOTE_RETRY_DELAY}ms 后重试：`, error)
+              await delay(REMOTE_RETRY_DELAY)
+            }
           }
         }
-      }
 
-      throw lastError instanceof Error ? lastError : new Error(String(lastError))
+        throw lastError instanceof Error ? lastError : new Error(String(lastError))
+      },
+      /**
+       * 空闲预热：loadRemoteFromManifest 会依次拉取 mf-manifest.json、
+       * remoteEntry.js 与子应用 routes 模块，并写入 MF 运行时缓存。
+       * in-flight 复用避免重复调度导致并发重复请求。
+       */
+      preload: (): Promise<unknown> => {
+        if (preloadPromise) return preloadPromise
+
+        const label = `[MF] 子应用空闲预加载（${entry.alias} ← ${entry.manifestUrl}）`
+        preloadPromise = withTimeout(
+          () => loadRemoteFromManifest(moduleId, entry.manifestUrl, { cacheTtl: 30_000 }),
+          label
+        ).catch((error) => {
+          // 失败后释放缓存，允许下一次真实导航或后续调度重试
+          preloadPromise = null
+          throw error
+        })
+
+        return preloadPromise
+      }
     }
-  }))
+  })
 }

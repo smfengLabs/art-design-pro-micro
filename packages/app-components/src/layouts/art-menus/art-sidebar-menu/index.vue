@@ -13,7 +13,12 @@
 
       <ElScrollbar style="height: calc(100% - 135px)">
         <ul>
-          <li v-for="menu in firstLevelMenus" :key="menu.path" @click="handleMenuJump(menu, true)">
+          <li
+            v-for="menu in firstLevelMenus"
+            :key="menu.path"
+            @mouseenter="preloadMenu(menu)"
+            @click="handleMenuJump(menu, true)"
+          >
             <ElTooltip
               class="box-item"
               effect="dark"
@@ -136,9 +141,10 @@
   import { AppConfig } from '@art/app-core'
   import { useSettingStore } from '@art/app-core'
   import { MenuTypeEnum, MenuWidth } from '@art/app-utils'
+  import type { AppRouteRecord } from '@art/app-utils'
   import { useMenuStore } from '@art/app-core'
   import { isIframe } from '@art/app-core'
-  import { handleMenuJump } from '@art/app-core'
+  import { handleMenuJump, preloadRemoteRoute } from '@art/app-core'
   import SidebarSubmenu from './widget/SidebarSubmenu.vue'
   import { useCommon } from '@art/app-core'
   import { useWindowSize, useTimeoutFn } from '@vueuse/core'
@@ -252,6 +258,10 @@
   }
 
   const { homePath } = useCommon()
+
+  const preloadMenu = (menu: AppRouteRecord): void => {
+    preloadRemoteRoute(menu)
+  }
 
   const navigateToHome = (): void => {
     router.push(homePath.value)

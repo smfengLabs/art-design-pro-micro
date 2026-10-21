@@ -2,6 +2,7 @@
 
 // 公共入口；remote 可依赖，但不得触达 bootstrap / router guards / store create
 export * from './router/runtime'
+export * from './router/preload'
 
 export * from './router/core'
 

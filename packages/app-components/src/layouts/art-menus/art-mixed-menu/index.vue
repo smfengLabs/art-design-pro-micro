@@ -21,6 +21,7 @@
             :class="{
               'menu-item-active text-theme': item.isActive
             }"
+            @mouseenter="preloadMenu(item)"
             @click="handleMenuJump(item, true)"
           >
             <ArtSvgIcon
@@ -55,7 +56,7 @@
   import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
   import { useThrottleFn } from '@vueuse/core'
   import { formatMenuTitle } from '@art/app-core'
-  import { handleMenuJump } from '@art/app-core'
+  import { handleMenuJump, preloadRemoteRoute } from '@art/app-core'
   import type { AppRouteRecord } from '@art/app-utils'
 
   defineOptions({ name: 'ArtMixedMenu' })
@@ -120,6 +121,10 @@
       formattedTitle: formatMenuTitle(item.meta.title)
     }))
   })
+
+  const preloadMenu = (item: AppRouteRecord): void => {
+    preloadRemoteRoute(item)
+  }
 
   const handleScrollCore = (): void => {
     if (!scrollbarRef.value?.wrapRef) return

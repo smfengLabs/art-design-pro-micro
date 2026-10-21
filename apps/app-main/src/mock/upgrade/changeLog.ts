@@ -9,6 +9,12 @@ interface UpgradeLog {
 
 export const upgradeLogList = ref<UpgradeLog[]>([
   {
+    version: 'v1.2.0',
+    title: '微应用预加载与路由秒开体验',
+    date: '2026-10-21',
+    detail: ['新增：微应用预加载能力，实现路由秒开']
+  },
+  {
     version: 'v1.1.0',
     title: '健壮性提升与微前端错误隔离',
     date: '2026-10-21',

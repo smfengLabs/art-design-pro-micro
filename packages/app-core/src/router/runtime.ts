@@ -22,6 +22,8 @@ export type ComponentGlob = Record<string, () => Promise<any>>
 export interface RemoteRouteSource {
   alias: string
   load?: () => Promise<AppRouteRecord[]>
+  /** 空闲预加载：预取 manifest / remoteEntry / 路由模块，不返回业务路由 */
+  preload?: () => Promise<unknown>
 }
 
 // 跨应用共享的路由运行时；remote 不直接引用宿主 router 单例
@@ -121,6 +123,8 @@ export interface RouteNameIndexEntry {
   name: string
   path?: string
   component?: AppRouteRecord['component']
+  /** 远程路由所属应用别名（backend 菜单回填预加载标记用） */
+  remoteAlias?: string
 }
 
 /** 全局路由名称索引：name → 路由摘要（MenuProcessor 装配菜单前全量替换） */

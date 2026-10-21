@@ -13,6 +13,7 @@ import {
 import type { RouteNameIndex } from '../runtime'
 import { RoutesAlias } from '@art/app-utils'
 import { formatMenuTitle } from '../../utils/router'
+import { MF_REMOTE_ALIAS_META_KEY, getRemoteRouteAlias } from '../preload'
 
 // 本地 asyncRoutes + 远程 MF 路由源；backend 模式用于构建 routeNameIndex
 async function collectRouteCandidates(): Promise<AppRouteRecord[]> {
@@ -51,7 +52,12 @@ function buildRouteNameIndex(candidates: AppRouteRecord[]): RouteNameIndex {
             `[MenuProcessor] 路由名称索引重复（保留先注册项）: ${name}（${index.get(name)?.path} ← ${route.path}）`
           )
         } else {
-          index.set(name, { name, path: route.path, component: route.component })
+          index.set(name, {
+            name,
+            path: route.path,
+            component: route.component,
+            remoteAlias: getRemoteRouteAlias(route)
+          })
         }
       }
 
@@ -150,13 +156,19 @@ export class MenuProcessor {
   ): AppRouteRecord[] {
     return menuList.map((item) => {
       const component = this.resolveComponentByName(item, index)
+      const sourceKey = this.getRouteSourceKey(item)
+      const remoteAlias = sourceKey ? index.get(sourceKey)?.remoteAlias : undefined
       const resolved: AppRouteRecord = {
         ...item,
         component:
           depth === 0 && item.children?.length && !component
             ? // 顶级目录缺省组件：补应用布局壳（含 <router-view>），保证跨应用子路由正常渲染
               (getLayoutComponent() ?? RoutesAlias.Layout)
-            : component
+            : component,
+        // backend 菜单的 meta 来自接口，需要把候选路由上的远程来源标记回填
+        ...(remoteAlias
+          ? { meta: { ...item.meta, [MF_REMOTE_ALIAS_META_KEY]: remoteAlias } }
+          : {})
       }
 
       if (item.children?.length) {
@@ -177,19 +189,20 @@ export class MenuProcessor {
       return component
     }
 
-    const key =
-      typeof component === 'string' && component
-        ? component
-        : route.name
-          ? String(route.name)
-          : ''
-
+    const key = this.getRouteSourceKey(route)
     if (!key) {
       return component
     }
 
     const hit = index.get(key)
     return hit?.component || component
+  }
+
+  private getRouteSourceKey(route: AppRouteRecord): string {
+    if (typeof route.component === 'string' && route.component) {
+      return route.component
+    }
+    return route.name ? String(route.name) : ''
   }
 
   private filterMenuByRoles(menu: AppRouteRecord[], roles: string[]): AppRouteRecord[] {

@@ -1,5 +1,10 @@
 <template>
-  <ElSubMenu v-if="hasChildren" :index="item.path || item.meta.title" class="!p-0">
+  <ElSubMenu
+    v-if="hasChildren"
+    :index="item.path || item.meta.title"
+    class="!p-0"
+    @mouseenter="preloadMenu(item)"
+  >
     <template #title>
       <ArtSvgIcon :icon="item.meta.icon" :color="theme?.iconColor" class="mr-1 text-lg" />
       <span class="text-md">{{ formatMenuTitle(item.meta.title) }}</span>
@@ -24,6 +29,7 @@
   <ElMenuItem
     v-else-if="isNavigableRoute"
     :index="item.path || item.meta.title"
+    @mouseenter="preloadMenu(item)"
     @click="goPage(item)"
   >
     <ArtSvgIcon
@@ -48,7 +54,7 @@
   import ArtSvgIcon from '../../../../base/art-svg-icon/index.vue'
   import { computed, type PropType } from 'vue'
   import { AppRouteRecord } from '@art/app-utils'
-  import { handleMenuJump } from '@art/app-core'
+  import { handleMenuJump, preloadRemoteRoute } from '@art/app-core'
   import { formatMenuTitle } from '@art/app-core'
 
   const props = defineProps({
@@ -89,6 +95,10 @@
   const hasChildren = computed(() => {
     return filteredChildren.value.length > 0
   })
+
+  const preloadMenu = (item: AppRouteRecord): void => {
+    preloadRemoteRoute(item)
+  }
 
   const goPage = (item: AppRouteRecord) => {
     closeMenu()

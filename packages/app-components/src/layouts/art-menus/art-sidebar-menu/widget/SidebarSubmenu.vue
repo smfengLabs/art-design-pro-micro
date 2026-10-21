@@ -1,6 +1,11 @@
 <template>
   <template v-for="(item, index) in filteredMenuItems" :key="getUniqueKey(item, index)">
-    <ElSubMenu v-if="hasChildren(item)" :index="item.path || item.meta.title" :level="level">
+    <ElSubMenu
+      v-if="hasChildren(item)"
+      :index="item.path || item.meta.title"
+      :level="level"
+      @mouseenter="preloadMenu(item)"
+    >
       <template #title>
         <div class="menu-icon flex-cc">
           <ArtSvgIcon
@@ -28,6 +33,7 @@
       v-else
       :index="isExternalLink(item) ? '' : item.path || item.meta.title"
       :level-item="level + 1"
+      @mouseenter="preloadMenu(item)"
       @click="goPage(item)"
     >
       <div class="menu-icon flex-cc">
@@ -62,7 +68,7 @@
   import { computed } from 'vue'
   import type { AppRouteRecord } from '@art/app-utils'
   import { formatMenuTitle } from '@art/app-core'
-  import { handleMenuJump } from '@art/app-core'
+  import { handleMenuJump, preloadRemoteRoute } from '@art/app-core'
   import { useSettingStore } from '@art/app-core'
 
   interface MenuTheme {
@@ -115,6 +121,10 @@
       return [item]
     })
   })
+
+  const preloadMenu = (item: AppRouteRecord): void => {
+    preloadRemoteRoute(item)
+  }
 
   const goPage = (item: AppRouteRecord): void => {
     closeMenu()
