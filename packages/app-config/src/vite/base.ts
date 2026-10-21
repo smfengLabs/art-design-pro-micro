@@ -189,6 +189,10 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       host: true
     },
     resolve: {
+      // 强制单例：workspace 包各自声明 pinia/vue 时，Rollup 可能按不同解析路径
+      // 打包出多份运行时。pinia 多实例会让 useStore() 拿不到宿主安装的实例，
+      // 生产环境表现为 `Cannot read properties of undefined (reading '_s')`。
+      dedupe: ['pinia', 'vue'],
       alias: {
         '@': resolvePath('src'),
         '@views': resolvePath('src/views'),

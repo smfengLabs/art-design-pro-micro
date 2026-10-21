@@ -396,6 +396,9 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2(patch_hash=da4db8152ec039a6b8a1285f8388effb1599b097649a3235b7e556d0103846a4)(rollup@4.64.7)(typescript@5.9.3)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2))(vue-tsc@2.2.12(typescript@5.9.3))
     devDependencies:
+      pinia:
+        specifier: 'catalog:'
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3))
       vue:
         specifier: 'catalog:'
         version: 3.5.44(typescript@5.9.3)

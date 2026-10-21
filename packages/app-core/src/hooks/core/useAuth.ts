@@ -6,9 +6,10 @@ import type { AppRouteRecord } from '@art/app-utils'
 
 type AuthItem = NonNullable<AppRouteRecord['meta']['authList']>[number]
 
-const userStore = useUserStore()
-
 export const useAuth = () => {
+  // Store 必须在组合式函数/组件 setup 内获取，禁止模块顶层调用：
+  // 模块求值可能早于 app.use(pinia)，此时 useStore() 会抛 `_s` 未定义。
+  const userStore = useUserStore()
   const route = useRoute()
   const { isFrontendMode } = useAppMode()
   const { info } = storeToRefs(userStore)

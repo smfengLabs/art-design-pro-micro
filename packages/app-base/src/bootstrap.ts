@@ -1,10 +1,11 @@
 import { createApp } from 'vue'
+import { setActivePinia } from 'pinia'
 import http, { onErrorMessage, onSuccessMessage } from '@art/app-api'
 import { ElMessage } from 'element-plus'
 import i18n, { $t } from '@art/app-core/locales'
 import { useUserStore } from '@art/app-core/store/modules/user'
 import {
-  initStore,
+  pinia,
   createHostRouter,
   initRouter,
   setupGlobDirectives,
@@ -53,7 +54,12 @@ export async function bootstrapApp(options: AppBootstrapOptions): Promise<void> 
 
   const app = createApp(App)
 
-  initStore(app)
+  // Pinia 必须最先安装：路由守卫、全局指令、i18n 以及后续组件 setup 都可能
+  // 调用 useStore()。晚于它们安装会让 useStore() 在无 active pinia 时执行，
+  // 生产环境直接抛 `Cannot read properties of undefined (reading '_s')`。
+  app.use(pinia)
+  // 显式激活唯一实例：覆盖非组件上下文（路由守卫、HTTP 拦截器回调等）。
+  setActivePinia(pinia)
 
   createHostRouter()
   initRouter(app)
