@@ -46,4 +46,4 @@ pnpm dev
 基于 MIT 协议开源。
 
 🤝 致谢
-感谢 Art Design Pro 提供的优秀 UI 基础与组件生态。
+感谢 Art Design Pro 提供的优秀 UI 基础与组件生态
