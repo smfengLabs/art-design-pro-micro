@@ -12,12 +12,15 @@
     "build": "turbo build",
     "clean": "node scripts/clean.mjs",
     "typecheck": "turbo typecheck",
+    "changeset": "changeset",
+    "release": "changeset publish",
     "depcruise": "depcruise . --config .dependency-cruiser.js",
     "depcruise:graph": "depcruise . --config .dependency-cruiser.js --output-type dot > docs/dependency-graph.dot",
     "audit:dist": "node scripts/audit-dist.mjs",
     "iconify:offline": "node scripts/generate-iconify-offline.mjs"
   },
   "devDependencies": {
+    "@changesets/cli": "^3.0.3",
     "@tailwindcss/vite": "^4.1.14",
     "@types/node": "^24.0.5",
     "@vitejs/plugin-vue": "^6.0.1",

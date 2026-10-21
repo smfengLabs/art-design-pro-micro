@@ -9,6 +9,15 @@ interface UpgradeLog {
 
 export const upgradeLogList = ref<UpgradeLog[]>([
   {
+    version: 'v1.3.0',
+    title: '版本管理与质量门禁',
+    date: '2026-10-21',
+    detail: [
+      '新增：Changesets 版本变更管理，规范记录每次迭代的版本影响',
+      '新增：GitHub Actions CI 门禁，PR 自动执行类型检查、架构校验与生产构建'
+    ]
+  },
+  {
     version: 'v1.2.0',
     title: '微应用预加载与路由秒开体验',
     date: '2026-10-21',
