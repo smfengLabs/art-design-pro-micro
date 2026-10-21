@@ -3,11 +3,19 @@ import { federation } from 'vite-plugin-federation'
 import { createBaseConfig, loadAppEnv } from './base.ts'
 import { mfSharedConfig } from './federation.ts'
 
-export function createRemoteConfig(options: { base?: string } = {}) {
+export interface RemoteConfigOptions {
+  /** 子应用部署基础路径 */
+  base?: string
+  /** Module Federation 应用名（默认 app-system，兼容现有模板） */
+  name?: string
+}
+
+export function createRemoteConfig(options: RemoteConfigOptions = {}) {
   return defineConfig(({ mode }: ConfigEnv): UserConfig => {
     const isDev = mode === 'development'
     const env = loadAppEnv(mode)
     const basePath = options.base || '/'
+    const remoteName = options.name?.trim() || 'app-system'
     // 子应用资源必须从自身域名根路径解析；主机地址不能参与 publicPath 计算。
     const remotePublicPath =
       env.VITE_REMOTE_PUBLIC_PATH?.trim() ||
@@ -26,7 +34,7 @@ export function createRemoteConfig(options: { base?: string } = {}) {
         ...(base.plugins || []),
         // Module Federation（v2 C2）
         federation({
-          name: 'app-system',
+          name: remoteName,
           exposes: {
             './routes': './src/routes.ts'
             // 阶段二：视图级按需暴露（'./views/system/user': './src/views/system/user/index.vue'）

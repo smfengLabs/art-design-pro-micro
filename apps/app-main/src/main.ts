@@ -17,6 +17,7 @@ bootstrapApp({
   staticRoutes,
   homePath: '/dashboard/console',
   asyncRouteSource: localAsyncRoutes,
+  // 远程路由源由注册表统一生成；脚手架新增子应用时只需追加 remotes 注册项
   remoteRouteSources: createRemoteRouteSources(__MF_REMOTE_REGISTRY__),
   dynamicRemotes: [],
   localComponents: {
