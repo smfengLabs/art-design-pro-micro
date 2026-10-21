@@ -1,8 +1,10 @@
 import type { Directive } from 'vue'
 
 /**
- * 全局指令类型增强（层 0 自包含：与 app-core 指令实现结构保持一致，
- * 但 app-utils 不得 import 其他 @art 包，故此处以 Vue Directive 泛型直陈）
+ * 全局指令类型增强
+ *
+ * 指令由 app-core 注册，因此类型声明归属 app-core；
+ * app-utils 不再承担任何 Vue 类型依赖。
  */
 export interface RippleOptions {
   /** 水波纹颜色 */
@@ -14,6 +16,5 @@ declare module 'vue' {
     vAuth: Directive<HTMLElement, string>
     vRoles: Directive<HTMLElement, string | string[]>
     vRipple: Directive<HTMLElement, RippleOptions>
-    vHighlight: Directive<HTMLElement>
   }
 }

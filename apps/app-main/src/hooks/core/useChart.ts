@@ -2,7 +2,7 @@ import { echarts, type EChartsOption } from '@/plugins/echarts'
 import { storeToRefs } from 'pinia'
 import { useSettingStore } from '@art/app-core'
 import { getCssVar } from '@art/app-core'
-import type { BaseChartProps, ChartThemeConfig, UseChartOptions } from '@art/app-utils'
+import type { BaseChartProps, ChartThemeConfig, UseChartOptions } from '@art/app-components'
 
 export const useChartOps = (): ChartThemeConfig => ({
   chartHeight: '16rem',

@@ -27,7 +27,7 @@ export const useSettingStore = defineStore(
     const showCrumbs = ref(SETTING_DEFAULT_CONFIG.showCrumbs)
     const showWorkTab = ref(SETTING_DEFAULT_CONFIG.showWorkTab)
     const showLanguage = ref(SETTING_DEFAULT_CONFIG.showLanguage)
-    const showNprogress = ref(SETTING_DEFAULT_CONFIG.showNprogress)
+    const showProgress = ref(SETTING_DEFAULT_CONFIG.showProgress)
     const showSettingGuide = ref(SETTING_DEFAULT_CONFIG.showSettingGuide)
     const showFestivalText = ref(SETTING_DEFAULT_CONFIG.showFestivalText)
     const watermarkVisible = ref(SETTING_DEFAULT_CONFIG.watermarkVisible)
@@ -134,8 +134,8 @@ export const useSettingStore = defineStore(
       showLanguage.value = !showLanguage.value
     }
 
-    const setNprogress = () => {
-      showNprogress.value = !showNprogress.value
+    const setProgress = () => {
+      showProgress.value = !showProgress.value
     }
 
     const setColorWeak = () => {
@@ -207,7 +207,7 @@ export const useSettingStore = defineStore(
       autoClose,
       showWorkTab,
       showLanguage,
-      showNprogress,
+      showProgress,
       colorWeak,
       showSettingGuide,
       pageTransition,
@@ -241,7 +241,7 @@ export const useSettingStore = defineStore(
       setCrumbs,
       setWorkTab,
       setLanguage,
-      setNprogress,
+      setProgress,
       setColorWeak,
       hideSettingGuide,
       openSettingGuide,

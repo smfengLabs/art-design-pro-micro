@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-  import type { LineDataItem } from '@art/app-utils'
+  import type { LineDataItem } from '@art/app-components'
 
   /**
    * X 轴数据配置

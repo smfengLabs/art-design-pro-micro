@@ -13,7 +13,7 @@
   import { graphic, type EChartsOption } from '@/plugins/echarts'
   import { getCssVar, hexToRgba } from '@art/app-core'
   import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
-  import type { LineChartProps, LineDataItem } from '@art/app-utils'
+  import type { LineChartProps, LineDataItem } from '@art/app-components'
 
   defineOptions({ name: 'ArtLineChart' })
 

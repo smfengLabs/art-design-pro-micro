@@ -120,6 +120,3 @@ export interface DialogConfig {
   // 自定义类名
   customClass?: string
 }
-
-// 图表组件类型
-export * from './chart'

@@ -19,9 +19,10 @@ export const staticRoutes: AppRouteRecordRaw[] = [
   //   meta: { title: 'menus.dashboard.title' }
   // },
   {
-    path: '/auth/login',
+    path: '/login',
+    alias: ['/auth/login'],
     name: 'Login',
-    component: () => import('@art/app-components/auth/login'),
+    component: () => import('@views/auth/login/index.vue'),
     meta: { title: 'menus.login.title', isHideTab: true }
   },
   {

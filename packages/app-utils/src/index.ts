@@ -1,7 +1,5 @@
-// 控制台信息（原 src/main.ts 副作用迁移，随包首载执行一次）
-import './sys/console'
-// 离线 Iconify 图标集（随包首载注册，禁止运行时请求外部 API）
-import './ui/iconify-loader'
+// 纯数据与纯函数入口：不执行任何运行时副作用，
+// UI 初始化（图标注册、控制台信息等）由应用装配层负责。
 
 // 常量（links）与全局约定（路由别名 / 接口状态码）
 export * from './constants'

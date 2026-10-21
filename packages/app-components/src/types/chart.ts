@@ -1,4 +1,10 @@
-import type { EChartsOption } from 'echarts'
+/**
+ * 图表配置结构
+ *
+ * UI 包不直接依赖 echarts；具体渲染应用在调用处使用 echarts 的 EChartsOption
+ * 做类型校验（结构兼容），公共层只约束必要的配置形态。
+ */
+export type ChartOption = Record<string, any>
 
 // 图例位置类型
 export type LegendPosition = 'bottom' | 'top' | 'left' | 'right'
@@ -30,7 +36,7 @@ export interface ChartThemeConfig {
 // 图表初始化选项
 export interface UseChartOptions {
   /** 初始化选项 */
-  initOptions?: EChartsOption
+  initOptions?: ChartOption
   /** 延迟初始化时间(ms) */
   initDelay?: number
   /** IntersectionObserver阈值 */
@@ -279,7 +285,7 @@ export interface BidirectionalBarChartProps
 }
 
 // 图表配置生成器函数类型
-export type ChartOptionGenerator = () => EChartsOption
+export type ChartOptionGenerator = () => ChartOption
 
 // 图表事件回调类型
 export type ChartEventCallback = (params: any) => void

@@ -17,7 +17,7 @@ export const SETTING_DEFAULT_CONFIG = {
   showCrumbs: true,
   showWorkTab: true,
   showLanguage: true,
-  showNprogress: false,
+  showProgress: false,
   showSettingGuide: true,
   showFestivalText: false,
   watermarkVisible: false,

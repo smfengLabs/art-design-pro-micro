@@ -2,8 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const root = process.cwd()
-const appUtilsDir = path.join(root, 'packages/app-utils')
-const outputFile = path.join(appUtilsDir, 'src/ui/iconify-offline.json')
+const appComponentsDir = path.join(root, 'packages/app-components')
+const outputFile = path.join(appComponentsDir, 'src/ui/iconify-offline.json')
 
 const prefixes = [
   'ri',
@@ -39,7 +39,7 @@ const collections = []
 for (const prefix of prefixes) {
   const source = JSON.parse(
     fs.readFileSync(
-      path.join(appUtilsDir, 'node_modules/@iconify-json', prefix, 'icons.json'),
+      path.join(appComponentsDir, 'node_modules/@iconify-json', prefix, 'icons.json'),
       'utf-8'
     )
   )

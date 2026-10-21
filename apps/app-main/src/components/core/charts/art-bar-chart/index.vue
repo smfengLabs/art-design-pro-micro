@@ -7,7 +7,7 @@
   import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
   import { getCssVar } from '@art/app-core'
   import { graphic, type EChartsOption } from '@/plugins/echarts'
-  import type { BarChartProps, BarDataItem } from '@art/app-utils'
+  import type { BarChartProps, BarDataItem } from '@art/app-components'
 
   defineOptions({ name: 'ArtBarChart' })
 

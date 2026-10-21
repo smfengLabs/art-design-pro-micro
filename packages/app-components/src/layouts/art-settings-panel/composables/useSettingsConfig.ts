@@ -154,10 +154,10 @@ export function useSettingsConfig() {
         headerBarKey: 'language' as const
       },
       {
-        key: 'showNprogress',
+        key: 'showProgress',
         label: t('setting.basics.list.progressBar'),
         type: 'switch' as const,
-        handler: 'nprogress',
+        handler: 'progress',
         headerBarKey: null // 不依赖headerBar配置
       },
       {

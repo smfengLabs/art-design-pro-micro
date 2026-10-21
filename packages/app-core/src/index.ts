@@ -1,3 +1,5 @@
+/// <reference types="pinia-plugin-persistedstate" />
+
 // 公共入口；remote 可依赖，但不得触达 bootstrap / router guards / store create
 export * from './router/runtime'
 

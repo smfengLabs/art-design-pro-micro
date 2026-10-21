@@ -8,7 +8,9 @@ export {
   triggerUnauthorized,
   translate,
   onErrorMessage,
-  onSuccessMessage
+  onSuccessMessage,
+  triggerErrorMessage,
+  triggerSuccessMessage
 } from './http/context'
 export type {
   TokenProvider,

@@ -1,6 +1,6 @@
-import NProgress from 'nprogress'
 import type { Router } from 'vue-router'
 import { loadingService } from '../../utils/ui/index'
+import { removeProgress } from '../../utils/router'
 import { resetPendingLoading } from './beforeEach'
 
 export function setupRouterErrorHandler(router: Router): void {
@@ -12,10 +12,7 @@ export function setupRouterErrorHandler(router: Router): void {
     )
 
     // 错误路径不会触发 afterEach：在此清理进度条与全屏 loading
-    NProgress.done()
-    setTimeout(() => {
-      NProgress.remove()
-    }, 600)
+    removeProgress()
     loadingService.hideLoading()
     resetPendingLoading()
   })

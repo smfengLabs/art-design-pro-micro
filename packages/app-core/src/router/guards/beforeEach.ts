@@ -1,6 +1,5 @@
 import type { Router, RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
 import { nextTick } from 'vue'
-import NProgress from 'nprogress'
 import { useSettingStore } from '../../store/modules/setting'
 import { useUserStore } from '../../store/modules/user'
 import { useMenuStore } from '../../store/modules/menu'
@@ -17,6 +16,7 @@ import {
   getStaticRoutes
 } from '../runtime'
 import { loadingService } from '../../utils/ui/index'
+import { startProgress } from '../../utils/router'
 import { useCommon } from '../../hooks/core/useCommon'
 import { useWorktabStore } from '../../store/modules/worktab'
 import { fetchGetUserInfo } from '@art/app-api'
@@ -87,8 +87,8 @@ async function handleRouteGuard(
   const settingStore = useSettingStore()
   const userStore = useUserStore()
 
-  if (settingStore.showNprogress) {
-    NProgress.start()
+  if (settingStore.showProgress) {
+    startProgress()
   }
 
   if (!handleLoginStatus(to, userStore, next)) {

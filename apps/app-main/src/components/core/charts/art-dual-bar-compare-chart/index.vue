@@ -6,7 +6,7 @@
 <script setup lang="ts">
   import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
   import type { EChartsOption, BarSeriesOption } from '@/plugins/echarts'
-  import type { BidirectionalBarChartProps } from '@art/app-utils'
+  import type { BidirectionalBarChartProps } from '@art/app-components'
 
   defineOptions({ name: 'ArtDualBarCompareChart' })
 

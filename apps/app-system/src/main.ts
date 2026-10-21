@@ -6,6 +6,8 @@ import 'element-plus/dist/index.css'
 import type { RouteRecordRaw } from 'vue-router'
 import { bootstrapApp } from '@art/app-base'
 import { RouteName } from '@art/app-utils'
+// 注册离线 Iconify 图标集（UI 层副作用，从 app-utils 剥离）
+import '@art/app-components'
 import App from './App.vue'
 import { systemRoutes } from './routes'
 import '@styles/core/tailwind.css'
@@ -17,7 +19,7 @@ const standaloneStaticRoutes: RouteRecordRaw[] = [
     path: '/login',
     alias: ['/auth/login'],
     name: RouteName.LOGIN,
-    component: () => import('@art/app-components/auth/login'),
+    component: () => import('./views/auth/login/index.vue'),
     meta: { title: 'menus.login.title', isHideTab: true }
   },
   {

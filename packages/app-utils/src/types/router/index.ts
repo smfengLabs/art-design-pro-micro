@@ -1,4 +1,23 @@
-import { RouteRecordRaw } from 'vue-router'
+/**
+ * 框架无关的路由记录结构
+ *
+ * app-utils 是零 UI / 零框架依赖的基础层，不能直接引用 vue-router。
+ * 该结构与 vue-router 的 RouteRecordRaw 保持必要字段兼容，供菜单、权限、
+ * 远程路由源等纯数据场景使用；真正注册到 Router 时由 app-core 做类型收窄。
+ */
+export interface RouteRecordRaw {
+  path: string
+  name?: string | symbol
+  component?: any
+  components?: Record<string, any>
+  redirect?: any
+  alias?: string | string[]
+  children?: RouteRecordRaw[]
+  meta?: RouteMeta
+  props?: boolean | Record<string, any> | ((to: any) => Record<string, any>)
+  beforeEnter?: any
+  [key: string]: any
+}
 
 /**
  * 路由元数据接口

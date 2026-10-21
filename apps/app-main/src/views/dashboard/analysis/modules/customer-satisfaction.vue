@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-  import type { LineDataItem } from '@art/app-utils'
+  import type { LineDataItem } from '@art/app-components'
 
   const AREA_STYLE_CONFIG = {
     startOpacity: 0.08,

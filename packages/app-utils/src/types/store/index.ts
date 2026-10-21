@@ -1,5 +1,10 @@
 import { MenuThemeEnum, SystemThemeEnum } from '../../enums/appEnum'
-import { LocationQueryRaw } from 'vue-router'
+
+/** 查询参数值（与 vue-router 的 LocationQueryValue 结构兼容） */
+export type LocationQueryValue = string | null
+
+/** 查询参数对象（与 vue-router 的 LocationQueryRaw 结构兼容） */
+export type LocationQueryRaw = Record<string, LocationQueryValue | LocationQueryValue[]>
 
 // 系统主题样式（light | dark）
 export interface SystemThemeType {
@@ -47,7 +52,7 @@ export interface SettingState {
   /** 是否显示语言切换 */
   showLanguage: boolean
   /** 是否显示进度条 */
-  showNprogress: boolean
+  showProgress: boolean
   /** 主题模式 */
   themeModel: string
 }

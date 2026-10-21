@@ -18,18 +18,6 @@
             @keyup.enter="handleSubmit"
             style="margin-top: 25px"
           >
-            <ElFormItem prop="account">
-              <ElSelect v-model="formData.account" @change="setupAccount">
-                <ElOption
-                  v-for="account in accounts"
-                  :key="account.key"
-                  :label="account.label"
-                  :value="account.key"
-                >
-                  <span>{{ account.label }}</span>
-                </ElOption>
-              </ElSelect>
-            </ElFormItem>
             <ElFormItem prop="username">
               <ElInput
                 class="custom-height"
@@ -108,21 +96,30 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, reactive, computed, watch, onMounted } from 'vue'
-  import { useRouter, useRoute } from 'vue-router'
+  import { ref, reactive, computed, watch } from 'vue'
   import { storeToRefs } from 'pinia'
   import LoginLeftView from './LoginLeftView.vue'
   import AuthTopBar from './AuthTopBar.vue'
   import ArtDragVerify from '../../forms/art-drag-verify/index.vue'
-  import { AppConfig } from '@art/app-core'
-  import { useUserStore, initSocket } from '@art/app-core'
-  import { useI18n } from 'vue-i18n'
-  import { HttpError } from '@art/app-api'
-  import { fetchLogin } from '../api'
-  import { ElNotification, type FormInstance, type FormRules } from 'element-plus'
   import { useSettingStore } from '@art/app-core'
+  import { useI18n } from 'vue-i18n'
+  import type { FormInstance, FormRules } from 'element-plus'
+  import type { LoginFormData } from './types'
 
   defineOptions({ name: 'Login' })
+
+  interface Props {
+    /** 登录请求进行中（由业务页面控制） */
+    loading?: boolean
+  }
+
+  const props = withDefaults(defineProps<Props>(), {
+    loading: false
+  })
+
+  const emit = defineEmits<{
+    submit: [formData: LoginFormData]
+  }>()
 
   const settingStore = useSettingStore()
   const { isDark } = storeToRefs(settingStore)
@@ -134,53 +131,12 @@
     formKey.value++
   })
 
-  type AccountKey = 'super' | 'admin' | 'user'
-
-  export interface Account {
-    key: AccountKey
-    label: string
-    userName: string
-    password: string
-    roles: string[]
-  }
-
-  const accounts = computed<Account[]>(() => [
-    {
-      key: 'super',
-      label: t('login.roles.super'),
-      userName: 'Super',
-      password: '123456',
-      roles: ['R_SUPER']
-    },
-    {
-      key: 'admin',
-      label: t('login.roles.admin'),
-      userName: 'Admin',
-      password: '123456',
-      roles: ['R_ADMIN']
-    },
-    {
-      key: 'user',
-      label: t('login.roles.user'),
-      userName: 'User',
-      password: '123456',
-      roles: ['R_USER']
-    }
-  ])
-
   const dragVerify = ref()
-
-  const userStore = useUserStore()
-  const router = useRouter()
-  const route = useRoute()
   const isPassing = ref(false)
   const isClickPass = ref(false)
-
-  const systemName = AppConfig.systemInfo.name
   const formRef = ref<FormInstance>()
 
-  const formData = reactive({
-    account: '',
+  const formData = reactive<LoginFormData>({
     username: '',
     password: '',
     rememberPassword: true
@@ -191,90 +147,40 @@
     password: [{ required: true, message: t('login.placeholder.password'), trigger: 'blur' }]
   }))
 
-  const loading = ref(false)
+  // 请求结束后由父级解除 loading，同时重置拖拽验证，便于失败重试
+  watch(
+    () => props.loading,
+    (value, oldValue) => {
+      if (oldValue && !value) {
+        resetDragVerify()
+      }
+    }
+  )
 
-  onMounted(() => {
-    setupAccount('super')
-  })
-
-  // 设置账号
-  const setupAccount = (key: AccountKey) => {
-    const selectedAccount = accounts.value.find((account: Account) => account.key === key)
-    formData.account = key
-    formData.username = selectedAccount?.userName ?? ''
-    formData.password = selectedAccount?.password ?? ''
-  }
-
-  // 登录
+  // 只做表单校验与事件抛出，不发起请求、不操作路由和用户状态
   const handleSubmit = async () => {
-    if (!formRef.value) return
+    if (props.loading || !formRef.value) return
 
     try {
-      // 表单验证
       const valid = await formRef.value.validate()
       if (!valid) return
 
-      // 拖拽验证
       if (!isPassing.value) {
         isClickPass.value = true
         return
       }
 
-      loading.value = true
-
-      // 登录请求
-      const { username, password } = formData
-
-      const { token, refreshToken } = await fetchLogin({
-        userName: username,
-        password
-      })
-
-      // 验证token
-      if (!token) {
-        throw new Error('Login failed - no token received')
-      }
-
-      // 存储 token 和登录状态
-      userStore.setToken(token, refreshToken)
-      userStore.setLoginStatus(true)
-
-      // 登录成功后建立多端数据实时同步连接（WebSocket 携带 token 鉴权）
-      initSocket()
-
-      // 登录成功处理
-      showLoginSuccessNotice()
-
-      // 获取 redirect 参数，如果存在则跳转到指定页面，否则跳转到首页
-      const redirect = route.query.redirect as string
-      router.push(redirect || '/')
-    } catch (error) {
-      // HttpError 由请求层统一提示，此处仅兜底记录未预期异常
-      if (!(error instanceof HttpError)) {
-        console.error('[Login] Unexpected error:', error)
-      }
-    } finally {
-      loading.value = false
-      resetDragVerify()
+      emit('submit', { ...formData })
+    } catch {
+      // 表单校验失败时由 Element Plus 展示字段提示
     }
   }
 
-  // 重置拖拽验证
+  // 重置拖拽验证与错误提示
   const resetDragVerify = () => {
-    dragVerify.value.reset()
-  }
-
-  // 登录成功提示
-  const showLoginSuccessNotice = () => {
-    setTimeout(() => {
-      ElNotification({
-        title: t('login.success.title'),
-        type: 'success',
-        duration: 2500,
-        zIndex: 10000,
-        message: `${t('login.success.message')}, ${systemName}!`
-      })
-    }, 1000)
+    isPassing.value = false
+    isClickPass.value = false
+    dragVerify.value?.reset()
   }
 </script>
 
@@ -316,9 +222,5 @@
       opacity: 1;
       transform: translateX(0);
     }
-  }
-
-  :deep(.el-select__wrapper) {
-    height: 40px !important;
   }
 </style>

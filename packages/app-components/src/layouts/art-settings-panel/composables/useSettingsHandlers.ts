@@ -82,7 +82,7 @@ export function useSettingsHandlers() {
     language: createToggleHandler(() => settingStore.setLanguage()),
 
     // 显示进度条
-    nprogress: createToggleHandler(() => settingStore.setNprogress()),
+    progress: createToggleHandler(() => settingStore.setProgress()),
 
     // 色弱模式
     colorWeak: createToggleHandler(

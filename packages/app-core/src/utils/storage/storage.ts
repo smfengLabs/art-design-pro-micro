@@ -1,6 +1,6 @@
 import { getActiveRouter } from '../../router/runtime'
 import { useUserStore } from '../../store/modules/user'
-import { ElMessage } from 'element-plus'
+import { triggerErrorMessage } from '@art/app-api'
 import { StorageConfig } from './storage-config'
 import {
   getSystemStorage as readSystemStorage,
@@ -43,12 +43,7 @@ class StorageCompatibilityManager {
   }
 
   private showStorageError(): void {
-    ElMessage({
-      type: 'error',
-      offset: 40,
-      duration: 5000,
-      message: '系统检测到本地数据异常，请重新登录系统恢复使用！'
-    })
+    triggerErrorMessage('系统检测到本地数据异常，请重新登录系统恢复使用！')
   }
 
   private performSystemLogout(): void {

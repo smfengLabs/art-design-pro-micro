@@ -1,7 +1,5 @@
 import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router'
 import AppConfig from '../config/index'
-import NProgress from 'nprogress'
-import 'nprogress/nprogress.css'
 import i18n, { $t } from '../locales/index'
 
 /** 扩展的路由配置类型 */
@@ -9,14 +7,79 @@ export type AppRouteRecordRaw = RouteRecordRaw & {
   hidden?: boolean
 }
 
-/** 顶部进度条配置 */
-export const configureNProgress = () => {
-  NProgress.configure({
-    easing: 'ease',
-    speed: 600,
-    showSpinner: false,
-    parent: 'body'
-  })
+/** 顶部进度条 DOM（纯原生实现，不引入第三方进度条库） */
+let progressElement: HTMLDivElement | null = null
+let progressTimer: ReturnType<typeof setInterval> | null = null
+let progressRemoveTimer: ReturnType<typeof setTimeout> | null = null
+
+function ensureProgressElement(): HTMLDivElement {
+  if (!progressElement) {
+    progressElement = document.createElement('div')
+    progressElement.className = 'art-route-progress'
+    Object.assign(progressElement.style, {
+      position: 'fixed',
+      top: '0',
+      left: '0',
+      width: '0',
+      height: '2px',
+      zIndex: '9999',
+      pointerEvents: 'none',
+      background: 'var(--el-color-primary, var(--main-color, #409eff))',
+      transition: 'width 0.2s ease, opacity 0.3s ease',
+      opacity: '1'
+    })
+    document.body.appendChild(progressElement)
+  }
+  return progressElement
+}
+
+/** 开始顶部路由进度条 */
+export function startProgress(): void {
+  if (progressRemoveTimer) {
+    clearTimeout(progressRemoveTimer)
+    progressRemoveTimer = null
+  }
+  const element = ensureProgressElement()
+  element.style.opacity = '1'
+  element.style.width = '8%'
+
+  if (progressTimer) clearInterval(progressTimer)
+  progressTimer = setInterval(() => {
+    if (!progressElement) return
+    const current = Number.parseFloat(progressElement.style.width) || 0
+    if (current < 90) {
+      progressElement.style.width = `${Math.min(current + Math.max(1, (90 - current) * 0.08), 90)}%`
+    }
+  }, 300)
+}
+
+/** 完成顶部路由进度条 */
+export function doneProgress(): void {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+  if (!progressElement) return
+
+  progressElement.style.width = '100%'
+  progressElement.style.opacity = '0'
+  progressRemoveTimer = setTimeout(() => {
+    removeProgress()
+  }, 350)
+}
+
+/** 立即移除顶部路由进度条 */
+export function removeProgress(): void {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+  if (progressRemoveTimer) {
+    clearTimeout(progressRemoveTimer)
+    progressRemoveTimer = null
+  }
+  progressElement?.remove()
+  progressElement = null
 }
 
 /**

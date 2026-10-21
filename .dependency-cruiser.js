@@ -24,6 +24,42 @@ export default {
       to: { path: '^apps/(?!app-system/)' }
     },
 
+    // 外部依赖黑名单：能力包不得反向绑定 UI 框架/运行时
+    {
+      name: 'app-utils-no-framework-runtime-deps',
+      severity: 'error',
+      from: { path: '^packages/app-utils/' },
+      to: {
+        // 普通解析路径：node_modules/vue/...
+        path: 'node_modules/(?:vue|vue-router|element-plus|pinia|axios|echarts|@iconify/vue|@iconify-json)(?:/|$)'
+      }
+    },
+    {
+      // pnpm 真实解析路径：node_modules/.pnpm/vue@.../node_modules/vue/...
+      name: 'app-utils-no-framework-runtime-deps-pnpm',
+      severity: 'error',
+      from: { path: '^packages/app-utils/' },
+      to: { path: 'node_modules/\\.pnpm/(?:vue|vue-router|element-plus|pinia|axios|echarts)@' }
+    },
+    {
+      name: 'app-utils-no-iconify-runtime-deps-pnpm',
+      severity: 'error',
+      from: { path: '^packages/app-utils/' },
+      to: { path: 'node_modules/\\.pnpm/@iconify' }
+    },
+    {
+      name: 'app-api-no-ui-framework-deps',
+      severity: 'error',
+      from: { path: '^packages/app-api/' },
+      to: { path: 'node_modules/(?:vue|element-plus|pinia)(?:/|$)' }
+    },
+    {
+      name: 'app-api-no-ui-framework-deps-pnpm',
+      severity: 'error',
+      from: { path: '^packages/app-api/' },
+      to: { path: 'node_modules/\\.pnpm/(?:vue|element-plus|pinia)@' }
+    },
+
     // 层序：utils < api < core < components < base
     {
       name: 'app-utils-no-internal-deps',
@@ -89,7 +125,8 @@ export default {
       conditionNames: ['import', 'require', 'node', 'default']
     },
     doNotFollow: { path: 'node_modules' },
-    // origin-code 为参考源码，不参与构建
-    exclude: { path: '(node_modules|dist|origin-code|docs|scripts)' }
+    // origin-code 为参考源码，不参与构建；node_modules 保留为叶子依赖节点，
+    // 否则外部依赖黑名单规则无法看到 npm 依赖（doNotFollow 已阻止继续遍历）。
+    exclude: { path: '(dist|origin-code|docs|scripts)' }
   }
 }

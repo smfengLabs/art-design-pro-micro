@@ -1,7 +1,6 @@
 import type { App } from 'vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { configureNProgress } from '../utils/router'
 import { setupBeforeEachGuard } from './guards/beforeEach'
 import { setupAfterEachGuard } from './guards/afterEach'
 import { setupRouterErrorHandler } from './guards/onError'
@@ -25,7 +24,6 @@ export function createHostRouter(): Router {
  */
 export function initRouter(app: App<Element>): void {
   const router = getActiveRouter()
-  configureNProgress() // 配置进度条
   setupBeforeEachGuard(router) // 路由前置守卫
   setupAfterEachGuard(router) // 路由后置守卫
   setupRouterErrorHandler(router) // 导航错误兜底（chunk 加载失败/超时时清理 loading）

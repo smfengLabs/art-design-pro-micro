@@ -12,7 +12,7 @@
 <script setup lang="ts">
   import type { EChartsOption } from '@/plugins/echarts'
   import { useChartOps, useChartComponent } from '@/hooks/core/useChart'
-  import type { RingChartProps } from '@art/app-utils'
+  import type { RingChartProps } from '@art/app-components'
 
   defineOptions({ name: 'ArtRingChart' })
 

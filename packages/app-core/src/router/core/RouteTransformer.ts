@@ -26,6 +26,7 @@ export class RouteTransformer {
 
     const converted: ConvertedRoute = {
       ...routeConfig,
+      path: route.path,
       component: undefined
     }
 
@@ -82,6 +83,7 @@ export class RouteTransformer {
       targetRoute.children = [
         {
           ...sourceRoute,
+          path: sourceRoute.path,
           component: this.componentLoader.loadIframe()
         } as ConvertedRoute
       ]
@@ -109,6 +111,7 @@ export class RouteTransformer {
     converted.children = [
       {
         ...route,
+        path: route.path,
         component: component ? this.resolveComponent(component) : undefined
       } as ConvertedRoute
     ]

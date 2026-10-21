@@ -263,27 +263,6 @@
   }
 }
 
-// 修复老机型 loading 定位问题
-.art-loading-fix {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-}
-
-.art-loading-fix .el-loading-spinner {
-  position: static !important;
-  top: auto !important;
-  left: auto !important;
-  transform: none !important;
-}
-
 // 去除移动端点击背景色
 @media screen and (max-width: 1180px) {
   * {

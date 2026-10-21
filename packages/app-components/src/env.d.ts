@@ -1,7 +1,6 @@
 /// <reference types="vite/client" />
-/// <reference types="pinia-plugin-persistedstate" />
+/// <reference path="../../app-core/src/types/directive.d.ts" />
 
-declare module 'nprogress'
 declare module 'crypto-js'
 
 // 构建期注入（@art/app-config 的 define，读取仓库根 VERSION 文件）

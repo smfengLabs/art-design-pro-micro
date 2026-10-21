@@ -3,6 +3,8 @@
 import 'element-plus/dist/index.css'
 
 import App from './App.vue'
+// 注册离线 Iconify 图标集（UI 层副作用，从 app-utils 剥离）
+import '@art/app-components'
 import { bootstrapApp, createRemoteRouteSources } from '@art/app-base'
 import { staticRoutes } from './routes/static'
 import { asyncRoutes as localAsyncRoutes } from './routes/local-async'

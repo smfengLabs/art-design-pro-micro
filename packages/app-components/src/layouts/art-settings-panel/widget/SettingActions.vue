@@ -76,7 +76,7 @@
     { comment: '是否显示面包屑', key: 'showCrumbs' },
     { comment: '是否显示工作台标签', key: 'showWorkTab' },
     { comment: '是否显示语言切换', key: 'showLanguage' },
-    { comment: '是否显示进度条', key: 'showNprogress' },
+    { comment: '是否显示进度条', key: 'showProgress' },
     { comment: '是否显示设置引导', key: 'showSettingGuide' },
     { comment: '是否显示节日文本', key: 'showFestivalText' },
     { comment: '是否显示水印', key: 'watermarkVisible' },
@@ -198,8 +198,8 @@
       toggleIfDifferent(settingStore.showLanguage, config.showLanguage, () =>
         settingStore.setLanguage()
       )
-      toggleIfDifferent(settingStore.showNprogress, config.showNprogress, () =>
-        settingStore.setNprogress()
+      toggleIfDifferent(settingStore.showProgress, config.showProgress, () =>
+        settingStore.setProgress()
       )
 
       // 界面显示（直接设置类方法）

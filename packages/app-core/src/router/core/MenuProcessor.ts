@@ -200,7 +200,12 @@ export class MenuProcessor {
       if (hasPermission) {
         const filteredItem = { ...item }
         if (filteredItem.children?.length) {
-          filteredItem.children = this.filterMenuByRoles(filteredItem.children, roles)
+          const filteredChildren = this.filterMenuByRoles(filteredItem.children, roles)
+          // 子节点全部被角色过滤时，父级目录一并剔除，避免遗留空父级
+          if (filteredChildren.length === 0) {
+            return acc
+          }
+          filteredItem.children = filteredChildren
         }
         acc.push(filteredItem)
       }
@@ -210,33 +215,35 @@ export class MenuProcessor {
   }
 
   private filterEmptyMenus(menuList: AppRouteRecord[]): AppRouteRecord[] {
-    return menuList
-      .map((item) => {
-        if (item.children && item.children.length > 0) {
-          const filteredChildren = this.filterEmptyMenus(item.children)
-          return {
-            ...item,
-            children: filteredChildren
-          }
-        }
-        return item
-      })
-      .filter((item) => {
-        // 空 children 仍视为目录菜单
-        if ('children' in item) {
-          return true
+    return menuList.reduce((acc: AppRouteRecord[], item) => {
+      // 只有“原本有子节点的目录”才需要做空目录剪枝；
+      // 后端叶子节点可能带 children: []，必须按页面节点处理，不能误删。
+      const hadChildren = Boolean(item.children?.length)
+
+      if (hadChildren) {
+        const filteredChildren = this.filterEmptyMenus(item.children || [])
+
+        // 子节点全部被权限/应用过滤后，父级目录一并删除，避免留下空目录或假可点击节点
+        if (filteredChildren.length === 0) {
+          return acc
         }
 
-        if (item.meta?.isIframe === true || item.meta?.link) {
-          return true
-        }
+        acc.push({ ...item, children: filteredChildren })
+        return acc
+      }
 
-        if (item.component && item.component !== '' && item.component !== RoutesAlias.Layout) {
-          return true
-        }
+      // 叶子节点：外链、iframe、真实页面组件才保留；纯 Layout 空壳直接移除
+      if (item.meta?.isIframe === true || item.meta?.link) {
+        acc.push(item)
+        return acc
+      }
 
-        return false
-      })
+      if (item.component && item.component !== '' && item.component !== RoutesAlias.Layout) {
+        acc.push(item)
+      }
+
+      return acc
+    }, [])
   }
 
   validateMenuList(menuList: AppRouteRecord[]): boolean {

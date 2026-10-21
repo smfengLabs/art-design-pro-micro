@@ -129,8 +129,8 @@
 
         if (item.children && item.children.length > 0) {
           const filteredChildren = filterRoutes(item.children)
-          // 目录菜单要求有可见子菜单；页面菜单则允许仅保留自身
-          return filteredChildren.length > 0 || isNavigableRoute(item)
+          // 目录菜单必须有可见子菜单；子节点全部被过滤时，父级不得降级为可点击叶子
+          return filteredChildren.length > 0
         }
 
         return isNavigableRoute(item)
