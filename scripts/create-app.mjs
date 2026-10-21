@@ -3,12 +3,12 @@
  * 一键生成子应用脚手架
  *
  * 用法：
- *   node scripts/create-app.mjs --name app-article --port 3102
+ *   node scripts/create-app.mjs --name app-order --port 3102
  *
  * 流程：
- *   1. 复制 apps/app-system 为 apps/<name>，并清理构建/依赖缓存
+ *   1. 复制 templates/app-template 为 apps/<name>，并清理构建/依赖缓存
  *   2. 替换包名、环境变量、路由前缀、RouteName 枚举、MF 名称等应用身份
- *   3. 剥离模板中的系统业务代码，生成只保留欢迎页的纯净骨架
+ *   3. 生成欢迎页与空业务路由，保证新应用零业务包袱
  *   4. 校验模板直接挂载公共 ArtUnifiedLogin，禁止再生成应用级登录页
  *   5. 向 packages/app-config/src/vite/remotes.ts 追加 dev/prod 注册项
  *   6. 扩展 packages/app-utils/src/enums/routeName.ts，保证生成应用类型检查通过
@@ -22,7 +22,8 @@ import { fileURLToPath } from 'node:url'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const appsDir = path.join(repoRoot, 'apps')
-const templateDir = path.join(appsDir, 'app-system')
+const templatesDir = path.join(repoRoot, 'templates')
+const templateDir = path.join(templatesDir, 'app-template')
 const remotesFile = path.join(repoRoot, 'packages/app-config/src/vite/remotes.ts')
 const routeNameFile = path.join(repoRoot, 'packages/app-utils/src/enums/routeName.ts')
 const hostMainFile = path.join(appsDir, 'app-main/src/main.ts')
@@ -42,16 +43,6 @@ const CACHE_DIRS = new Set([
 /** 需要做应用身份替换的文本文件扩展名 */
 const TEXT_EXTENSIONS = new Set(['.ts', '.vue', '.json', '.html', '.scss', '.css', '.md', '.txt'])
 
-/** app-system 中仅供系统业务使用的文件/目录，生成新应用时物理剥离 */
-const SYSTEM_BUSINESS_PATHS = [
-  'src/views/system',
-  'src/api/system-manage.ts',
-  'src/mock',
-  'src/components',
-  'src/assets/images/avatar',
-  'src/assets/images/user'
-]
-
 function fail(message) {
   throw new Error(message)
 }
@@ -69,12 +60,12 @@ function printUsage() {
 用法: node scripts/create-app.mjs --name <app-name> --port <port>
 
 参数:
-  --name  子应用目录与包名，必须以 app- 开头，例如 app-article
+  --name  子应用目录与包名，必须以 app- 开头，例如 app-order
   --port  子应用独立运行端口，例如 3102
   --help  显示帮助
 
 示例:
-  node scripts/create-app.mjs --name app-article --port 3102
+  node scripts/create-app.mjs --name app-order --port 3102
 `)
 }
 
@@ -145,12 +136,16 @@ function validateNameAndPort(rawName, rawPort) {
 
   if (!/^app-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(appName)) {
     fail(
-      `应用名不合法：${appName}。必须形如 app-article（小写字母/数字/中划线，以 app- 开头，且 app- 后首字符为字母）`
+      `应用名不合法：${appName}。必须形如 app-order（小写字母/数字/中划线，以 app- 开头，且 app- 后首字符为字母）`
     )
   }
 
   if (appName === 'app-main') {
     fail('app-main 是宿主应用，不能作为脚手架目标')
+  }
+
+  if (appName === 'app-template') {
+    fail('app-template 是纯模板保留名，请使用其他应用名')
   }
 
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
@@ -192,34 +187,6 @@ function replaceInFiles(files, transform) {
     const after = transform(before)
     if (after !== before) write(file, after)
   }
-}
-
-/** 删除模板复制过来的系统业务代码，避免新应用携带 app-system 的业务包袱 */
-function stripSystemBusiness(targetDir) {
-  for (const relativePath of SYSTEM_BUSINESS_PATHS) {
-    const absolutePath = path.join(targetDir, relativePath)
-    if (!fs.existsSync(absolutePath)) continue
-    fs.rmSync(absolutePath, { recursive: true, force: true })
-  }
-
-  const apiDir = path.join(targetDir, 'src/api')
-  if (fs.existsSync(apiDir) && fs.readdirSync(apiDir).length === 0) {
-    fs.rmdirSync(apiDir)
-  }
-}
-
-/** 清理自动生成的组件声明中指向已删除本地组件的条目 */
-function pruneStaleComponentTypes(targetDir) {
-  const componentsTypeFile = path.join(targetDir, 'src/types/import/components.d.ts')
-  if (!fs.existsSync(componentsTypeFile)) return
-
-  const source = read(componentsTypeFile)
-  const updated = source.replace(
-    /^[ \t]*\w+:\s*typeof import\('\.\/\.\.\/\.\.\/components\/[^']+'\)\[[^\]]+\]\r?\n/gm,
-    ''
-  )
-
-  if (updated !== source) write(componentsTypeFile, updated)
 }
 
 /** 生成纯净欢迎页：纯展示、零业务依赖，开箱即可作为业务开发起点 */
@@ -527,7 +494,7 @@ function updateGeneratedShell(targetDir, routeBase) {
   for (const file of files) {
     if (!fs.existsSync(file)) continue
     const before = read(file)
-    const after = before.replaceAll('/system/user', `${routeBase}/home`)
+    const after = before.replaceAll('/template/home', `${routeBase}/home`)
     if (after !== before) write(file, after)
   }
 
@@ -550,8 +517,9 @@ function assertNoGeneratedAlias(source, appName) {
 function assertPackageNameAvailable(appName) {
   const packageName = `@art/${appName}`
 
-  for (const group of ['apps', 'packages']) {
+  for (const group of ['apps', 'packages', 'templates']) {
     const groupDir = path.join(repoRoot, group)
+    if (!fs.existsSync(groupDir)) continue
     for (const entry of fs.readdirSync(groupDir, { withFileTypes: true })) {
       if (!entry.isDirectory()) continue
       const packageFile = path.join(groupDir, entry.name, 'package.json')
@@ -644,7 +612,7 @@ function main() {
   const { name: rawName, port: rawPort } = parseArgs(process.argv.slice(2))
   const { appName, port } = validateNameAndPort(rawName, rawPort)
 
-  assertExists(templateDir, '模板应用 apps/app-system')
+  assertExists(templateDir, '模板工程 templates/app-template')
   assertExists(remotesFile, 'remotes 注册表')
   assertExists(routeNameFile, 'RouteName 枚举')
   assertExists(hostMainFile, '宿主入口')
@@ -667,11 +635,17 @@ function main() {
     )
   }
 
-  for (const entry of fs.readdirSync(appsDir, { withFileTypes: true })) {
-    if (!entry.isDirectory() || entry.name === appName) continue
-    const existingPort = readPort(path.join(appsDir, entry.name, '.env'))
-    if (existingPort === port) {
-      fail(`端口 ${port} 已被 apps/${entry.name} 使用，请更换 --port`)
+  const portOwners = [appsDir, templatesDir]
+  for (const ownerDir of portOwners) {
+    if (!fs.existsSync(ownerDir)) continue
+    for (const entry of fs.readdirSync(ownerDir, { withFileTypes: true })) {
+      if (!entry.isDirectory() || (ownerDir === appsDir && entry.name === appName)) continue
+      const existingPort = readPort(path.join(ownerDir, entry.name, '.env'))
+      if (existingPort === port) {
+        fail(
+          `端口 ${port} 已被 ${path.relative(repoRoot, path.join(ownerDir, entry.name))} 使用，请更换 --port`
+        )
+      }
     }
   }
 
@@ -705,10 +679,6 @@ function main() {
       }
     }
 
-    // 剥离 app-system 的业务代码，只保留可运行的纯净骨架
-    stripSystemBusiness(targetDir)
-    pruneStaleComponentTypes(targetDir)
-
     // 新应用自带一个纯展示欢迎页，作为业务开发的起点
     const homePageFile = path.join(targetDir, 'src/views/home/index.vue')
     fs.mkdirSync(path.dirname(homePageFile), { recursive: true })
@@ -723,14 +693,17 @@ function main() {
     const mainFile = path.join(targetDir, 'src/main.ts')
     const mainSource = read(mainFile)
     if (!mainSource.includes('@art/app-components/auth/unified-login')) {
-      fail('模板 src/main.ts 未挂载公共 ArtUnifiedLogin，请先更新 apps/app-system/src/main.ts')
+      fail('模板 src/main.ts 未挂载公共 ArtUnifiedLogin，请先更新 templates/app-template/src/main.ts')
     }
 
     const textFiles = collectTextFiles(targetDir)
 
-    // 应用身份替换：app-system → app-demo / app_system → app_demo
+    // 应用身份替换：templates/app-template → apps/<name>，app-template → app-name
     replaceInFiles(textFiles, (content) =>
-      content.replaceAll('app-system', appName).replaceAll('app_system', appCode)
+      content
+        .replaceAll('templates/app-template', `apps/${appName}`)
+        .replaceAll('app-template', appName)
+        .replaceAll('app_template', appCode)
     )
 
     // 包名按 workspace 约定使用 @art/ 作用域
@@ -762,21 +735,21 @@ function main() {
     // 入口 / 开发环境 404 的业务回跳统一指向欢迎页
     updateGeneratedShell(targetDir, routeBase)
 
-    // routes.ts / main.ts 中的业务路由变量名同步为 demoRoutes / articleRoutes...
+    // routes.ts / main.ts 中的业务路由变量名同步为 demoRoutes / orderRoutes...
     replaceInFiles(collectTextFiles(targetDir), (content) =>
-      content.replaceAll('systemRoutes', routeVariable)
+      content.replaceAll('templateRoutes', routeVariable)
     )
 
-    // 兜底替换可能残留的 /system 路由字面量，避免生成应用继续指向已剥离的页面
+    // 兜底替换可能残留的 /template 路由字面量，避免生成应用继续指向模板欢迎页
     replaceInFiles(collectTextFiles(targetDir), (content) =>
-      content.replace(/(['"`])\/system(?=\/|['"`])/g, (_matched, quote) => `${quote}${routeBase}`)
+      content.replace(/(['"`])\/template(?=\/|['"`])/g, (_matched, quote) => `${quote}${routeBase}`)
     )
 
     // 组件名同步为 AppXxx / XxxNotFound
     replaceInFiles(collectTextFiles(targetDir), (content) =>
       content
-        .replaceAll('AppSystem', `App${pascalName}`)
-        .replaceAll('SystemNotFound', `${pascalName}NotFound`)
+        .replaceAll('AppTemplate', `App${pascalName}`)
+        .replaceAll('TemplateNotFound', `${pascalName}NotFound`)
     )
 
     const viteConfigFile = path.join(targetDir, 'vite.config.ts')

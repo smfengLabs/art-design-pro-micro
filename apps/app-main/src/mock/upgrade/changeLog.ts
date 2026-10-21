@@ -9,6 +9,18 @@ interface UpgradeLog {
 
 export const upgradeLogList = ref<UpgradeLog[]>([
   {
+    version: 'v1.4.0',
+    title: '核心固本与全自动工作流',
+    date: '2026-10-21',
+    detail: [
+      '新增：独立示例微应用 app-example，集中展示组件库与高可用业务模板',
+      '重构：脚手架复制源切换为 templates/app-template 纯模板，系统业务与模板彻底隔离',
+      '新增：pr:auto 全自动 PR 脚本，一键推送 GitHub/Gitee 并创建、尝试合并 PR',
+      '加固：app-main / app-system / app-template 防删守卫，禁止物理删除核心支柱',
+      '优化：移除冗余测试应用 app-article，精简 workspace 与 MF 注册表'
+    ]
+  },
+  {
     version: 'v1.3.0',
     title: '版本管理与质量门禁',
     date: '2026-10-21',

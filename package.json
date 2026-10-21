@@ -11,6 +11,7 @@
     "app:create": "node scripts/create-app.mjs",
     "app:delete": "node scripts/delete-app.mjs",
     "app:list": "node scripts/list-apps.mjs",
+    "pr:auto": "node scripts/auto-pr.mjs",
     "dev": "turbo dev",
     "build": "turbo build",
     "clean": "node scripts/clean.mjs",

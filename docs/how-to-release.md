@@ -30,6 +30,24 @@ pnpm changeset
 
 ## 2. PR 阶段：通过质量门禁
 
+一键推送并创建 PR（配置 Token 后还会尝试自动合并）：
+
+```bash
+pnpm pr:auto
+```
+
+脚本会读取当前分支，推送到 `origin`（GitHub）与 `gitee`，再调用两端 API 创建或复用 PR。
+Token 只从环境变量读取，不会打印：
+
+- GitHub：`GITHUB_TOKEN` 或 `GH_TOKEN`
+- Gitee：`GITEE_TOKEN` 或 `GITEE_ACCESS_TOKEN`
+
+未配置 Token 时，脚本仍会完成双端推送，并输出手动创建 PR 的对比链接。可选参数：
+
+```bash
+pnpm pr:auto -- --base main --title "feat: xxx" --no-merge
+```
+
 向 `main` 提交 Pull Request 后，GitHub Actions 会执行 `.github/workflows/ci.yml`：
 
 1. `pnpm typecheck`：全 workspace 类型检查。

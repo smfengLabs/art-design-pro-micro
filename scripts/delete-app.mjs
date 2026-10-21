@@ -6,7 +6,7 @@
  *   node scripts/delete-app.mjs --name app-example
  *
  * 流程：
- *   1. 防呆校验：拒绝删除宿主 app-main 与脚手架模板 app-system
+ *   1. 防呆校验：拒绝删除宿主 app-main、业务应用 app-system 与纯模板 app-template
  *   2. 从 remotes.ts 的 dev/prod 注册表中移除对应别名的完整对象
  *   3. 从 routeName.ts 中移除该应用的 RouteName 枚举与生成注释
  *   4. 物理删除 apps/<name>；注册表写入失败时自动回滚
@@ -25,7 +25,8 @@ const routeNameFile = path.join(repoRoot, 'packages/app-utils/src/enums/routeNam
 /** 禁止通过本脚本删除的应用 */
 const PROTECTED_APPS = new Map([
   ['app-main', '宿主应用（基座），删除后整个微前端将无法启动'],
-  ['app-system', '脚手架模板，删除后 app:create 将无法生成新应用']
+  ['app-system', '系统业务应用，删除后系统管理能力与演示数据将丢失'],
+  ['app-template', '纯模板工程（templates/app-template），删除后 app:create 将无法生成新应用']
 ])
 
 function fail(message) {
@@ -45,15 +46,15 @@ function printUsage() {
 用法: node scripts/delete-app.mjs --name <app-name>
 
 参数:
-  --name  要删除的子应用目录名，例如 app-article
+  --name  要删除的子应用目录名，例如 app-order
   --help  显示帮助
 
 说明:
-  - app-main（宿主）与 app-system（脚手架模板）不允许删除
+  - app-main（宿主）、app-system（系统应用）与 app-template（纯模板）不允许删除
   - 脚本会同步清理 remotes.ts 与 routeName.ts 中的注册信息
 
 示例:
-  node scripts/delete-app.mjs --name app-article
+  node scripts/delete-app.mjs --name app-order
 `)
 }
 
@@ -93,7 +94,7 @@ function validateAppName(rawName) {
 
   if (!/^app-[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(appName)) {
     fail(
-      `应用名不合法：${appName}。必须形如 app-article（小写字母/数字/中划线，以 app- 开头，且 app- 后首字符为字母）`
+      `应用名不合法：${appName}。必须形如 app-order（小写字母/数字/中划线，以 app- 开头，且 app- 后首字符为字母）`
     )
   }
 

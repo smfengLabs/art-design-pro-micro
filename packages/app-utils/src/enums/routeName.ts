@@ -12,6 +12,11 @@ export enum RouteName {
   /** 500 服务异常 */
   EXCEPTION_500 = 'Exception500',
 
+  /** templates/app-template：纯模板布局路由 */
+  TEMPLATE = 'Template',
+  /** templates/app-template：模板欢迎页 */
+  TEMPLATE_HOME = 'TemplateHome',
+
   /** app-system：系统模块（布局路由） */
   SYSTEM = 'System',
   /** app-system：系统首页（阶段一演示保留） */
@@ -40,12 +45,6 @@ export enum RouteName {
   SYSTEM_NESTED_MENU3_2 = 'NestedMenu3-2',
   /** app-system：嵌套菜单-3-2-1 */
   SYSTEM_NESTED_MENU3_2_1 = 'NestedMenu3-2-1',
-  /** app-article：业务路由（脚手架生成） */
-  ARTICLE = 'Article',
-  ARTICLE_USER = 'ArticleUser',
-  ARTICLE_ROLE = 'ArticleRole',
-  ARTICLE_USER_CENTER = 'ArticleUserCenter',
-  ARTICLE_MENU = 'ArticleMenu',
   /** app-example：业务路由（脚手架生成） */
   EXAMPLE = 'Example',
   EXAMPLE_COMPONENTS = 'ExampleComponents',
