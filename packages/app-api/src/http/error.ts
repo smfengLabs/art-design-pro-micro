@@ -1,7 +1,6 @@
 import { AxiosError } from 'axios'
 import { ApiStatus } from '@art/app-utils'
-import { ElMessage } from 'element-plus'
-import { translate as $t } from './context'
+import { translate as $t, triggerErrorMessage, triggerSuccessMessage } from './context'
 
 export interface ErrorResponse {
   /** 错误状态码 */
@@ -112,14 +111,14 @@ export function handleError(error: AxiosError<ErrorResponse>): never {
 
 export function showError(error: HttpError, showMessage: boolean = true): void {
   if (showMessage) {
-    ElMessage.error(error.message)
+    triggerErrorMessage(error.message)
   }
   console.error('[HTTP Error]', error.toLogData())
 }
 
 export function showSuccess(message: string, showMessage: boolean = true): void {
   if (showMessage) {
-    ElMessage.success(message)
+    triggerSuccessMessage(message)
   }
 }
 

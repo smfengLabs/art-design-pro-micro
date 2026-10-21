@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
-import http from '@art/app-api'
+import http, { onErrorMessage, onSuccessMessage } from '@art/app-api'
+import { ElMessage } from 'element-plus'
 import i18n, { $t } from '@art/app-core/locales'
 import { useUserStore } from '@art/app-core/store/modules/user'
 import {
@@ -40,6 +41,9 @@ export async function bootstrapApp(options: AppBootstrapOptions): Promise<void> 
   setComponentGlob(localComponents.componentGlob || {})
   if (localComponents.layoutComponent) setLayoutComponent(localComponents.layoutComponent)
   if (localComponents.iframeComponent) setIframeComponent(localComponents.iframeComponent)
+
+  onErrorMessage((message) => ElMessage.error(message))
+  onSuccessMessage((message) => ElMessage.success(message))
 
   http.setTokenProvider(() => useUserStore().accessToken)
   http.onUnauthorized(() => {

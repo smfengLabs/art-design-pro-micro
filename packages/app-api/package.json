@@ -14,8 +14,7 @@
   },
   "dependencies": {
     "@art/app-utils": "workspace:*",
-    "axios": "catalog:",
-    "element-plus": "catalog:"
+    "axios": "catalog:"
   },
   "devDependencies": {
     "@types/node": "^24.0.5"

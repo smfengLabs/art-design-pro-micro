@@ -16,6 +16,7 @@
     "@art/app-api": "workspace:*",
     "@art/app-core": "workspace:*",
     "@art/app-utils": "workspace:*",
+    "element-plus": "catalog:",
     "vite-plugin-federation": "^1.0.2"
   },
   "peerDependencies": {

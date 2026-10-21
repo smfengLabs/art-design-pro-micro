@@ -6,7 +6,14 @@ export {
   setTranslator,
   getToken,
   triggerUnauthorized,
-  translate
+  translate,
+  onErrorMessage,
+  onSuccessMessage
 } from './http/context'
-export type { TokenProvider, UnauthorizedHandler, Translator } from './http/context'
+export type {
+  TokenProvider,
+  UnauthorizedHandler,
+  Translator,
+  MessageHandler
+} from './http/context'
 export * from './framework-api'
