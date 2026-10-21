@@ -8,6 +8,7 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./iconify": "./src/ui/iconify-loader.ts",
     "./layouts": "./src/layouts/index.ts",
     "./auth/login": "./src/auth/login/index.vue",
     "./auth/register": "./src/auth/register/index.vue",

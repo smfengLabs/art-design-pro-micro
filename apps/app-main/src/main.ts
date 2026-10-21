@@ -3,8 +3,8 @@
 import 'element-plus/dist/index.css'
 
 import App from './App.vue'
-// 注册离线 Iconify 图标集（UI 层副作用，从 app-utils 剥离）
-import '@art/app-components'
+// 显式注册离线 Iconify 图标集（独立子路径，避免仅为副作用加载整个组件库）
+import '@art/app-components/iconify'
 import { bootstrapApp, createRemoteRouteSources } from '@art/app-base'
 import { staticRoutes } from './routes/static'
 import { asyncRoutes as localAsyncRoutes } from './routes/local-async'

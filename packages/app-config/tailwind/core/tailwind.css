@@ -7,10 +7,8 @@
  * 故手动注册宿主/远程/共享包的源码目录（路径相对本文件）。
  */
 @source '../../../../apps/app-main/src';
-@source '../../../../apps/app-system/src/**/*.vue';
-@source '../../../../apps/app-system/src/**/*.ts';
-@source '../../../../packages/app-components/src/**/*.vue';
-@source '../../../../packages/app-components/src/**/*.ts';
+@source '../../../../apps/app-system/src';
+@source '../../../../packages/app-components/src';
 @source '../../../../packages/app-core/src';
 @source '../../../../packages/app-utils/src';
 

@@ -6,8 +6,8 @@ import 'element-plus/dist/index.css'
 import type { RouteRecordRaw } from 'vue-router'
 import { bootstrapApp } from '@art/app-base'
 import { RouteName } from '@art/app-utils'
-// 注册离线 Iconify 图标集（UI 层副作用，从 app-utils 剥离）
-import '@art/app-components'
+// 显式注册离线 Iconify 图标集（独立子路径，避免仅为副作用加载整个组件库）
+import '@art/app-components/iconify'
 import App from './App.vue'
 import { systemRoutes } from './routes'
 import '@styles/core/tailwind.css'

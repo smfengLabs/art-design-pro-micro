@@ -78,6 +78,44 @@ function injectAllCssLinks(base: string): Plugin {
   }
 }
 
+/**
+ * [MF 适配] 远端 chunk 样式随模块注入宿主
+ *
+ * 远端构建会把组件 scoped CSS 抽成独立文件，并只在远端自己的 index.html 中引用。
+ * 宿主通过 Module Federation 只加载远端 JS，不会读取远端 index.html，导致远端页面
+ * 的组件样式（如 ArtTableHeader 的按钮尺寸/间距）在基座中丢失。
+ *
+ * 这里为每个含 CSS 的远端 chunk 追加运行时 <link> 注入：以 chunk 自身 URL 解析
+ * CSS 绝对地址，因此独立域名部署与本地预览都能命中；standalone 的 index.html
+ * 已引用的样式会按 href 去重，不会重复加载。
+ */
+function injectChunkCssRuntime(): Plugin {
+  return {
+    name: 'art:mf-chunk-css-runtime',
+    apply: 'build',
+    generateBundle(_options, bundle) {
+      for (const [fileName, output] of Object.entries(bundle)) {
+        if (output.type !== 'chunk') continue
+
+        const cssFiles = [...(output.viteMetadata?.importedCss ?? [])]
+        if (cssFiles.length === 0) continue
+
+        const hrefs = cssFiles.map((cssFile) => {
+          const relative = path.posix.relative(path.posix.dirname(fileName), cssFile)
+          return relative.startsWith('.') ? relative : `./${relative}`
+        })
+
+        output.code +=
+          `\n;(()=>{const hrefs=${JSON.stringify(hrefs)};` +
+          `for(const href of hrefs){const url=new URL(href,import.meta.url).href;` +
+          `if(![...document.querySelectorAll('link[rel="stylesheet"]')].some((link)=>link.href===url)){` +
+          `const link=document.createElement('link');link.rel='stylesheet';link.crossOrigin='';` +
+          `link.href=url;document.head.appendChild(link)}}})();`
+      }
+    }
+  }
+}
+
 /** app 根目录（vite 以 app 目录为 cwd 运行） */
 const rootDir = process.cwd()
 
@@ -257,6 +295,8 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
         threshold: 10240,
         deleteOriginFile: false
       }),
+      // 远端样式必须由 JS 带入宿主（standalone 已由 index.html 全量加载）
+      ...(kind === 'remote' ? [injectChunkCssRuntime()] : []),
       injectAllCssLinks(env.VITE_BASE_URL || '/')
     ],
     optimizeDeps: {

@@ -131,6 +131,8 @@
   import { useI18n } from 'vue-i18n'
   import type { ColumnOption } from '@art/app-utils'
   import { ElScrollbar } from 'element-plus'
+  // 显式引入，确保走统一的 Iconify 解析与离线图标注册链路
+  import ArtSvgIcon from '../../base/art-svg-icon/index.vue'
 
   defineOptions({ name: 'ArtTableHeader' })
 

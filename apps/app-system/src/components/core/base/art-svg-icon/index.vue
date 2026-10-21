@@ -5,6 +5,9 @@
 
 <script setup lang="ts">
   import { Icon } from '@iconify/vue/offline'
+  // 远端组件在宿主中执行时不会加载 app-system 的 main.ts，必须在组件侧
+  // 注册离线图标集，避免图标数据缺失退化为空白/文本。
+  import '@art/app-components/iconify'
 
   defineOptions({ name: 'ArtSvgIcon', inheritAttrs: false })
 
