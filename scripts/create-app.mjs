@@ -8,9 +8,10 @@
  * 流程：
  *   1. 复制 apps/app-system 为 apps/<name>，并清理构建/依赖缓存
  *   2. 替换包名、环境变量、路由前缀、RouteName 枚举、MF 名称等应用身份
- *   3. 校验模板直接挂载公共 ArtUnifiedLogin，禁止再生成应用级登录页
- *   4. 向 packages/app-config/src/vite/remotes.ts 追加 dev/prod 注册项
- *   5. 扩展 packages/app-utils/src/enums/routeName.ts，保证生成应用类型检查通过
+ *   3. 剥离模板中的系统业务代码，生成只保留欢迎页的纯净骨架
+ *   4. 校验模板直接挂载公共 ArtUnifiedLogin，禁止再生成应用级登录页
+ *   5. 向 packages/app-config/src/vite/remotes.ts 追加 dev/prod 注册项
+ *   6. 扩展 packages/app-utils/src/enums/routeName.ts，保证生成应用类型检查通过
  *
  * 主应用 app-main 通过 createRemoteRouteSources(__MF_REMOTE_REGISTRY__) 自动消费
  * remotes 注册表，因此无需在 main.ts 中重复维护路由源列表。
@@ -40,6 +41,16 @@ const CACHE_DIRS = new Set([
 
 /** 需要做应用身份替换的文本文件扩展名 */
 const TEXT_EXTENSIONS = new Set(['.ts', '.vue', '.json', '.html', '.scss', '.css', '.md', '.txt'])
+
+/** app-system 中仅供系统业务使用的文件/目录，生成新应用时物理剥离 */
+const SYSTEM_BUSINESS_PATHS = [
+  'src/views/system',
+  'src/api/system-manage.ts',
+  'src/mock',
+  'src/components',
+  'src/assets/images/avatar',
+  'src/assets/images/user'
+]
 
 function fail(message) {
   throw new Error(message)
@@ -180,6 +191,349 @@ function replaceInFiles(files, transform) {
     const before = read(file)
     const after = transform(before)
     if (after !== before) write(file, after)
+  }
+}
+
+/** 删除模板复制过来的系统业务代码，避免新应用携带 app-system 的业务包袱 */
+function stripSystemBusiness(targetDir) {
+  for (const relativePath of SYSTEM_BUSINESS_PATHS) {
+    const absolutePath = path.join(targetDir, relativePath)
+    if (!fs.existsSync(absolutePath)) continue
+    fs.rmSync(absolutePath, { recursive: true, force: true })
+  }
+
+  const apiDir = path.join(targetDir, 'src/api')
+  if (fs.existsSync(apiDir) && fs.readdirSync(apiDir).length === 0) {
+    fs.rmdirSync(apiDir)
+  }
+}
+
+/** 清理自动生成的组件声明中指向已删除本地组件的条目 */
+function pruneStaleComponentTypes(targetDir) {
+  const componentsTypeFile = path.join(targetDir, 'src/types/import/components.d.ts')
+  if (!fs.existsSync(componentsTypeFile)) return
+
+  const source = read(componentsTypeFile)
+  const updated = source.replace(
+    /^[ \t]*\w+:\s*typeof import\('\.\/\.\.\/\.\.\/components\/[^']+'\)\[[^\]]+\]\r?\n/gm,
+    ''
+  )
+
+  if (updated !== source) write(componentsTypeFile, updated)
+}
+
+/** 生成纯净欢迎页：纯展示、零业务依赖，开箱即可作为业务开发起点 */
+function buildHomePage(displayName, componentName) {
+  return `<!-- 欢迎页：脚手架生成的纯净业务起点 -->
+<template>
+  <div class="home-page">
+    <div class="home-glow home-glow--primary"></div>
+    <div class="home-glow home-glow--secondary"></div>
+
+    <section class="home-card">
+      <div class="home-icons" aria-hidden="true">
+        <span class="home-icon home-icon--violet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09Z" />
+            <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2Z" />
+            <path d="M9 12H4l3-5h5M12 15v5l5-3v-5" />
+          </svg>
+        </span>
+        <span class="home-icon home-icon--blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.9 5.1a2 2 0 0 1-1.2 1.2L4 11.2l4.9 1.9a2 2 0 0 1 1.2 1.2L12 19.4l1.9-5.1a2 2 0 0 1 1.2-1.2l4.9-1.9-4.9-1.9a2 2 0 0 1-1.2-1.2L12 3Z" />
+            <path d="M5 3v4M3 5h4M19 17v4M17 19h4" />
+          </svg>
+        </span>
+        <span class="home-icon home-icon--cyan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m8 9-4 3 4 3M16 9l4 3-4 3M14 5l-4 14" />
+          </svg>
+        </span>
+      </div>
+
+      <p class="home-kicker">ART DESIGN PRO · STARTER</p>
+      <h1 class="home-title">欢迎使用 <span>{{ appName }}</span>！</h1>
+      <p class="home-desc">当前是一个纯净的子应用模板，请在此处开发您的业务逻辑。</p>
+
+      <div class="home-tags">
+        <span class="home-tag">布局已接入</span>
+        <span class="home-tag">路由已就绪</span>
+        <span class="home-tag">登录已统一</span>
+      </div>
+
+      <p class="home-hint">从 src/views/home/index.vue 开始你的开发</p>
+    </section>
+  </div>
+</template>
+
+<script setup lang="ts">
+  defineOptions({ name: '${componentName}' })
+
+  const appName = '${displayName}'
+</script>
+
+<style scoped>
+  .home-page {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 100px);
+    padding: 32px;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.16), transparent 32%),
+      radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.14), transparent 30%),
+      var(--art-bg-color, #f6f8fc);
+  }
+
+  .home-glow {
+    position: absolute;
+    width: 360px;
+    height: 360px;
+    border-radius: 999px;
+    filter: blur(70px);
+    opacity: 0.55;
+    pointer-events: none;
+  }
+
+  .home-glow--primary {
+    top: -120px;
+    left: -80px;
+    background: rgba(99, 102, 241, 0.35);
+  }
+
+  .home-glow--secondary {
+    right: -100px;
+    bottom: -140px;
+    background: rgba(14, 165, 233, 0.28);
+  }
+
+  .home-card {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 680px);
+    padding: clamp(32px, 6vw, 64px) clamp(24px, 5vw, 56px);
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.72);
+    border-radius: 28px;
+    background: rgba(255, 255, 255, 0.78);
+    box-shadow: 0 24px 80px rgba(30, 41, 59, 0.12);
+    backdrop-filter: blur(18px);
+  }
+
+  .home-icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 34px;
+  }
+
+  .home-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    color: #fff;
+    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.24);
+    animation: home-float 4.8s ease-in-out infinite;
+  }
+
+  .home-icon svg {
+    width: 27px;
+    height: 27px;
+  }
+
+  .home-icon--violet {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    transform: rotate(-8deg);
+  }
+
+  .home-icon--blue {
+    background: linear-gradient(135deg, #38bdf8, #2563eb);
+    animation-delay: 0.35s;
+  }
+
+  .home-icon--cyan {
+    background: linear-gradient(135deg, #2dd4bf, #0891b2);
+    transform: rotate(8deg);
+    animation-delay: 0.7s;
+  }
+
+  .home-kicker {
+    margin: 0 0 14px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    color: #6366f1;
+  }
+
+  .home-title {
+    margin: 0;
+    font-size: clamp(28px, 4vw, 42px);
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #111827;
+  }
+
+  .home-title span {
+    background: linear-gradient(120deg, #4f46e5, #0891b2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .home-desc {
+    max-width: 480px;
+    margin: 18px auto 0;
+    font-size: 15px;
+    line-height: 1.9;
+    color: #64748b;
+  }
+
+  .home-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 28px;
+  }
+
+  .home-tag {
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #475569;
+    border: 1px solid rgba(99, 102, 241, 0.16);
+    border-radius: 999px;
+    background: rgba(99, 102, 241, 0.07);
+  }
+
+  .home-hint {
+    margin: 30px 0 0;
+    font-size: 12px;
+    color: #94a3b8;
+  }
+
+  :global(.dark) .home-page {
+    background:
+      radial-gradient(circle at 12% 18%, rgba(99, 102, 241, 0.2), transparent 32%),
+      radial-gradient(circle at 88% 82%, rgba(6, 182, 212, 0.16), transparent 30%),
+      #0b1020;
+  }
+
+  :global(.dark) .home-card {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(17, 24, 39, 0.78);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.32);
+  }
+
+  :global(.dark) .home-title {
+    color: #f8fafc;
+  }
+
+  :global(.dark) .home-desc {
+    color: #94a3b8;
+  }
+
+  :global(.dark) .home-tag {
+    color: #cbd5e1;
+    border-color: rgba(129, 140, 248, 0.2);
+    background: rgba(129, 140, 248, 0.12);
+  }
+
+  :global(.dark) .home-hint {
+    color: #64748b;
+  }
+
+  @keyframes home-float {
+    0%,
+    100% {
+      translate: 0 0;
+    }
+    50% {
+      translate: 0 -6px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .home-page {
+      padding: 20px;
+    }
+
+    .home-card {
+      padding: 36px 22px;
+    }
+
+    .home-icons {
+      margin-bottom: 26px;
+    }
+
+    .home-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+    }
+  }
+</style>
+`
+}
+
+/** 重写路由：布局根路由 + 唯一 home 子路由 */
+function buildHomeRoutes({ routeVariable, routeBase, routePrefix, displayName }) {
+  return `// ${displayName} 业务路由：纯净骨架，仅保留首页
+import type { RouteRecordRaw } from 'vue-router'
+import { RouteName } from '@art/app-utils'
+
+export const ${routeVariable}: RouteRecordRaw[] = [
+  {
+    path: '${routeBase}',
+    name: RouteName.${routePrefix},
+    component: () => import('@art/app-components/layouts'),
+    redirect: '${routeBase}/home',
+    meta: {
+      title: '${displayName}',
+      icon: 'ri:home-4-line',
+      collapseSingleChild: true
+    },
+    children: [
+      {
+        path: 'home',
+        name: RouteName.${routePrefix}_HOME,
+        component: () => import('./views/home/index.vue'),
+        meta: {
+          title: 'menus.home.title',
+          icon: 'ri:home-4-line',
+          keepAlive: true
+        }
+      }
+    ]
+  }
+]
+
+export default ${routeVariable}
+`
+}
+
+/** 将生成应用的入口重定向和开发环境 404 回跳统一指向欢迎页 */
+function updateGeneratedShell(targetDir, routeBase) {
+  const files = [path.join(targetDir, 'src/main.ts'), path.join(targetDir, 'src/dev/NotFound.vue')]
+
+  for (const file of files) {
+    if (!fs.existsSync(file)) continue
+    const before = read(file)
+    const after = before.replaceAll('/system/user', `${routeBase}/home`)
+    if (after !== before) write(file, after)
+  }
+
+  const mainSource = read(path.join(targetDir, 'src/main.ts'))
+  if (!mainSource.includes(`${routeBase}/home`)) {
+    fail(`生成应用的 src/main.ts 未指向欢迎页：${routeBase}/home`)
   }
 }
 
@@ -351,6 +705,15 @@ function main() {
       }
     }
 
+    // 剥离 app-system 的业务代码，只保留可运行的纯净骨架
+    stripSystemBusiness(targetDir)
+    pruneStaleComponentTypes(targetDir)
+
+    // 新应用自带一个纯展示欢迎页，作为业务开发的起点
+    const homePageFile = path.join(targetDir, 'src/views/home/index.vue')
+    fs.mkdirSync(path.dirname(homePageFile), { recursive: true })
+    write(homePageFile, buildHomePage(displayName, `${pascalName}Home`))
+
     // 登录页统一由公共包提供：模板不得再生成应用级登录页，main.ts 必须直接挂载 ArtUnifiedLogin
     const loginDir = path.join(targetDir, 'src/views/auth/login')
     if (fs.existsSync(loginDir)) {
@@ -392,22 +755,19 @@ function main() {
     }
     write(htmlFile, htmlSource.replace(/<title>.*?<\/title>/, `<title>Art Design Pro - ${displayName}</title>`))
 
-    // 业务路由：变量名、RouteName 前缀、绝对路径
+    // 纯净业务路由：布局根路由 + 唯一 home 子路由
     const routesFile = path.join(targetDir, 'src/routes.ts')
-    const routesSource = read(routesFile)
-    const renamedRoutes = routesSource
-      .replaceAll('systemRoutes', routeVariable)
-      .replace(/RouteName\.SYSTEM(?:_[A-Z0-9_]+)?(?![A-Z0-9_])/g, (matched) => {
-        return `RouteName.${routePrefix}${matched.slice('RouteName.SYSTEM'.length)}`
-      })
-    write(routesFile, renamedRoutes)
+    write(routesFile, buildHomeRoutes({ routeVariable, routeBase, routePrefix, displayName }))
+
+    // 入口 / 开发环境 404 的业务回跳统一指向欢迎页
+    updateGeneratedShell(targetDir, routeBase)
 
     // routes.ts / main.ts 中的业务路由变量名同步为 demoRoutes / articleRoutes...
     replaceInFiles(collectTextFiles(targetDir), (content) =>
       content.replaceAll('systemRoutes', routeVariable)
     )
 
-    // 只替换「引号后紧跟 /system」的路由字面量，避免误伤 ./views/system 导入路径
+    // 兜底替换可能残留的 /system 路由字面量，避免生成应用继续指向已剥离的页面
     replaceInFiles(collectTextFiles(targetDir), (content) =>
       content.replace(/(['"`])\/system(?=\/|['"`])/g, (_matched, quote) => `${quote}${routeBase}`)
     )

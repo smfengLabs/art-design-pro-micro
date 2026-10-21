@@ -49,6 +49,8 @@ export interface RouteMeta extends Record<string | number | symbol, unknown> {
   }>
   /** 是否为一级菜单 */
   isFirstLevel?: boolean
+  /** 仅有一个子菜单时是否在侧边栏折叠父级目录 */
+  collapseSingleChild?: boolean
   /** 角色权限 */
   roles?: string[]
   /** 是否固定标签页 */

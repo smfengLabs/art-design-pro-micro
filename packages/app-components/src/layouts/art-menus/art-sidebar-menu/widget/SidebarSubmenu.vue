@@ -101,7 +101,20 @@
 
   const { menuOpen } = storeToRefs(settingStore)
 
-  const filteredMenuItems = computed(() => filterRoutes(props.list))
+  const filteredMenuItems = computed(() => {
+    const items = filterRoutes(props.list)
+
+    return items.flatMap((item) => {
+      const children = item.children ?? []
+
+      // 纯布局目录只有一个可见子菜单时，直接展示子菜单，避免出现“首页 / 首页”这类重复层级
+      if (item.meta.collapseSingleChild && children.length === 1) {
+        return [{ ...children[0], meta: { ...children[0].meta, isFirstLevel: true } }]
+      }
+
+      return [item]
+    })
+  })
 
   const goPage = (item: AppRouteRecord): void => {
     closeMenu()

@@ -212,6 +212,9 @@
     "login": {
       "title": "登录"
     },
+    "home": {
+      "title": "首页"
+    },
     "register": {
       "title": "注册"
     },
