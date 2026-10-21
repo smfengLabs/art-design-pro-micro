@@ -45,7 +45,7 @@ Token 只从环境变量读取，不会打印：
 未配置 Token 时，脚本仍会完成双端推送，并输出手动创建 PR 的对比链接。可选参数：
 
 ```bash
-pnpm pr:auto -- --base main --title "feat: xxx" --no-merge
+pnpm pr:auto --base main --title "feat: xxx" --no-merge
 ```
 
 向 `main` 提交 Pull Request 后，GitHub Actions 会执行 `.github/workflows/ci.yml`：

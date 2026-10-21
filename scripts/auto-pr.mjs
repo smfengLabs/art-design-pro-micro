@@ -4,7 +4,7 @@
  *
  * 用法：
  *   pnpm pr:auto
- *   pnpm pr:auto -- --base main --title "feat: xxx" --no-merge
+ *   pnpm pr:auto --base main --title "feat: xxx" --no-merge
  *
  * Token（仅从环境变量读取，绝不打印）：
  *   GitHub: GITHUB_TOKEN 或 GH_TOKEN
@@ -31,7 +31,7 @@ function fail(message) {
 
 function printUsage() {
   console.log(`
-用法: pnpm pr:auto [-- 选项]
+用法: pnpm pr:auto [选项]
 
 选项:
   --base <branch>          PR 目标分支，默认 ${DEFAULT_BASE}
@@ -237,6 +237,11 @@ function buildPrBody(base, head) {
 }
 
 function manualLink(host, repoInfo, base, head) {
+  if (host === 'gitee.com') {
+    const { owner, repo } = repoInfo
+    return `https://gitee.com/${owner}/${repo}/pull/new/${owner}:${head}...${owner}:${base}`
+  }
+
   return `https://${host}/${repoInfo.owner}/${repoInfo.repo}/compare/${base}...${head}?expand=1`
 }
 
@@ -327,7 +332,7 @@ async function mergeGiteePr({ repoInfo, number, token }) {
   })
 }
 
-async function handlePlatform({ platform, host, remote, tokenNames, ensurePr, mergePr }) {
+async function handlePlatform({ platform, host, remote, tokenNames, head, ensurePr, mergePr }) {
   const repoUrl = getRemoteUrl(remote)
   const repoInfo = parseRepo(repoUrl, host)
 
@@ -341,7 +346,7 @@ async function handlePlatform({ platform, host, remote, tokenNames, ensurePr, me
   const token = readToken(tokenNames)
   if (!token) {
     console.log(`  未配置 ${tokenNames.join(' / ')}，跳过 API 创建与合并。`)
-    console.log(`  手动创建 PR: ${manualLink(host, repoInfo, args.base, branch)}`)
+    console.log(`  手动创建 PR: ${manualLink(host, repoInfo, args.base, head)}`)
     return { platform, status: 'no-token' }
   }
 
@@ -349,7 +354,7 @@ async function handlePlatform({ platform, host, remote, tokenNames, ensurePr, me
     const pr = await ensurePr({
       repoInfo,
       base: args.base,
-      head: branch,
+      head,
       title,
       body,
       token
@@ -372,7 +377,7 @@ async function handlePlatform({ platform, host, remote, tokenNames, ensurePr, me
     }
   } catch (error) {
     console.log(`  API 操作失败：${error instanceof Error ? error.message : String(error)}`)
-    console.log(`  手动创建 PR: ${manualLink(host, repoInfo, args.base, branch)}`)
+    console.log(`  手动创建 PR: ${manualLink(host, repoInfo, args.base, head)}`)
     return { platform, status: 'api-failed' }
   }
 }
@@ -423,6 +428,7 @@ async function main() {
       host: 'github.com',
       remote: 'origin',
       tokenNames: ['GITHUB_TOKEN', 'GH_TOKEN'],
+      head: branch,
       ensurePr: ensureGithubPr,
       mergePr: mergeGithubPr
     })
@@ -434,6 +440,7 @@ async function main() {
       host: 'gitee.com',
       remote: 'gitee',
       tokenNames: ['GITEE_TOKEN', 'GITEE_ACCESS_TOKEN'],
+      head: branch,
       ensurePr: ensureGiteePr,
       mergePr: mergeGiteePr
     })
