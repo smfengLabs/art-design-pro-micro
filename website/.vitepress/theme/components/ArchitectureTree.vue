@@ -25,9 +25,15 @@ const tree: TreeLine[] = [
     kind: 'app'
   },
   {
-    branch: '│  └─ ',
+    branch: '│  ├─ ',
     name: 'app-system/',
     comment: 'remote · system',
+    kind: 'app'
+  },
+  {
+    branch: '│  └─ ',
+    name: 'app-example/',
+    comment: 'remote · 组件与模板示例',
     kind: 'app'
   },
   {
@@ -71,6 +77,30 @@ const tree: TreeLine[] = [
     name: 'app-config/',
     comment: 'vite · mf 2.0',
     kind: 'package'
+  },
+  {
+    branch: '├─ ',
+    name: 'templates/',
+    comment: 'app:create 复制源',
+    kind: 'folder'
+  },
+  {
+    branch: '│  └─ ',
+    name: 'app-template/',
+    comment: 'empty shell',
+    kind: 'app'
+  },
+  {
+    branch: '├─ ',
+    name: 'scripts/',
+    comment: 'CLI 与自动 PR',
+    kind: 'folder'
+  },
+  {
+    branch: '├─ ',
+    name: 'website/',
+    comment: 'VitePress 官网文档',
+    kind: 'folder'
   },
   {
     branch: '└─ ',

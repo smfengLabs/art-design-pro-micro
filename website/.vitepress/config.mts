@@ -39,26 +39,24 @@ export default defineConfig({
         link: '/docs/guide/getting-started',
         activeMatch: '/docs/'
       },
+      { text: 'CLI 脚手架', link: '/docs/guide/cli' },
       { text: '架构', link: '/docs/architecture/' },
-      { text: 'FAQ', link: '/docs/faq' }
+      { text: 'FAQ', link: '/docs/faq' },
+      { text: '在线演示', link: siteConfig.demo }
     ],
     sidebar: {
       '/docs/': [
         {
-          text: '开始',
+          text: '入门',
           items: [
-            { text: '快速开始', link: '/docs/guide/getting-started' }
+            { text: '快速上手', link: '/docs/guide/getting-started' },
+            { text: 'CLI 脚手架使用', link: '/docs/guide/cli' }
           ]
         },
         {
           text: '架构',
           items: [
-            { text: '架构设计', link: '/docs/architecture/' }
-          ]
-        },
-        {
-          text: '接入',
-          items: [
+            { text: '核心架构说明', link: '/docs/architecture/' },
             { text: '微应用接入指南', link: '/docs/guide/micro-app' }
           ]
         },
