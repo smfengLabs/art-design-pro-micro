@@ -520,30 +520,6 @@ importers:
         specifier: 'catalog:'
         version: 9.14.4(vue@3.5.44(typescript@5.9.3))
     devDependencies:
-      '@iconify-json/fluent':
-        specifier: ^1.2.60
-        version: 1.2.60
-      '@iconify-json/icon-park-outline':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/iconamoon':
-        specifier: ^1.2.2
-        version: 1.2.2
-      '@iconify-json/ix':
-        specifier: ^1.2.14
-        version: 1.2.14
-      '@iconify-json/ri':
-        specifier: ^1.2.10
-        version: 1.2.10
-      '@iconify-json/solar':
-        specifier: ^1.2.13
-        version: 1.2.13
-      '@iconify-json/system-uicons':
-        specifier: ^1.2.4
-        version: 1.2.4
-      '@iconify-json/vaadin':
-        specifier: ^1.2.1
-        version: 1.2.1
       vue:
         specifier: 'catalog:'
         version: 3.5.44(typescript@5.9.3)
@@ -553,6 +529,9 @@ importers:
 
   packages/app-config:
     dependencies:
+      '@iconify/json':
+        specifier: ^2.2.545
+        version: 2.2.545
       '@tailwindcss/vite':
         specifier: ^4.1.14
         version: 4.3.3(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2)(yaml@2.9.1))
@@ -571,6 +550,9 @@ importers:
       unplugin-element-plus:
         specifier: ^0.10.0
         version: 0.10.0
+      unplugin-icons:
+        specifier: ^24.0.0
+        version: 24.0.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(rollup@4.64.7)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2)(yaml@2.9.1))
       unplugin-vue-components:
         specifier: ^29.1.0
         version: 29.2.0(@babel/parser@7.29.9)(supports-color@7.2.0)(vue@3.5.44(typescript@5.9.3))
@@ -687,6 +669,12 @@ importers:
         version: 4.6.4(vue@3.5.44(typescript@5.9.3))
 
 packages:
+
+  '@antfu/install-pkg@1.1.0':
+    resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
+
+  '@antfu/install-pkg@2.1.0':
+    resolution: {integrity: sha512-sdg9NxU3zR4Mnawfbc/x6GB5Wf17WYud5qOuEuxXjaKpYpMkISSJEjItGebXJ2bQ4DIcly4NYH23mtkGJjvKUw==}
 
   '@babel/code-frame@7.29.7':
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
@@ -1075,32 +1063,14 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@iconify-json/fluent@1.2.60':
-    resolution: {integrity: sha512-+Tc4TcygQpzm2QNQ3v1/p5V+3OWczkJzKMqUw01pzGiIYLD85uhWPY4GaERkU0+J9J9ZqGQEWKSOk/qPL2ofsw==}
-
-  '@iconify-json/icon-park-outline@1.2.4':
-    resolution: {integrity: sha512-NyZxXe2gD2TbTOyoRRMdtEJhr6i2KQCdDlYYoOn5oZLndQjwpIhw79hzeFhXvP38/o40D3gQ+l+IaSJgbB+0TQ==}
-
-  '@iconify-json/iconamoon@1.2.2':
-    resolution: {integrity: sha512-Xn7YeSDniPgutPr0qil/iQwQelq975OYQ/i2twGjcK4DjGOXBrBC+6q45WtVuQbFfXzM7bgijv4yVnxy0OqUdQ==}
-
-  '@iconify-json/ix@1.2.14':
-    resolution: {integrity: sha512-cAOb00fbDsRPNG9udWo9jSzmaycRgcLIeHJ9d5mu7G5oAyo/siZRxlryweptV/YVs0LglCUdw7aCIsGETbAp2g==}
-
-  '@iconify-json/ri@1.2.10':
-    resolution: {integrity: sha512-WWMhoncVVM+Xmu9T5fgu2lhYRrKTEWhKk3Com0KiM111EeEsRLiASjpsFKnC/SrB6covhUp95r2mH8tGxhgd5Q==}
-
-  '@iconify-json/solar@1.2.13':
-    resolution: {integrity: sha512-/ZWb6xRib6pzxD/qTkKWYhuzSU2yu0bY+EN0spgtz1NM3d5f4eYueQZpL3PfCdsg5uVfm4Ldtt3cAyQL+YI8/Q==}
-
-  '@iconify-json/system-uicons@1.2.4':
-    resolution: {integrity: sha512-9WB9dmEm+TRCXI5Ml2IY8zQAPZES8euKxY0VOaf8D6E6ZaEr7ztO6DChMlGg7qWECs3m3FjFUqNgBx8ZpB+djw==}
-
-  '@iconify-json/vaadin@1.2.1':
-    resolution: {integrity: sha512-dT2PWQp5tPxqJsWCc7qXDRVMcGeOf3e+Hys1dcMQrfVVnaRgXxYXgA0Wj98N5QjZMIf9+/iqAKvY1Yuk484hEg==}
+  '@iconify/json@2.2.545':
+    resolution: {integrity: sha512-Ucao184M47kRtBqmd47a5TWcrFC9zdGLACcpJonLwnCdj5aeiKAxsj0i75hpZffWDqi4sUXJwpIKCJSBdRHXXw==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+
+  '@iconify/utils@3.1.7':
+    resolution: {integrity: sha512-JZHlwdID+dy+lTgbYC8NEC4zeugqeYsc6jewvzb4c58kHauJn+X7rNwQjxz5p2qSjqaEeQoLkCIQ9v/H4PK0/w==}
 
   '@iconify/vue@5.0.3':
     resolution: {integrity: sha512-e9x6QZe2/HyeHUog0jzZJSZts7m/YntPYp/p4OqtZEXpHznxWnQpcX30YpuaUH43h69l3YeR1FCJ8V1t3qd7qA==}
@@ -2959,6 +2929,26 @@ packages:
     resolution: {integrity: sha512-oRSW0x6U58xBOWKy8TcoVZNA8ElIpfp3TUJRLQI6ey/E9PpjHl9/deeTAZNt8D57Li4OA4pCJtM6p2cb4Ff4ZA==}
     engines: {node: '>=18.12.0'}
 
+  unplugin-icons@24.0.0:
+    resolution: {integrity: sha512-wV6c7I0PtiIP8KIU7Z1Ukyc2uzgY9ind3RXNu7j63L9qTWDn7CzLnW9FD57DKbfGpWKQv3qyV2PCtBG8Y5Llcg==}
+    peerDependencies:
+      '@svgr/core': '>=7.0.0'
+      '@svgx/core': ^1.0.1
+      '@vue/compiler-sfc': ^3.0.2
+      '@vue/compiler-vapor': ^3.6.0-rc.5
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0
+    peerDependenciesMeta:
+      '@svgr/core':
+        optional: true
+      '@svgx/core':
+        optional: true
+      '@vue/compiler-sfc':
+        optional: true
+      '@vue/compiler-vapor':
+        optional: true
+      svelte:
+        optional: true
+
   unplugin-utils@0.2.5:
     resolution: {integrity: sha512-gwXJnPRewT4rT7sBi/IvxKTjsms7jX7QIDLOClApuZwR49SXbrB1z2NLUZ+vDHyqCj/n58OzRRqaW+B8OZi8vg==}
     engines: {node: '>=18.12.0'}
@@ -2983,6 +2973,42 @@ packages:
   unplugin@2.3.11:
     resolution: {integrity: sha512-5uKD0nqiYVzlmCRs01Fhs2BdkEgBS3SAVP6ndrBsuK42iC2+JHyxM05Rm9G8+5mkmRtzMZGY8Ct5+mliZxU/Ww==}
     engines: {node: '>=18.12.0'}
+
+  unplugin@3.4.0:
+    resolution: {integrity: sha512-9skdIFlCsPdFV7wUfZxNsFInlW+7nJmGu2gkTu0OUhF56aXGsHab9x52/QhdJ4lC7ZDPWTxbiC4ANqVlsuaW3w==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    peerDependencies:
+      '@farmfe/core': '*'
+      '@rsbuild/core': '*'
+      '@rspack/core': '*'
+      bun-types-no-globals: '*'
+      esbuild: '*'
+      rolldown: '*'
+      rollup: '*'
+      unloader: '*'
+      vite: '*'
+      webpack: '*'
+    peerDependenciesMeta:
+      '@farmfe/core':
+        optional: true
+      '@rsbuild/core':
+        optional: true
+      '@rspack/core':
+        optional: true
+      bun-types-no-globals:
+        optional: true
+      esbuild:
+        optional: true
+      rolldown:
+        optional: true
+      rollup:
+        optional: true
+      unloader:
+        optional: true
+      vite:
+        optional: true
+      webpack:
+        optional: true
 
   update-browserslist-db@1.3.4:
     resolution: {integrity: sha512-t8wonIOdQyOjtPd2VktlBu6QjTVTks6v8bSi7kd0r2Vll8TK1JYDZtRRdbmCHOAMphkZgrzK+L+vXK4pyZ8t4A==}
@@ -3189,6 +3215,16 @@ packages:
     resolution: {integrity: sha512-oEGMDB6pOP2S6OwRR4PdVv610zrjnA3Bh+JnSG12fYJlBKjtNAoEb5fSUoCOOINlH96I2fU38/A2UpRKs67xYQ==}
 
 snapshots:
+
+  '@antfu/install-pkg@1.1.0':
+    dependencies:
+      package-manager-detector: 1.9.0
+      tinyexec: 1.3.1
+
+  '@antfu/install-pkg@2.1.0':
+    dependencies:
+      package-manager-detector: 1.9.0
+      tinyexec: 1.3.1
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -3594,39 +3630,18 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@iconify-json/fluent@1.2.60':
+  '@iconify/json@2.2.545':
     dependencies:
       '@iconify/types': 2.0.0
-
-  '@iconify-json/icon-park-outline@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/iconamoon@1.2.2':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/ix@1.2.14':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/ri@1.2.10':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/solar@1.2.13':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/system-uicons@1.2.4':
-    dependencies:
-      '@iconify/types': 2.0.0
-
-  '@iconify-json/vaadin@1.2.1':
-    dependencies:
-      '@iconify/types': 2.0.0
+      pathe: 2.0.3
 
   '@iconify/types@2.0.0': {}
+
+  '@iconify/utils@3.1.7':
+    dependencies:
+      '@antfu/install-pkg': 2.1.0
+      '@iconify/types': 2.0.0
+      import-meta-resolve: 4.2.0
 
   '@iconify/vue@5.0.3(vue@3.5.44(typescript@5.9.3))':
     dependencies:
@@ -5396,6 +5411,27 @@ snapshots:
       unplugin: 2.3.11
       unplugin-utils: 0.2.5
 
+  unplugin-icons@24.0.0(@vue/compiler-sfc@3.5.44)(esbuild@0.28.2)(rollup@4.64.7)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2)(yaml@2.9.1)):
+    dependencies:
+      '@antfu/install-pkg': 1.1.0
+      '@iconify/utils': 3.1.7
+      local-pkg: 1.2.1
+      obug: 2.2.1
+      unplugin: 3.4.0(esbuild@0.28.2)(rollup@4.64.7)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2)(yaml@2.9.1))
+    optionalDependencies:
+      '@vue/compiler-sfc': 3.5.44
+    transitivePeerDependencies:
+      - '@farmfe/core'
+      - '@rsbuild/core'
+      - '@rspack/core'
+      - bun-types-no-globals
+      - esbuild
+      - rolldown
+      - rollup
+      - unloader
+      - vite
+      - webpack
+
   unplugin-utils@0.2.5:
     dependencies:
       pathe: 2.0.3
@@ -5428,6 +5464,16 @@ snapshots:
       acorn: 8.19.0
       picomatch: 4.0.7
       webpack-virtual-modules: 0.6.2
+
+  unplugin@3.4.0(esbuild@0.28.2)(rollup@4.64.7)(vite@7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2)(yaml@2.9.1)):
+    dependencies:
+      '@jridgewell/remapping': 2.3.5
+      picomatch: 4.0.7
+      webpack-virtual-modules: 0.6.2
+    optionalDependencies:
+      esbuild: 0.28.2
+      rollup: 4.64.7
+      vite: 7.3.7(@types/node@24.19.2)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.105.2)(terser@5.51.2)(yaml@2.9.1)
 
   update-browserslist-db@1.3.4(browserslist@4.29.3):
     dependencies:
