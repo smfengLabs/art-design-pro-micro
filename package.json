@@ -8,6 +8,9 @@
     "pnpm": ">=9.5.0"
   },
   "scripts": {
+    "app:create": "node scripts/create-app.mjs",
+    "app:delete": "node scripts/delete-app.mjs",
+    "app:list": "node scripts/list-apps.mjs",
     "dev": "turbo dev",
     "build": "turbo build",
     "clean": "node scripts/clean.mjs",

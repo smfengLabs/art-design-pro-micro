@@ -1,6 +1,6 @@
-# 一键生成子应用（SOP）
+# 微应用生命周期管理（SOP）
 
-本文适用于 v1.1.0 及以上版本。新增子应用统一以 `apps/app-system` 为模板，通过脚本完成复制、重命名、MF 注册和宿主路由接入，避免手工漏改。
+本文适用于已内置 `app:create` / `app:list` / `app:delete` 生命周期命令的版本。新增、查看、删除子应用统一通过脚本完成，避免手工漏改 MF 注册表与路由枚举。
 
 ## 1. 前置条件
 
@@ -8,19 +8,32 @@
 - Node.js >= 20.19.0，pnpm >= 9.5.0。
 - `apps/app-system` 是脚手架模板，请不要直接在模板上开发新业务。
 - 新应用名必须以 `app-` 开头，例如 `app-article`、`app-order-center`。
+- `apps/app-main` 是唯一宿主（基座），不允许删除。
 
-## 2. 生成子应用
+## 2. 命令总览
+
+| 命令                                             | 作用                         |
+| ------------------------------------------------ | ---------------------------- |
+| `pnpm app:create --name <app> --port <port>`     | 创建子应用并自动接入宿主     |
+| `pnpm app:list`                                  | 查看当前 workspace 应用列表  |
+| `pnpm app:delete --name <app>`                   | 删除子应用并清理全部注册信息 |
+
+三条命令等价于直接执行 `node scripts/*.mjs`，推荐使用 `pnpm app:*`，避免记错脚本路径。
+
+## 3. 创建子应用
+
+### 3.1 命令
 
 ```bash
-node scripts/create-app.mjs --name app-article --port 3102
+pnpm app:create --name app-article --port 3102
 ```
 
 参数说明：
 
 | 参数     | 必填 | 说明                                                     |
 | -------- | ---- | -------------------------------------------------------- |
-| `--name` | 是   | 子应用目录名和包名，格式为 `app-<业务>`                 |
-| `--port` | 是   | 独立运行端口，不能与现有应用（3006/3101 等）冲突        |
+| `--name` | 是   | 子应用目录名和包名，格式为 `app-<业务>`                  |
+| `--port` | 是   | 独立运行端口，不能与现有应用（3006/3101 等）冲突         |
 | `--help` | 否   | 查看帮助                                                 |
 
 生成结果示例：
@@ -37,28 +50,93 @@ apps/app-article
     └── routes.ts        # /article 与 RouteName.ARTICLE_*
 ```
 
-脚本会自动完成以下操作：
+### 3.2 自动完成的操作
 
 1. 复制 `apps/app-system` 到 `apps/<name>`，跳过并清理 `node_modules`、`dist`、`.turbo`、`.mf`、`@mf-types` 等缓存。
-2. 更新 `package.json` 包名为 `@art/<name>`。
-3. 更新 `.env` 的 `VITE_APP_CODE`（`app_article`）和 `VITE_PORT`。
-4. 更新 `.env.production` 的子应用部署域名及 `vite.config.ts` 的 MF name。
-5. 更新 `src/routes.ts`：根路径 `/system` → `/article`，`RouteName.SYSTEM_*` → `RouteName.ARTICLE_*`，路由变量 `systemRoutes` → `articleRoutes`。
-6. 更新 `src/main.ts` 的 `appName`、`appCode`、`homePath`、`asyncRouteSource`。
+2. 剥离模板中的系统业务代码，生成只保留欢迎页的纯净骨架。
+3. 更新 `package.json` 包名为 `@art/<name>`。
+4. 更新 `.env` 的 `VITE_APP_CODE`（`app_article`）和 `VITE_PORT`。
+5. 更新 `.env.production` 的子应用部署域名及 `vite.config.ts` 的 MF name。
+6. 更新 `src/routes.ts` 为布局根路由 + 欢迎页，并同步 `src/main.ts`、404 回跳等入口配置。
 7. 更新 `tsconfig.json` 路径别名和 `index.html` 标题。
 8. 向 `packages/app-utils/src/enums/routeName.ts` 追加 `<APP>_*` 枚举。
 9. 向 `packages/app-config/src/vite/remotes.ts` 追加 dev/prod MF 注册项。
 
 命名映射规则：
 
-| 输入                        | 路由前缀     | RouteName 前缀 | 应用编码           | MF 名称        |
-| --------------------------- | ------------ | -------------- | ------------------ | -------------- |
-| `app-article`               | `/article`   | `ARTICLE_*`    | `app_article`      | `app-article`  |
-| `app-order-center`          | `/order-center` | `ORDER_CENTER_*` | `app_order_center` | `app-order-center` |
+| 输入               | 路由前缀       | RouteName 前缀     | 应用编码           | MF 名称        |
+| ------------------ | -------------- | ------------------ | ------------------ | -------------- |
+| `app-article`      | `/article`     | `ARTICLE_*`        | `app_article`      | `app-article`  |
+| `app-order-center` | `/order-center` | `ORDER_CENTER_*`  | `app_order_center` | `app-order-center` |
 
 如果目标目录已存在、包名与其他 workspace 包冲突、端口被占用、应用名不合法或 RouteName 冲突，脚本会直接失败，不会覆盖已有应用。
 
-## 3. 安装依赖并启动
+## 4. 查看应用列表
+
+```bash
+pnpm app:list
+```
+
+输出示例：
+
+```text
+ART Design Pro · 微应用列表
+
+┌─────────────┬──────────────────┬──────┬────────┐
+│ 应用名      │ 包名             │ 端口 │ 类型   │
+├─────────────┼──────────────────┼──────┼────────┤
+│ app-main    │ app-main         │ 3006 │ 基座   │
+│ app-system  │ app-system       │ 3101 │ 子应用 │
+│ app-article │ @art/app-article │ 3108 │ 子应用 │
+└─────────────┴──────────────────┴──────┴────────┘
+
+共 3 个应用：1 个基座，2 个子应用
+app-system 是脚手架模板，app:create 会以它为源生成新子应用。
+```
+
+数据来源：
+
+- 应用名：`apps/` 下的目录名。
+- 包名：应用 `package.json` 的 `name`。
+- 端口：应用 `.env` 的 `VITE_PORT`。
+- 类型：`app-main` 为基座，其余为子应用。
+
+## 5. 删除子应用
+
+### 5.1 命令
+
+```bash
+pnpm app:delete --name app-article
+```
+
+脚本会依次完成：
+
+1. 校验应用名，并拒绝删除 `app-main`（宿主）与 `app-system`（脚手架模板）。
+2. 从 `packages/app-config/src/vite/remotes.ts` 中移除该应用在 **dev 与 prod** 两个数组中的完整注册项。
+3. 从 `packages/app-utils/src/enums/routeName.ts` 中移除该应用的 `<PREFIX>` / `<PREFIX>_*` 枚举及脚手架生成注释。
+4. 物理删除 `apps/<name>` 整个目录。
+5. 输出清理结果，并提示执行 `pnpm install`。
+
+映射示例：`app-article` 对应 `ARTICLE` / `ARTICLE_*`，`app-order-center` 对应 `ORDER_CENTER` / `ORDER_CENTER_*`。
+
+### 5.2 安全边界
+
+- 只接受 `app-<业务>` 格式的应用名，且只能删除 `apps/` 的直接子目录，避免路径穿越。
+- 目标应用不存在或不是目录时直接失败，不会误删其他路径。
+- 若 `remotes.ts` 中存在同别名但格式无法识别的注册项，脚本会中止并且**不会删除目录**，需手动检查后重试。
+- 若注册项或枚举已被手动清理，脚本会提示并继续完成目录删除。
+- 注册表写入或目录删除失败时，会自动回滚两个注册表，避免出现“应用还在、注册信息已丢”的中间态。
+
+### 5.3 删除后
+
+```bash
+pnpm install
+git diff
+```
+
+确认 `remotes.ts` 与 `routeName.ts` 已无该应用残留。若启用了后端菜单模式，还需在服务端同步清理该应用的菜单与 `appCode` 数据；本脚本只负责前端 workspace 与注册表。
+
+## 6. 安装依赖并启动
 
 ```bash
 pnpm install
@@ -70,24 +148,25 @@ pnpm dev
 - 主应用：<http://localhost:3006>
 - 新子应用：<http://localhost:3102>
 - 原有系统应用：<http://localhost:3101>
+- 查看应用列表：`pnpm app:list`
 
 首次生成后务必执行 `pnpm install`，让 pnpm 识别新的 workspace 包。
 
-## 4. 验收新应用
+## 7. 验收新应用
 
-### 4.1 子应用独立运行
+### 7.1 子应用独立运行
 
 1. 打开 <http://localhost:3102>。
 2. 应显示独立登录页。
 3. 使用测试账号 `Super` / `123456` 登录。
-4. 登录后应跳转到 `http://localhost:3102/#/article/user`，用户管理页面正常渲染。
+4. 登录后应跳转到 `http://localhost:3102/#/article/home`，显示脚手架欢迎页。
 5. 浏览器控制台不应出现运行时错误。
 
-### 4.2 主应用聚合
+### 7.2 主应用聚合
 
 1. 打开 <http://localhost:3006> 并登录。
-2. 左侧菜单应出现新应用对应的菜单（模板阶段会显示为“系统管理”）。
-3. 点击新应用下的“用户管理”，地址应变为 `http://localhost:3006/#/article/user`，页面正常渲染。
+2. 左侧菜单应出现新应用对应的菜单（默认使用应用名，例如 `Article`）。
+3. 点击该菜单，地址应变为 `http://localhost:3006/#/article/home`，欢迎页正常渲染。
 
 主应用 `apps/app-main/src/main.ts` 使用下面的方式消费注册表：
 
@@ -95,9 +174,9 @@ pnpm dev
 remoteRouteSources: createRemoteRouteSources(__MF_REMOTE_REGISTRY__)
 ```
 
-因此脚本只需要追加 `remotes.ts` 注册项，**不需要在 main.ts 里逐个维护路由源**。新增子应用后如果主应用已启动，建议刷新或重启主应用 dev server。
+因此脚本只需要维护 `remotes.ts` 注册项，**不需要在 main.ts 里逐个维护路由源**。新增或删除子应用后如果主应用已启动，建议刷新或重启主应用 dev server。
 
-## 5. 上线前检查
+## 8. 上线前检查
 
 脚本按现有约定生成生产地址：
 
@@ -117,13 +196,20 @@ pnpm --filter @art/<app-name> build
 
 将 `apps/<app-name>/dist` 部署到对应域名后，再构建并部署主应用，使主应用产物包含最新 `remotes` 注册表。
 
-## 6. 常见问题
+## 9. 常见问题
 
 ### 3006 左侧菜单没有新应用
 
 - 确认已执行 `pnpm install`。
 - 确认 `packages/app-config/src/vite/remotes.ts` 中存在该应用的 dev 注册项。
 - 重启主应用 dev server，确保 Vite 重新读取注册表。
+
+### 删除后 3006 仍显示旧应用菜单
+
+- 确认已重启主应用 dev server。
+- 执行 `pnpm app:list`，确认 `apps/<name>` 已不存在。
+- 检查 `git diff`，确认 `remotes.ts` 中没有该应用残留。
+- 若使用后端菜单模式，清理服务端菜单数据。
 
 ### 3006 打开子应用页面报错或超时
 
@@ -139,13 +225,17 @@ pnpm --filter @art/<app-name> build
 
 ### 端口冲突
 
-脚本启动前会检查现有应用的 `.env` 端口。直接更换 `--port` 重新生成即可；不要手工修改生成应用的端口后忘记同步 `remotes.ts`。
+创建脚本会检查现有应用的 `.env` 端口。直接更换 `--port` 重新生成即可；不要手工修改生成应用的端口后忘记同步 `remotes.ts`。
 
-## 7. 后续开发建议
+### 删除脚本提示未找到注册项或枚举
 
-生成应用默认复用 `app-system` 的用户/角色/菜单示例页面。正式开发时：
+说明该应用可能由旧版本脚本生成，或已被手动清理。确认 `git diff` 与 `app:list` 结果后即可继续；如果 `remotes.ts` 中仍有同别名配置但格式无法识别，脚本会中止并提示手动清理。
 
-1. 删除不需要的示例页面和路由。
-2. 将 `src/views/system` 重命名为业务目录，并同步 `src/routes.ts` 的组件导入。
-3. 保留 `routes.ts` 的 `/article` 根路径和 `RouteName.ARTICLE_*` 命名约定。
+## 10. 后续开发建议
+
+生成应用默认只有 `src/views/home/index.vue` 欢迎页，正式开发时：
+
+1. 在 `src/views` 下创建业务目录与页面。
+2. 在 `src/routes.ts` 中补充业务路由，保留 `/article` 根路径和 `RouteName.ARTICLE_*` 命名约定。
+3. 如需新增接口，按现有分层放入应用自身的 `src/api`。
 4. 在子应用内独立调试通过后，再回到主应用验证聚合效果。
