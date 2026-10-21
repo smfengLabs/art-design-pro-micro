@@ -20,7 +20,10 @@
     "release": "changeset publish",
     "depcruise": "depcruise . --config .dependency-cruiser.js",
     "depcruise:graph": "depcruise . --config .dependency-cruiser.js --output-type dot > docs/dependency-graph.dot",
-    "audit:dist": "node scripts/audit-dist.mjs"
+    "audit:dist": "node scripts/audit-dist.mjs",
+    "docs:dev": "pnpm --filter website docs:dev",
+    "docs:build": "pnpm --filter website docs:build",
+    "docs:preview": "pnpm --filter website docs:preview"
   },
   "devDependencies": {
     "@changesets/cli": "^3.0.3",

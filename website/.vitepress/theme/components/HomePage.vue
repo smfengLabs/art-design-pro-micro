@@ -10,10 +10,10 @@ import BrandMark from './BrandMark.vue'
 const features = [
   {
     index: '01',
-    title: '独立部署与单飞',
+    title: '微前端聚合',
     description:
-      '子应用自带完整 Layout 与独立登录页，可独占域名独立运行，也能被宿主无缝聚合，不被平台绑定。',
-    tag: 'DEPLOY',
+      'app-main 是唯一宿主。运行时按 remotes 注册表加载子应用路由，合并进同一套菜单、权限与布局，子应用无需为被聚合改一行代码。',
+    tag: 'MF 2.0',
     icon: [
       'M12 3 3 7.5l9 4.5 9-4.5L12 3Z',
       'M3 12l9 4.5 9-4.5',
@@ -22,10 +22,41 @@ const features = [
   },
   {
     index: '02',
-    title: '极细粒度 Monorepo',
+    title: '独立单飞',
     description:
-      'apps 与 packages 分层解耦，dependency-cruiser 划定依赖方向，把“能跑”升级为“结构上不会跑偏”。',
-    tag: 'MONOREPO',
+      '每个子应用自带 Layout、登录页与路由守卫，可以独占域名独立部署、独立发布，也能被宿主聚合，两种形态共用同一套核心。',
+    tag: 'STANDALONE',
+    icon: [
+      'M12 3 4.5 6v5.2c0 4.4 3.2 8.5 7.5 9.8 4.3-1.3 7.5-5.4 7.5-9.8V6L12 3Z',
+      'm8.8 12 2.1 2.1 4.4-4.4'
+    ]
+  },
+  {
+    index: '03',
+    title: '秒开预加载',
+    description:
+      '登录后 requestIdleCallback 空闲预热 manifest、remoteEntry 与路由表，菜单悬停再预取页面 chunk，真正点击时直接命中缓存。',
+    tag: 'PRELOAD',
+    icon: ['m13 2-9 12h7l-1 8 9-12h-7l1-8Z']
+  },
+  {
+    index: '04',
+    title: 'CLI 脚手架',
+    description:
+      'app:create / app:list / app:delete 三条命令完成建应用、注册远端、追加 RouteName 与回收清理，校验不过直接失败、不落盘。',
+    tag: 'CLI',
+    icon: [
+      'm5 7 4 4-4 4',
+      'M12 15h7',
+      'M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z'
+    ]
+  },
+  {
+    index: '05',
+    title: '自动化门禁',
+    description:
+      'typecheck、dependency-cruiser 依赖方向、产物审计与双端 CI 组成质量门禁；GitHub Quality Gate 与 Gitee 双审批，越界代码合不进去。',
+    tag: 'CI GATE',
     icon: [
       'M6 3v12',
       'M18 9v3a3 3 0 0 1-3 3H9',
@@ -35,57 +66,24 @@ const features = [
     ]
   },
   {
-    index: '03',
-    title: '全局实时数据同步',
+    index: '06',
+    title: '错误隔离',
     description:
-      'WebSocket 单例与 mitt 事件总线贯穿运行时，跨浏览器、跨微应用的数据变更自动刷新，无需手动广播。',
-    tag: 'REALTIME',
-    icon: [
-      'M4.9 4.9a10 10 0 0 0 0 14.2',
-      'M7.8 7.8a6 6 0 0 0 0 8.4',
-      'M12 12h.01',
-      'M16.2 7.8a6 6 0 0 1 0 8.4',
-      'M19.1 4.9a10 10 0 0 1 0 14.2'
-    ]
-  },
-  {
-    index: '04',
-    title: '彻底的状态共享',
-    description:
-      'MF 2.0 shared singleton 保证全局唯一 Vue、Pinia 与 Vue Router 实例，Token 和权限数据天生互通。',
-    tag: 'SHARED',
+      '远端加载超时重试、ArtErrorBoundary 局部兜底、全局脚本与资源错误归集。单个子应用崩溃只影响自己的卡片，宿主继续可用。',
+    tag: 'RESILIENCE',
     icon: [
       'M12 3c4.4 0 8 1.3 8 3s-3.6 3-8 3-8-1.3-8-3 3.6-3 8-3Z',
       'M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6',
       'M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6'
     ]
-  },
-  {
-    index: '05',
-    title: '全链路防雷防双实例',
-    description:
-      '移除易导致双实例的第三方 Hook，手写原生 ResizeObserver 高度观测，解决微前端样式与高度计算的隐性断裂。',
-    tag: 'RUNTIME',
-    icon: [
-      'M12 3 4.5 6v5.2c0 4.4 3.2 8.5 7.5 9.8 4.3-1.3 7.5-5.4 7.5-9.8V6L12 3Z',
-      'm8.8 12 2.1 2.1 4.4-4.4'
-    ]
-  },
-  {
-    index: '06',
-    title: '开箱即用',
-    description:
-      '自动导入 d.ts 的 Fresh Clone 报错已被处理，安装依赖即可启动；开发、构建、类型检查与依赖审计都有明确入口。',
-    tag: 'DX',
-    icon: ['m13 2-9 12h7l-1 8 9-12h-7l1-8Z']
   }
 ]
 
 const metrics = [
-  { value: '02', label: '独立可部署应用' },
+  { value: '03', label: '可部署应用单元' },
   { value: '06', label: '共享核心 packages' },
   { value: '01', label: '全局运行时实例' },
-  { value: '100%', label: '子应用独立部署' }
+  { value: '02', label: '级预加载策略' }
 ]
 
 const architecturePoints = [
@@ -99,7 +97,11 @@ const architecturePoints = [
   },
   {
     title: 'shared singleton',
-    text: 'Vue、Pinia、Router 单实例，状态、权限与请求层不再分裂。'
+    text: 'Vue、Pinia、Router、Element Plus 单实例，状态与权限不再分裂。'
+  },
+  {
+    title: 'remotes 注册表',
+    text: '新增子应用只追加一条注册项，宿主路由源与构建期 remotes 同源。'
   }
 ]
 
@@ -129,10 +131,10 @@ const startCommand =
               <span class="ap-text-gradient">Pro Micro</span>
             </h1>
 
-            <p class="ap-hero__tagline">基于 MF2.0 的企业级微前端架构底座</p>
+            <p class="ap-hero__tagline">{{ siteConfig.tagline }}</p>
             <p class="ap-hero__desc">
-              保留 Art Design Pro 的优雅界面与业务组件，把应用边界、状态共享、依赖方向与独立部署
-              做成可验证的工程约束。不是把单体拆开，而是让复杂度可控。
+              保留 Art Design Pro 的优雅界面与业务组件，把应用边界、状态共享、加载性能、脚手架与
+              错误隔离做成可验证的工程约束。不是把单体拆开，而是让复杂度可控。
             </p>
 
             <div class="ap-hero__actions">
@@ -173,7 +175,7 @@ const startCommand =
               >
                 <img :src="siteConfig.badges.gitee" alt="Gitee stars" />
               </a>
-              <span class="ap-license">{{ siteConfig.license }} License</span>
+              <span class="ap-license">{{ siteConfig.version }} · {{ siteConfig.license }} License</span>
             </div>
           </div>
 
@@ -283,6 +285,7 @@ const startCommand =
         </a>
         <div class="ap-footer__links">
           <a :href="withBase(siteConfig.docs)">文档</a>
+          <a :href="withBase('/docs/guide/cli')">CLI 脚手架</a>
           <a :href="withBase('/docs/architecture/')">架构</a>
           <a :href="withBase('/docs/faq')">FAQ</a>
           <a :href="siteConfig.github" target="_blank" rel="noreferrer">GitHub</a>

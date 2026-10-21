@@ -26,7 +26,7 @@ description: Art Design Pro Micro 的运行时与工程问题排查
 - 子应用是否自行复制了 shared 清单；
 - 是否引入了会携带第二份 Vue 运行时的依赖。
 
-运行时强耦合的 UI 包也需要纳入共享清单，例如 `@iconify/vue` 与 `vue-draggable-plus`。
+运行时强耦合的 UI 包也需要纳入共享清单，例如 `@iconify/vue/offline` 与 `vue-draggable-plus`。`vite-plugin-federation` 已通过 `patches/` 锁定 `getActivePinia()` 相关行为，不要私自升级该插件版本。
 
 ## 为什么高度观测不直接用第三方 Hook？
 
@@ -79,19 +79,48 @@ description: Art Design Pro Micro 的运行时与工程问题排查
 
 这是架构约束生效，不是误报。`packages` 不允许依赖 `apps`，`apps` 之间不允许源码互引，核心层也不能反向依赖 UI 层。
 
-如果新功能确实需要跨应用复用，请把能力下沉到合适的 `packages/*`，或通过 Module Federation 暴露模块，而不是绕过依赖规则。
+如果新功能确实需要跨应用复用，请把能力下沉到合适的 `packages/*`，或通过 Module Federation 暴露模块，而不是绕过依赖规则。完整规则清单见 [核心架构说明](/docs/architecture/) 第 2 节。
+
+## 独立登录成功，但接口 401 / 403？
+
+后端按 `appCode` 隔离数据与权限。检查 `apps/<app>/.env` 的 `VITE_APP_CODE` 与 `src/main.ts` 里 `bootstrapApp({ appCode })` 是否一致，以及该 `appCode` 是否已在服务端注册。脚手架生成时会同步这两处，手工迁移最容易漏。
+
+## 菜单图标不显示？
+
+图标已由构建期自动注入（`art:auto-iconify` 插件扫描全部 workspace 源码并生成 `virtual:art-iconify`），不需要任何生成脚本。若图标缺失：
+
+1. 确认写的是标准 Iconify 字符串（如 `ri:dashboard-line`），前缀在 `@iconify/json` 中存在；
+2. 确认应用引入了 `@art/app-components/iconify`（宿主与各子应用的 `main.ts` 都需要）；
+3. dev 阶段新增图标名后等待一次 full-reload，或手动刷新页面。
+
+## `pnpm app:create` 直接失败，什么都没生成？
+
+这是设计如此：脚本在任何校验不通过时中止，并回滚已写入的注册表与已创建的目录，避免留下「应用还在、注册信息已丢」的中间态。常见原因：目录或包名已存在、`remotes.ts` 已有同别名注册项、端口被 `apps/*` 或 `templates/*` 占用、`RouteName` 键或值冲突、使用了保留名 `app-main` / `app-template`。逐条对照 [CLI 脚手架使用](/docs/guide/cli) 的内置校验清单。
+
+## PR 为什么合不进去？
+
+双端各有一套门禁，且都必须绿：
+
+- **GitHub**：`main` 受分支保护，PR 需要 **Quality Gate** 状态检查通过（typecheck → depcruise → build）。管理员直接 push 会看到 bypass 提示。
+- **Gitee**：PR 需要 **审查** 与 **测试** 两项审批各 1/1 才能解锁合并。
+- 两端 `main` 历史不做 force push；若两端分叉，先 `merge`（必要时 `merge -s ours`）对齐内容再快进推送，并用 `git diff --stat origin/main gitee/main` 确认树一致。
+
+`pnpm pr:auto` 会把当前分支推送到双端并创建 PR；Token 只从环境变量读取，绝不打印。
+
+## 仓库里怎么多了个 `FETCH_HEAD`？
+
+那是 `git fetch` 的元数据文件，曾被误提交。现在已从版本库移除，并在根 `.gitignore` 中忽略 `FETCH_HEAD` 与 `**/FETCH_HEAD`；可用 `git check-ignore -v FETCH_HEAD` 验证。若它再次出现在工作区，属于未跟踪的正常文件，不要提交。
 
 ## 官网与文档如何本地预览？
 
-```bash
-cd website
-pnpm install
-pnpm docs:dev
-```
-
-生产构建：
+`website` 是 pnpm workspace 成员，直接在仓库根执行：
 
 ```bash
-pnpm docs:build
-pnpm docs:preview
+pnpm install          # 一次装齐全部 workspace
+pnpm docs:dev         # 本地预览（等价于 pnpm --filter website docs:dev）
+pnpm docs:build       # 静态产物构建
+pnpm docs:preview     # 预览构建产物
 ```
+
+文档站使用 VitePress 默认主题 + Tailwind CSS（`darkMode: 'class'`，与 VitePress 的暗黑切换共用同一个 `.dark` 类）。新增页面后记得在 `.vitepress/config.mts` 的 `nav` / `sidebar` 中登记，并确认 `tailwind.config.cjs` 的 `content` 覆盖到新的 Markdown 路径。
+
