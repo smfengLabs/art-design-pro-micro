@@ -8,7 +8,7 @@
  * 流程：
  *   1. 复制 apps/app-system 为 apps/<name>，并清理构建/依赖缓存
  *   2. 替换包名、环境变量、路由前缀、RouteName 枚举、MF 名称等应用身份
- *   3. 校验模板登录页已复用 useAuthLogin Hook，避免生成重复登录逻辑
+ *   3. 校验模板直接挂载公共 ArtUnifiedLogin，禁止再生成应用级登录页
  *   4. 向 packages/app-config/src/vite/remotes.ts 追加 dev/prod 注册项
  *   5. 扩展 packages/app-utils/src/enums/routeName.ts，保证生成应用类型检查通过
  *
@@ -351,10 +351,16 @@ function main() {
       }
     }
 
-    // 登录页是模板复用质量的关键：必须直接消费 useAuthLogin，而不是复制登录业务逻辑
-    const loginFile = path.join(targetDir, 'src/views/auth/login/index.vue')
-    if (!read(loginFile).includes('useAuthLogin')) {
-      fail('模板登录页未使用 useAuthLogin Hook，请先更新 apps/app-system/src/views/auth/login/index.vue')
+    // 登录页统一由公共包提供：模板不得再生成应用级登录页，main.ts 必须直接挂载 ArtUnifiedLogin
+    const loginDir = path.join(targetDir, 'src/views/auth/login')
+    if (fs.existsSync(loginDir)) {
+      fail('模板仍包含 src/views/auth/login，请删除应用级登录页并改用公共 ArtUnifiedLogin')
+    }
+
+    const mainFile = path.join(targetDir, 'src/main.ts')
+    const mainSource = read(mainFile)
+    if (!mainSource.includes('@art/app-components/auth/unified-login')) {
+      fail('模板 src/main.ts 未挂载公共 ArtUnifiedLogin，请先更新 apps/app-system/src/main.ts')
     }
 
     const textFiles = collectTextFiles(targetDir)

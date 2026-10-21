@@ -11,6 +11,7 @@
     "./iconify": "./src/ui/iconify-loader.ts",
     "./layouts": "./src/layouts/index.ts",
     "./auth/login": "./src/auth/login/index.vue",
+    "./auth/unified-login": "./src/auth/unified-login.vue",
     "./auth/register": "./src/auth/register/index.vue",
     "./auth/forget-password": "./src/auth/forget-password/index.vue",
     "./theme/theme-svg": "./src/theme/theme-svg/index.vue"

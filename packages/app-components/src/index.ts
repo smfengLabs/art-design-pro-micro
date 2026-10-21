@@ -3,5 +3,6 @@ import './ui/iconify-loader'
 
 export { default as ArtErrorBoundary } from './art-error-boundary/index.vue'
 export { default as ArtLayout } from './layouts'
+export { default as ArtUnifiedLogin } from './auth/unified-login.vue'
 export type { LoginFormData } from './auth/login/types'
 export type * from './types/chart'

@@ -8,7 +8,7 @@
 
       <div class="auth-right-wrap">
         <div class="form">
-          <h3 class="title">{{ $t('login.title') }}</h3>
+          <h3 class="title">{{ title || $t('login.title') }}</h3>
           <p class="sub-title">{{ $t('login.subTitle') }}</p>
           <ElForm
             ref="formRef"
@@ -111,10 +111,13 @@
   interface Props {
     /** 登录请求进行中（由业务页面控制） */
     loading?: boolean
+    /** 自定义登录标题；为空时使用 i18n 默认文案 */
+    title?: string
   }
 
   const props = withDefaults(defineProps<Props>(), {
-    loading: false
+    loading: false,
+    title: ''
   })
 
   const emit = defineEmits<{

@@ -22,7 +22,7 @@ export const staticRoutes: AppRouteRecordRaw[] = [
     path: '/login',
     alias: ['/auth/login'],
     name: 'Login',
-    component: () => import('@views/auth/login/index.vue'),
+    component: () => import('@art/app-components/auth/unified-login'),
     meta: { title: 'menus.login.title', isHideTab: true }
   },
   {
