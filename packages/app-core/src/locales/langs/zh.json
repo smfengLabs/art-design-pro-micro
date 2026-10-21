@@ -209,6 +209,11 @@
     "500": "抱歉，服务器出错了"
   },
   "menus": {
+    "example": {
+      "title": "示例应用",
+      "components": "组件示例",
+      "templates": "模板页面"
+    },
     "login": {
       "title": "登录"
     },

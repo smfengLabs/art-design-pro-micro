@@ -209,6 +209,11 @@
     "500": "Sorry, there was an error on the server"
   },
   "menus": {
+    "example": {
+      "title": "Example App",
+      "components": "Components",
+      "templates": "Templates"
+    },
     "login": {
       "title": "Login"
     },
