@@ -9,6 +9,15 @@ interface UpgradeLog {
 
 export const upgradeLogList = ref<UpgradeLog[]>([
   {
+    version: 'v1.1.0',
+    title: '健壮性提升与微前端错误隔离',
+    date: '2026-10-21',
+    detail: [
+      '新增：全局 ErrorBoundary 组件，隔离子应用运行时错误，防止主应用白屏',
+      '优化：版本号规范化管理'
+    ]
+  },
+  {
     version: 'v1.0.0',
     title: '微前端架构开源首发',
     date: '2026-10-20',

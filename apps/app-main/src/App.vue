@@ -7,11 +7,14 @@
       shadow: 'never'
     }"
   >
-    <RouterView></RouterView>
+    <ArtErrorBoundary>
+      <RouterView></RouterView>
+    </ArtErrorBoundary>
   </ElConfigProvider>
 </template>
 
 <script setup lang="ts">
+  import { ArtErrorBoundary } from '@art/app-components'
   import { useUserStore } from '@art/app-core/store/modules/user'
   import zh from 'element-plus/es/locale/lang/zh-cn'
   import en from 'element-plus/es/locale/lang/en'
