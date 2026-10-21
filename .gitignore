@@ -30,3 +30,7 @@ origin-code/
 .vscode/*
 !.vscode/extensions.json
 art-design-pro-micro-frontend-plan-v2.md
+
+# Git fetch 元数据（误提交过，禁止再次入库）
+FETCH_HEAD
+**/FETCH_HEAD
