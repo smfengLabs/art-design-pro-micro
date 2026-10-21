@@ -14,6 +14,11 @@ export const remoteRegistry = {
       manifestUrl: 'http://localhost:3101/mf-manifest.json',
       moduleId: 'app-system/routes'
     },
+    {
+      alias: 'app-article',
+      manifestUrl: 'http://localhost:3108/mf-manifest.json',
+      moduleId: 'app-article/routes'
+    },
     // SCAFFOLD_REMOTES_DEV
   ] as RemoteRegistryEntry[],
   prod: [
@@ -21,6 +26,11 @@ export const remoteRegistry = {
       alias: 'app-system',
       manifestUrl: APP_SYSTEM_PROD_MANIFEST_URL,
       moduleId: 'app-system/routes'
+    },
+    {
+      alias: 'app-article',
+      manifestUrl: 'https://app-article.qxiangkj.cn/mf-manifest.json',
+      moduleId: 'app-article/routes'
     },
     // SCAFFOLD_REMOTES_PROD
   ] as RemoteRegistryEntry[]

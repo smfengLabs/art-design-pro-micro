@@ -4,6 +4,9 @@ export { useAppMode } from './core/useAppMode'
 
 export { useAuth } from './core/useAuth'
 
+export { useAuthLogin } from './core/useAuthLogin'
+export type { AuthLoginCredentials, UseAuthLoginOptions } from './core/useAuthLogin'
+
 export { useTable } from './core/useTable'
 
 export { useTableColumns, getColumnKey } from './core/useTableColumns'

@@ -257,6 +257,60 @@ importers:
         specifier: ^2.1.6
         version: 2.2.12(typescript@5.9.3)
 
+  apps/app-article:
+    dependencies:
+      '@art/app-api':
+        specifier: workspace:*
+        version: link:../../packages/app-api
+      '@art/app-base':
+        specifier: workspace:*
+        version: link:../../packages/app-base
+      '@art/app-components':
+        specifier: workspace:*
+        version: link:../../packages/app-components
+      '@art/app-config':
+        specifier: workspace:*
+        version: link:../../packages/app-config
+      '@art/app-core':
+        specifier: workspace:*
+        version: link:../../packages/app-core
+      '@art/app-utils':
+        specifier: workspace:*
+        version: link:../../packages/app-utils
+      '@element-plus/icons-vue':
+        specifier: ^2.3.2
+        version: 2.3.2(vue@3.5.44(typescript@5.9.3))
+      '@iconify/vue':
+        specifier: 'catalog:'
+        version: 5.0.3(vue@3.5.44(typescript@5.9.3))
+      '@vueuse/core':
+        specifier: ^13.9.0
+        version: 13.9.0(vue@3.5.44(typescript@5.9.3))
+      axios:
+        specifier: 'catalog:'
+        version: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+      element-plus:
+        specifier: 'catalog:'
+        version: 2.14.7(vue@3.5.44(typescript@5.9.3))
+      pinia:
+        specifier: 'catalog:'
+        version: 3.0.4(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3))
+      pinia-plugin-persistedstate:
+        specifier: 'catalog:'
+        version: 4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3)))
+      vue:
+        specifier: 'catalog:'
+        version: 3.5.44(typescript@5.9.3)
+      vue-draggable-plus:
+        specifier: 'catalog:'
+        version: 0.6.1(@types/sortablejs@1.15.9)
+      vue-i18n:
+        specifier: 'catalog:'
+        version: 9.14.4(vue@3.5.44(typescript@5.9.3))
+      vue-router:
+        specifier: 'catalog:'
+        version: 4.6.4(vue@3.5.44(typescript@5.9.3))
+
   apps/app-main:
     dependencies:
       '@art/app-api':
@@ -518,6 +572,9 @@ importers:
       '@art/app-utils':
         specifier: workspace:*
         version: link:../app-utils
+      element-plus:
+        specifier: 'catalog:'
+        version: 2.14.7(vue@3.5.44(typescript@5.9.3))
       pinia-plugin-persistedstate:
         specifier: 'catalog:'
         version: 4.7.1(pinia@3.0.4(typescript@5.9.3)(vue@3.5.44(typescript@5.9.3)))

@@ -39,5 +39,11 @@ export enum RouteName {
   /** app-system：嵌套菜单-3-2（目录） */
   SYSTEM_NESTED_MENU3_2 = 'NestedMenu3-2',
   /** app-system：嵌套菜单-3-2-1 */
-  SYSTEM_NESTED_MENU3_2_1 = 'NestedMenu3-2-1'
+  SYSTEM_NESTED_MENU3_2_1 = 'NestedMenu3-2-1',
+  /** app-article：业务路由（脚手架生成） */
+  ARTICLE = 'Article',
+  ARTICLE_USER = 'ArticleUser',
+  ARTICLE_ROLE = 'ArticleRole',
+  ARTICLE_USER_CENTER = 'ArticleUserCenter',
+  ARTICLE_MENU = 'ArticleMenu'
 }

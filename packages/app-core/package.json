@@ -21,6 +21,7 @@
   "dependencies": {
     "@art/app-api": "workspace:*",
     "@art/app-utils": "workspace:*",
+    "element-plus": "catalog:",
     "pinia-plugin-persistedstate": "catalog:"
   },
   "peerDependencies": {
