@@ -6,9 +6,11 @@ import tailwindcss from '@tailwindcss/vite'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import ElementPlus from 'unplugin-element-plus/vite'
+import Icons from 'unplugin-icons/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import viteCompression from 'vite-plugin-compression'
 import { createVersionDefine } from './federation.ts'
+import { autoIconify } from './iconify-auto.ts'
 import { createRemoteRegistry } from './remotes.ts'
 import { createProxy } from './proxy.ts'
 
@@ -267,6 +269,9 @@ export function createBaseConfig(context: BaseConfigContext): UserConfig {
       // element-plus/es → 共享代理（须先于其他解析插件；见函数注释）
       elementPlusSharedSubpath(),
       vue(),
+      Icons({ compiler: 'vue3', autoInstall: false }),
+      // 路由 meta 等字符串图标无法被 unplugin-icons 静态分析，构建期统一按需注入
+      autoIconify(),
       tailwindcss(),
       // 仅保留 Vue / Router / Pinia；Element Plus 没有官方 AutoImport preset，
       // 由下方 ElementPlusResolver 按需导入（ElMessage / ElLoading 等）。

@@ -514,6 +514,21 @@ function assertNoGeneratedAlias(source, appName) {
   }
 }
 
+/** 图标由构建插件自动注入，模板不得回退到手动生成脚本或图标数据包 */
+function assertNoIconifyGeneration(packageFile) {
+  const packageJson = JSON.parse(read(packageFile))
+  const scripts = Object.values(packageJson.scripts || {}).join(' ')
+
+  if (scripts.includes('iconify')) {
+    fail('模板不应包含 iconify 相关脚本：图标由 @art/app-config 的 art:auto-iconify 自动注入')
+  }
+
+  const dependencies = { ...packageJson.dependencies, ...packageJson.devDependencies }
+  if (Object.keys(dependencies).some((name) => name.startsWith('@iconify-json/'))) {
+    fail('模板不应依赖 @iconify-json/*：图标数据由 @art/app-config 统一按需提取')
+  }
+}
+
 function assertPackageNameAvailable(appName) {
   const packageName = `@art/${appName}`
 
@@ -711,6 +726,7 @@ function main() {
     const packageJson = JSON.parse(read(packageFile))
     packageJson.name = `@art/${appName}`
     write(packageFile, `${JSON.stringify(packageJson, null, 2)}\n`)
+    assertNoIconifyGeneration(packageFile)
 
     // 独立运行端口
     const envFile = path.join(targetDir, '.env')
