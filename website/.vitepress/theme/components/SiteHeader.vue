@@ -61,6 +61,7 @@ onUnmounted(() => {
         <a href="#features" @click="closeMenu">核心特性</a>
         <a href="#architecture" @click="closeMenu">架构设计</a>
         <a :href="withBase(siteConfig.docs)" @click="closeMenu">文档</a>
+        <a :href="withBase('/docs/guide/cli')" @click="closeMenu">CLI 脚手架</a>
         <a :href="withBase('/docs/faq')" @click="closeMenu">FAQ</a>
       </nav>
 

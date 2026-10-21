@@ -22,6 +22,10 @@ templates/*/@mf-types
 templates/*/.__mf__temp
 templates/*/.mf
 
+# VitePress 文档站构建产物与缓存
+website/.vitepress/dist
+website/.vitepress/cache
+
 # 官方原版参考源码（不参与构建与发布）
 origin-code/
 

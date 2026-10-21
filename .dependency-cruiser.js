@@ -127,6 +127,7 @@ export default {
     doNotFollow: { path: 'node_modules' },
     // origin-code 为参考源码，不参与构建；node_modules 保留为叶子依赖节点，
     // 否则外部依赖黑名单规则无法看到 npm 依赖（doNotFollow 已阻止继续遍历）。
-    exclude: { path: '(dist|origin-code|docs|scripts)' }
+    // website 为独立文档站，不参与 workspace 依赖拓扑。
+    exclude: { path: '(dist|origin-code|docs|scripts|website)' }
   }
 }
