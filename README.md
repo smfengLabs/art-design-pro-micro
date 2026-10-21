@@ -19,7 +19,9 @@
 ## 📦 架构说明
 
 - `apps/app-main`：宿主应用（壳子、登录、仪表盘）。
-- `apps/app-system`：第一个微应用（系统管理/权限管理）。
+- `apps/app-system`：系统管理微应用（权限管理/系统设置）。
+- `apps/app-example`：示例微应用，展示组件库与高可用业务模板。
+- `templates/app-template`：纯空壳脚手架模板，`app:create` 的唯一复制源。
 - `packages/app-core`：全局核心（路由、Pinia、权限控制、守卫）。
 - `packages/app-api`：统一 HTTP 层与全局 WebSocket。
 - `packages/app-components`：公共 UI 组件及 Layout 壳。
@@ -41,6 +43,8 @@ pnpm dev
 宿主主应用：http://localhost:3006
 
 系统子应用：http://localhost:3101
+
+示例子应用：http://localhost:3105
 
 📄 开源协议
 基于 MIT 协议开源。

@@ -1,6 +1,5 @@
 import { loadRemoteFromManifest } from 'vite-plugin-federation/runtime'
 import type { AppRouteRecord } from '@art/app-utils'
-import { markRemoteRouteAlias } from '@art/app-core'
 import type { RemoteRouteSource } from '@art/app-core'
 
 // dev server 重预构建时远端请求可能挂起；超时 + 一次重试，避免守卫 loading 无限等待
@@ -95,6 +94,35 @@ function wrapRouteComponents(routes: AppRouteRecord[], alias: string): AppRouteR
     }
 
     return wrapped
+  })
+}
+
+/**
+ * 为远端路由追加来源标记（__mfRemoteAlias），与 app-core 的
+ * MF_REMOTE_ALIAS_META_KEY 常量保持同一字面量。
+ * 内联实现避免 app-base → app-core 运行时循环依赖
+ * （remotes.ts 会被打包进每个 remote 应用，不能跨 MF 边界引入 host 侧新模块）。
+ */
+const MF_REMOTE_ALIAS_META_KEY = '__mfRemoteAlias'
+
+function markRemoteRouteAlias(
+  routes: AppRouteRecord[],
+  alias: string
+): AppRouteRecord[] {
+  return routes.map((route) => {
+    const marked: AppRouteRecord = {
+      ...route,
+      meta: {
+        ...route.meta,
+        [MF_REMOTE_ALIAS_META_KEY]: alias
+      }
+    }
+
+    if (route.children?.length) {
+      marked.children = markRemoteRouteAlias(route.children, alias)
+    }
+
+    return marked
   })
 }
 
