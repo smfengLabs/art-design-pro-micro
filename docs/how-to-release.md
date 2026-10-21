@@ -55,6 +55,37 @@ git push gitee main --follow-tags
 说明：
 
 - `pnpm changeset version` 会消费 `.changeset/*.md`，更新相关包版本与 CHANGELOG。
-- `pnpm release` 等价于 `changeset publish`。仓库内包均为私有包，因此不会发布到 npm，只会为版本变化创建 git tag。
+- `pnpm release` 等价于 `changeset publish`。仓库内包均为私有包，因此不会发布到 npm，只会为版本变化创建包级 git tag。
 - 对外应用版本仍需同步更新根目录 `VERSION` 和 `apps/app-main/src/mock/upgrade/changeLog.ts`，保证应用内升级弹窗与构建缓存键一致。
-- 当前 `release` 只负责版本号与 git tag；GitHub Release 页面尚未配置自动创建，后续可增加 tag 触发的 release workflow。
+- `pnpm release` 不负责应用级版本 tag；对外发版必须继续执行第 4 节的标准发版 SOP。
+
+## 4. 标准发版 SOP（每次对外发版必须执行）
+
+Changesets 负责包版本与 CHANGELOG，应用对外版本则通过 `vX.Y.Z` tag 发布。若本次迭代积累了 changeset，先按第 3 节消费并提交，再执行以下步骤，顺序不可省略：
+
+1. 修改根目录 `VERSION` 为本次版本号，同步更新 `apps/app-main/src/mock/upgrade/changeLog.ts`，并提交代码。
+2. 在最新 `main` 提交上打 annotated tag：
+
+   ```bash
+   git tag -a v1.4.0 -m "Release v1.4.0 - 说明"
+   ```
+
+3. 推送代码与标签：
+
+   ```bash
+   git push origin main && git push origin v1.4.0
+   ```
+
+推送 `v*` 标签后，`.github/workflows/release.yml` 会自动创建 GitHub Release，无需再到网页手动操作。
+
+双端同步时补充执行：
+
+```bash
+git push gitee main && git push gitee v1.4.0
+```
+
+注意事项：
+
+- `v1.4.0` 仅为示例，实际替换为本次发版号，并确保与 `VERSION` 完全一致。
+- 打 tag 的提交必须包含 `.github/workflows/release.yml`，否则该标签无法触发自动 Release。
+- 已发布的 tag 严禁重复使用或随意移动；需要补发时应创建新的版本号。
