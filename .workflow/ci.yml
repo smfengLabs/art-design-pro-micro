@@ -5,7 +5,8 @@ triggers:
     branches:
       include:
         - main
-  pull_request:
+  # Gitee Go 使用 pr 表示 Pull Request 触发
+  pr:
     branches:
       include:
         - main
