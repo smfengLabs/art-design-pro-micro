@@ -7,6 +7,7 @@
  *
  * 输出：
  *   应用名、包名、独立运行端口、应用类型（基座/子应用）
+ *   以及 app:create 使用的纯模板工程路径
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -14,6 +15,7 @@ import { fileURLToPath } from 'node:url'
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const appsDir = path.join(repoRoot, 'apps')
+const templateDir = path.join(repoRoot, 'templates/app-template')
 
 function fail(message) {
   throw new Error(message)
@@ -81,12 +83,13 @@ function collectApps() {
 
   const priority = new Map([
     ['app-main', 0],
-    ['app-system', 1]
+    ['app-system', 1],
+    ['app-example', 2]
   ])
 
   return apps.sort((left, right) => {
-    const leftPriority = priority.get(left.name) ?? 2
-    const rightPriority = priority.get(right.name) ?? 2
+    const leftPriority = priority.get(left.name) ?? 3
+    const rightPriority = priority.get(right.name) ?? 3
     if (leftPriority !== rightPriority) return leftPriority - rightPriority
     return left.name.localeCompare(right.name)
   })
@@ -156,8 +159,13 @@ function main() {
   console.log(renderTable(apps))
   console.log(`\n共 ${apps.length} 个应用：${hostCount} 个基座，${remoteCount} 个子应用`)
 
-  if (apps.some((app) => app.name === 'app-system')) {
-    console.log('app-system 是脚手架模板，app:create 会以它为源生成新子应用。')
+  if (fs.existsSync(templateDir)) {
+    console.log(
+      `\n模板工程: templates/app-template（包名 ${readPackageName(templateDir)}，端口 ${readPort(templateDir)}）`
+    )
+    console.log('app:create 以该模板为复制源；app:delete 受防删守卫保护，禁止删除。')
+  } else {
+    console.log('\n! 未找到 templates/app-template，app:create 将无法使用。')
   }
 }
 

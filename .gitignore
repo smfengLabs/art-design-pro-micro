@@ -18,6 +18,9 @@ dist-ssr
 apps/*/@mf-types
 apps/*/.__mf__temp
 apps/*/.mf
+templates/*/@mf-types
+templates/*/.__mf__temp
+templates/*/.mf
 
 # 官方原版参考源码（不参与构建与发布）
 origin-code/

@@ -5,6 +5,8 @@
 ## 包结构
 - `apps/app-main`: 宿主应用（壳），提供登录、全局路由调度、仪表盘及异常兜底。
 - `apps/app-system`: 系统管理微应用，具备独立运行调试与统一聚合的双重能力。
+- `apps/app-example`: 示例微应用，集中展示组件库与业务模板，作为开源演示核心资产。
+- `templates/app-template`: 纯空壳脚手架模板（登录页 + 欢迎页 + 空路由），`app:create` 的唯一复制源。
 - `packages/app-core`: 核心内核（路由控制、全局守卫、Pinia 共享状态）。
 - `packages/app-api`: HTTP 统一请求层与全局 WebSocket 单例。
 - `packages/app-components`: 跨应用共享的 UI 组件与 Layout 壳。

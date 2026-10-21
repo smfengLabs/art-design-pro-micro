@@ -15,11 +15,6 @@ export const remoteRegistry = {
       moduleId: 'app-system/routes'
     },
     {
-      alias: 'app-article',
-      manifestUrl: 'http://localhost:3108/mf-manifest.json',
-      moduleId: 'app-article/routes'
-    },
-    {
       alias: 'app-example',
       manifestUrl: 'http://localhost:3105/mf-manifest.json',
       moduleId: 'app-example/routes'
@@ -31,11 +26,6 @@ export const remoteRegistry = {
       alias: 'app-system',
       manifestUrl: APP_SYSTEM_PROD_MANIFEST_URL,
       moduleId: 'app-system/routes'
-    },
-    {
-      alias: 'app-article',
-      manifestUrl: 'https://app-article.qxiangkj.cn/mf-manifest.json',
-      moduleId: 'app-article/routes'
     },
     {
       alias: 'app-example',

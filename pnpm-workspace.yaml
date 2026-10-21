@@ -1,6 +1,7 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+  - 'templates/*'
 
 # ── 单版本锁（B5/C3）：shared 内核依赖统一由 catalog 提供 ──
 # requiredVersion（federation.ts）与本表同步，杜绝手写第二份版本号。
