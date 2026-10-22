@@ -200,7 +200,7 @@
   position: relative;
 }
 
-.ap-nav-demo__trigger {
+.ap-nav .ap-nav-demo__trigger {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -222,7 +222,7 @@
 
 .ap-nav-demo:hover .ap-nav-demo__trigger,
 .ap-nav-demo.is-open .ap-nav-demo__trigger,
-.ap-nav-demo__trigger:focus-visible {
+.ap-nav .ap-nav-demo__trigger:focus-visible {
   color: var(--ap-text);
 }
 
@@ -1722,7 +1722,7 @@
   }
 
   .ap-nav a,
-  .ap-nav-demo__trigger {
+  .ap-nav .ap-nav-demo__trigger {
     padding-inline: 8px;
     font-size: 12px;
   }
@@ -1776,7 +1776,7 @@
     display: none;
   }
 
-  .ap-nav-demo__trigger {
+  .ap-nav .ap-nav-demo__trigger {
     width: 100%;
     padding: 11px 12px;
     font-size: 13px;
