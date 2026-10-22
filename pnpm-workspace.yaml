@@ -30,3 +30,14 @@ catalog:
 
 patchedDependencies:
   vite-plugin-federation@1.0.2: patches/vite-plugin-federation@1.0.2.patch
+
+# 高危依赖修补：undici / ws / adm-zip 均由 vite-plugin-federation 的 @module-federation/dts-plugin
+# 带入（Node 侧构建链，不进入浏览器产物），上游锁的范围偏旧，这里强制抬到官方修补版本。
+# vue-i18n 只抬补丁位（9.14.4 → 9.14.5，DOM XSS 修补），catalog 的 ^9.14.0 仍成立，
+# federation.ts 的 requiredVersion 无需同步修改。
+overrides:
+  undici: '>=7.29.1 <8'
+  ws: '>=8.21.0 <9'
+  adm-zip: '>=0.6.1'
+  vue-i18n: '>=9.14.5 <10'
+  '@intlify/core-base': '>=9.14.5 <10'
