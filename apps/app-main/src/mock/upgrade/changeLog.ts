@@ -9,6 +9,19 @@ interface UpgradeLog {
 
 export const upgradeLogList = ref<UpgradeLog[]>([
   {
+    version: 'v1.6.0',
+    title: '极致瘦身、依赖安全修补与代码优雅化',
+    date: '2026-10-22',
+    detail: [
+      '安全：undici / ws / adm-zip / vue-i18n 高危依赖统一抬升到修补版本（pnpm-workspace overrides）',
+      '重构：清理复述式注释与装饰性分割线，全仓精简约 1100 行',
+      '优化：链式判空改可选链、深层嵌套改卫语句，远端加载超时改用 Promise.race',
+      '修复：注销与登出确认框取消时产生未捕获的 Promise 拒绝',
+      '加固：mitt 事件、匿名监听与定时器统一在组件卸载时清理，避免跨微应用重复回调',
+      '性能：表格列配置移除不必要的 deep watch，改由引用替换触发'
+    ]
+  },
+  {
     version: 'v1.4.0',
     title: '核心固本与全自动工作流',
     date: '2026-10-21',
