@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue'
 import { withBase } from 'vitepress'
-import { siteConfig } from '../site'
+import { demoApps, siteConfig } from '../site'
 import BrandMark from './BrandMark.vue'
 
 const scrolled = ref(false)
 const menuOpen = ref(false)
+const demoOpen = ref(false)
 const isDark = ref(false)
 
 let observer: MutationObserver | undefined
@@ -28,12 +29,18 @@ function handleScroll() {
 
 function closeMenu() {
   menuOpen.value = false
+  demoOpen.value = false
+}
+
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') closeMenu()
 }
 
 onMounted(() => {
   handleScroll()
   syncTheme()
   window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('keydown', handleKeydown)
   observer = new MutationObserver(syncTheme)
   observer.observe(document.documentElement, {
     attributes: true,
@@ -43,6 +50,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('keydown', handleKeydown)
   observer?.disconnect()
 })
 </script>
@@ -59,10 +67,49 @@ onUnmounted(() => {
 
       <nav class="ap-nav" :class="{ 'is-open': menuOpen }" aria-label="主导航">
         <a href="#features" @click="closeMenu">核心特性</a>
+        <a href="#demos" @click="closeMenu">微应用矩阵</a>
         <a href="#architecture" @click="closeMenu">架构设计</a>
         <a :href="withBase(siteConfig.docs)" @click="closeMenu">文档</a>
         <a :href="withBase('/docs/guide/cli')" @click="closeMenu">CLI 脚手架</a>
         <a :href="withBase('/docs/faq')" @click="closeMenu">FAQ</a>
+
+        <div
+          class="ap-nav-demo"
+          :class="{ 'is-open': demoOpen }"
+          @mouseenter="demoOpen = true"
+          @mouseleave="demoOpen = false"
+        >
+          <button
+            class="ap-nav-demo__trigger"
+            type="button"
+            :aria-expanded="demoOpen"
+            @click="demoOpen = !demoOpen"
+          >
+            在线演示
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <div class="ap-nav-demo__panel">
+            <a
+              v-for="app in demoApps"
+              :key="app.key"
+              class="ap-nav-demo__item"
+              :href="app.url"
+              target="_blank"
+              rel="noreferrer"
+              @click="closeMenu"
+            >
+              <span class="ap-nav-demo__title">
+                {{ app.title }}
+                <em>{{ app.role }}</em>
+              </span>
+              <span class="ap-nav-demo__desc">{{ app.description }}</span>
+              <span class="ap-nav-demo__domain">{{ app.domain }}</span>
+            </a>
+          </div>
+        </div>
       </nav>
 
       <div class="ap-header__actions">

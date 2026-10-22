@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { withBase } from 'vitepress'
-import { siteConfig } from '../site'
+import { demoApps, siteConfig } from '../site'
 import SiteHeader from './SiteHeader.vue'
 import HeroVisual from './HeroVisual.vue'
 import FeatureCard from './FeatureCard.vue'
@@ -150,7 +150,7 @@ const startCommand =
                 target="_blank"
                 rel="noreferrer"
               >
-                在线演示
+                进入主应用（Demo）
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                   <path d="M14 5h5v5M19 5l-8 8" stroke-linecap="round" stroke-linejoin="round" />
                   <path d="M19 13v4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4" stroke-linecap="round" />
@@ -210,6 +210,62 @@ const startCommand =
               :feature="feature"
             />
           </div>
+        </div>
+      </section>
+
+      <section id="demos" class="ap-section ap-demos">
+        <div class="ap-shell">
+          <div class="ap-section-head">
+            <div>
+              <p class="ap-kicker">Independent deployments</p>
+              <h2>体验微前端<br />独立单飞。</h2>
+            </div>
+            <p class="ap-section-head__desc">
+              三个应用各自构建、各自部署、各自发布。它们能被宿主聚合成同一套菜单与权限，
+              也能用独立域名单独打开 —— 两种形态共用同一套核心。
+            </p>
+          </div>
+
+          <div class="ap-demo-grid">
+            <a
+              v-for="app in demoApps"
+              :key="app.key"
+              class="ap-demo-card"
+              :class="`ap-demo-card--${app.role.toLowerCase()}`"
+              :href="app.url"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="ap-demo-card__head">
+                <span class="ap-demo-card__role">{{ app.role }}</span>
+                <span class="ap-demo-card__live">
+                  <i></i>
+                  独立部署
+                </span>
+              </span>
+
+              <h3>
+                {{ app.title }}
+                <span>{{ app.roleLabel }}</span>
+              </h3>
+              <p>{{ app.description }}</p>
+
+              <span class="ap-demo-card__foot">
+                <code>{{ app.domain }}</code>
+                <span class="ap-demo-card__go">
+                  打开
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                    <path d="M9 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </span>
+              </span>
+            </a>
+          </div>
+
+          <p class="ap-demos__note">
+            直接访问 <strong>app-system</strong> 或 <strong>app-example</strong> 域名时，会看到各自的独立登录页与完整布局；
+            由 <strong>app-main</strong> 打开时，它们只贡献路由与页面。演示账号 <code>Super</code> / <code>123456</code>。
+          </p>
         </div>
       </section>
 

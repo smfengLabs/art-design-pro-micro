@@ -1,5 +1,5 @@
 import { defineConfig } from 'vitepress'
-import { siteConfig } from './theme/site'
+import { demoApps, siteConfig } from './theme/site'
 
 const base = process.env.DOCS_BASE || '/'
 const asset = (path: string) =>
@@ -42,7 +42,13 @@ export default defineConfig({
       { text: 'CLI 脚手架', link: '/docs/guide/cli' },
       { text: '架构', link: '/docs/architecture/' },
       { text: 'FAQ', link: '/docs/faq' },
-      { text: '在线演示', link: siteConfig.demo }
+      {
+        text: '在线演示',
+        items: demoApps.map((app) => ({
+          text: `${app.title} · ${app.role}`,
+          link: app.url
+        }))
+      }
     ],
     sidebar: {
       '/docs/': [
