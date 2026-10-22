@@ -669,7 +669,7 @@ importers:
         version: 4.6.4(vue@3.5.44(typescript@5.9.3))
 
   website:
-    devDependencies:
+    dependencies:
       autoprefixer:
         specifier: ^10.4.21
         version: 10.6.1(postcss@8.5.30)
