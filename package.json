@@ -2,6 +2,7 @@
   "name": "art-design-pro-micro",
   "private": true,
   "type": "module",
+  "homepage": "https://doc.qxiangkj.cn",
   "packageManager": "pnpm@12.14.0",
   "engines": {
     "node": ">=20.19.0",

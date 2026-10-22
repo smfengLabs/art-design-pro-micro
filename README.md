@@ -1,11 +1,27 @@
 # Art Design Pro Micro
 
+[![官方文档](https://img.shields.io/badge/docs-doc.qxiangkj.cn-635bff?style=social)](https://doc.qxiangkj.cn)
 [![GitHub stars](https://img.shields.io/github/stars/smfengLabs/art-design-pro-micro?style=social)](https://github.com/smfengLabs/art-design-pro-micro)
 [![Gitee stars](https://gitee.com/smfengLabs/art-design-pro-micro/badge/star.svg?theme=dark)](https://gitee.com/smfengLabs/art-design-pro-micro)
 
 基于 **Vue 3 + TypeScript + Vite + Module Federation 2.0** 打造的现代化企业级微前端中后台架构底座。
 
 本项目重构自优秀的单体中后台模板 [Art Design Pro](https://github.com/Daymychen/art-design-pro)。在保留原有优雅 UI 与完善业务组件的基础上，将其深度改造为支持**独立部署、独立单飞、跨应用聚合**的微前端架构。
+
+## 🔗 快速入口
+
+统一对外入口为官方网站 **[https://doc.qxiangkj.cn](https://doc.qxiangkj.cn)**，文档、架构说明、CLI 手册与三端演示矩阵都在那里：
+
+| 入口 | 链接 | 说明 |
+| --- | --- | --- |
+| 官方文档 · 在线演示 | <https://doc.qxiangkj.cn> | 主入口。首页的「体验微前端独立单飞」矩阵聚合下面三个演示环境 |
+| 快速上手 | <https://doc.qxiangkj.cn/docs/guide/getting-started> | 环境要求、目录结构、命令表 |
+| 核心架构说明 | <https://doc.qxiangkj.cn/docs/architecture/> | 分层拓扑、MF 装配、预加载与错误隔离 |
+| 宿主主应用（直接体验） | <https://app-main.qxiangkj.cn> | 备用直链 · Host 极薄基座，统一登录与路由调度 |
+| 系统子应用（直接体验） | <https://app-system.qxiangkj.cn> | 备用直链 · Remote 权限管理微应用，可独立运行 |
+| 示例子应用（直接体验） | <https://app-example.qxiangkj.cn> | 备用直链 · Remote 高级表格、编辑器与模板库 |
+
+演示账号 `Super` / `123456`。
 
 ## 🌟 核心特性
 
@@ -37,19 +53,22 @@ pnpm install
 
 # 启动所有应用
 pnpm dev
+```
 
-启动后，你可以访问：
+启动后，本地可以访问：
 
-宿主主应用：http://localhost:3006
+- 宿主主应用：<http://localhost:3006>
+- 系统子应用：<http://localhost:3101>
+- 示例子应用：<http://localhost:3105>
 
-系统子应用：http://localhost:3101
+更多用法（脚手架建应用、依赖门禁、独立部署与发布顺序）见官方文档：<https://doc.qxiangkj.cn/docs/guide/getting-started>。
 
-示例子应用：http://localhost:3105
+## 📄 开源协议
 
-📄 开源协议
 基于 MIT 协议开源。
 
-🤝 致谢
-感谢 Art Design Pro 提供的优秀 UI 基础与组件生态
+## 🤝 致谢
+
+感谢 [Art Design Pro](https://github.com/Daymychen/art-design-pro) 提供的优秀 UI 基础与组件生态。
 
 <!-- test gitee ci -->
