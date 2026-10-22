@@ -137,9 +137,6 @@
     type: 'primary'
   })
 
-  /**
-   * 是否处于编辑模式
-   */
   const isEditing = computed(() => editingEventIndex.value >= 0)
 
   /**
@@ -149,11 +146,6 @@
    */
   const formatDate = (date: string) => date.split('-')[2]
 
-  /**
-   * 获取事件类型对应的样式类名
-   * @param type 事件类型
-   * @returns 包含背景和文字颜色的类名对象
-   */
   const getEventClasses = (type: CalendarEvent['type'] = 'primary') => {
     const classMap = {
       primary: { bgClass: 'bg-theme/12', textClass: 'text-theme' },
@@ -245,9 +237,6 @@
     resetForm()
   }
 
-  /**
-   * 删除事件
-   */
   const handleDeleteEvent = () => {
     if (isEditing.value) {
       events.value.splice(editingEventIndex.value, 1)

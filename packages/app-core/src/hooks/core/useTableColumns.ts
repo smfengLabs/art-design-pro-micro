@@ -11,9 +11,6 @@ const SPECIAL_COLUMNS: Record<string, { prop: string; label: string }> = {
   index: { prop: '__index__', label: $t('table.column.index') }
 }
 
-/**
- * 获取列的唯一标识
- */
 export const getColumnKey = <T>(col: ColumnOption<T>) =>
   SPECIAL_COLUMNS[col.type as keyof typeof SPECIAL_COLUMNS]?.prop ?? (col.prop as string)
 
@@ -30,9 +27,6 @@ export const getColumnVisibility = <T>(col: ColumnOption<T>): boolean => {
   return col.checked ?? true
 }
 
-/**
- * 获取列的检查状态
- */
 export const getColumnChecks = <T>(columns: ColumnOption<T>[]) =>
   columns.map((col) => {
     const special = col.type && SPECIAL_COLUMNS[col.type]
@@ -87,16 +81,7 @@ export interface DynamicColumnConfig<T = any> {
    * @param toIndex 目标索引
    */
   reorderColumns: (fromIndex: number, toIndex: number) => void
-  /**
-   * 获取列配置
-   * @param prop 列的唯一标识
-   * @returns 列配置
-   */
   getColumnConfig: (prop: string) => ColumnOption<T> | undefined
-  /**
-   * 获取所有列配置
-   * @returns 所有列配置
-   */
   getAllColumns: () => ColumnOption<T>[]
   /**
    * 重置所有列
@@ -130,8 +115,7 @@ export function useTableColumns<T = any>(
         }
       })
       columnChecks.value = newChecks
-    },
-    { deep: true }
+    }
   )
 
   // 当前显示列（基于 columnChecks 的 checked 或 visible）
@@ -265,14 +249,8 @@ export function useTableColumns<T = any>(
         return next
       }),
 
-    /**
-     * 获取列配置
-     */
     getColumnConfig: (prop: string) => dynamicColumns.value.find((c) => getColumnKey(c) === prop),
 
-    /**
-     * 获取所有列配置
-     */
     getAllColumns: () => [...dynamicColumns.value]
   }
 }

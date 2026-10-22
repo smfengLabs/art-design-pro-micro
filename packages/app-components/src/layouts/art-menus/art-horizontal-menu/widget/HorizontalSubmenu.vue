@@ -91,7 +91,6 @@
     )
   })
 
-  // 计算当前项是否有可见的子菜单
   const hasChildren = computed(() => {
     return filteredChildren.value.length > 0
   })

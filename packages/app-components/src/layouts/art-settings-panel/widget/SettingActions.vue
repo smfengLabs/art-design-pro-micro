@@ -93,28 +93,20 @@
     { comment: '节日日期', key: 'festivalDate', forceValue: '' }
   ]
 
-  /**
-   * 将值转换为代码字符串
-   */
   const valueToCode = (value: any, enumMap?: Record<string, string>): string => {
     if (value === null) return 'null'
     if (value === undefined) return 'undefined'
 
-    // 优先查找枚举映射
-    if (enumMap && typeof value === 'string' && enumMap[value]) {
-      return enumMap[value]
+    if (typeof value === 'string') {
+      const mapped = enumMap?.[value]
+      return mapped ? mapped : `'${value}'`
     }
 
-    // 其他类型处理
-    if (typeof value === 'string') return `'${value}'`
     if (typeof value === 'boolean' || typeof value === 'number') return String(value)
 
     return JSON.stringify(value)
   }
 
-  /**
-   * 生成配置代码
-   */
   const generateConfigCode = (): string => {
     const lines = ['export const SETTING_DEFAULT_CONFIG = {']
 

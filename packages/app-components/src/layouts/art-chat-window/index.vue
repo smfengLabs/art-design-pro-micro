@@ -99,7 +99,6 @@
 
   defineOptions({ name: 'ArtChatWindow' })
 
-  // 类型定义
   interface ChatMessage {
     id: number
     sender: string
@@ -128,7 +127,6 @@
   const messageId = ref(10)
   const messageContainer = ref<HTMLElement | null>(null)
 
-  // 初始化聊天消息数据
   const initializeMessages = (): ChatMessage[] => [
     {
       id: 1,
@@ -206,7 +204,6 @@
 
   const messages = ref<ChatMessage[]>(initializeMessages())
 
-  // 工具函数
   const formatCurrentTime = (): string => {
     return new Date().toLocaleTimeString([], {
       hour: '2-digit',
@@ -253,7 +250,6 @@
     isDrawerVisible.value = false
   }
 
-  // 生命周期
   onMounted(() => {
     scrollToBottom()
     mittBus.on('openChat', openChat)

@@ -110,7 +110,6 @@
           ]
         }
 
-        // 添加中心文字
         if (props.centerText) {
           const centerPos = getCenterPosition()
           option.title = {

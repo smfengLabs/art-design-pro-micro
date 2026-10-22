@@ -11,9 +11,6 @@ import { useCeremony } from '@art/app-core'
 import { useSettingsState } from './useSettingsState'
 import { useSettingsHandlers } from './useSettingsHandlers'
 
-/**
- * 设置面板核心逻辑管理
- */
 export function useSettingsPanel() {
   const settingStore = useSettingStore()
   const { systemThemeType, systemThemeMode, menuType } = storeToRefs(settingStore)
@@ -24,7 +21,6 @@ export function useSettingsPanel() {
   const { initColorWeak } = useSettingsState()
   const { domOperations } = useSettingsHandlers()
 
-  // 响应式状态
   const showDrawer = ref(false)
 
   // 使用 VueUse breakpoints 优化性能
@@ -51,12 +47,10 @@ export function useSettingsPanel() {
   const beforeMenuType = ref<MenuTypeEnum | undefined>(storedDesktopMenuType)
   const hasChangedMenu = ref(Boolean(storedDesktopMenuType))
 
-  // 计算属性
   const systemThemeColor = computed(() => settingStore.systemThemeColor as string)
 
   // 主题相关处理
   const useThemeHandlers = () => {
-    // 初始化系统颜色
     const initSystemColor = () => {
       if (!AppConfig.systemMainColor.includes(systemThemeColor.value)) {
         settingStore.setElementTheme(AppConfig.systemMainColor[0])
@@ -64,7 +58,6 @@ export function useSettingsPanel() {
       }
     }
 
-    // 初始化系统主题
     const initSystemTheme = () => {
       if (systemThemeMode.value === SystemThemeEnum.AUTO) {
         setSystemAutoTheme()
@@ -73,7 +66,6 @@ export function useSettingsPanel() {
       }
     }
 
-    // 监听系统主题变化
     const listenerSystemTheme = () => {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
       mediaQuery.addEventListener('change', initSystemTheme)
@@ -96,7 +88,6 @@ export function useSettingsPanel() {
       isMobile,
       (mobile: boolean) => {
         if (mobile) {
-          // 切换到移动端布局
           if (!hasChangedMenu.value) {
             beforeMenuType.value = menuType.value
             if (menuType.value !== MenuTypeEnum.LEFT) {
@@ -186,7 +177,6 @@ export function useSettingsPanel() {
     )
   }
 
-  // 初始化设置
   const useSettingsInitializer = () => {
     const themeHandlers = useThemeHandlers()
     const { openSetting } = useDrawerControl()
@@ -199,7 +189,6 @@ export function useSettingsPanel() {
       themeCleanup = themeHandlers.listenerSystemTheme()
       initColorWeak()
 
-      // 设置盒子模式
       const boxMode = settingStore.boxBorderMode ? 'border-mode' : 'shadow-mode'
       domOperations.setRootAttribute('data-box-mode', boxMode)
 
@@ -208,6 +197,7 @@ export function useSettingsPanel() {
     }
 
     const cleanupSettings = () => {
+      mittBus.off('openSetting', openSetting)
       stopWatch()
       themeCleanup?.()
       cleanup()
@@ -220,10 +210,8 @@ export function useSettingsPanel() {
   }
 
   return {
-    // 状态
     showDrawer,
 
-    // 方法组合
     useThemeHandlers,
     useResponsiveLayout,
     useDrawerControl,

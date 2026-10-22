@@ -107,9 +107,6 @@
     }
   ])
 
-  /**
-   * 处理重置事件
-   */
   const handleReset = () => {
     emit('reset')
   }

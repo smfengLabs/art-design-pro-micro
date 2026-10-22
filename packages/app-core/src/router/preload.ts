@@ -120,8 +120,10 @@ export function scheduleRemoteIdlePreload(): void {
   const run = (): void => {
     const tasks = sources.map((source) =>
       Promise.resolve()
-        .then(() => source.preload?.())
-        .then(() => true)
+        .then(async () => {
+          await source.preload?.()
+          return true
+        })
         .catch((error) => {
           console.debug(`[MF] 子应用空闲预加载失败（${source.alias}）：`, error)
           return false

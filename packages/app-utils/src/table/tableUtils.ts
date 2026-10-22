@@ -71,7 +71,6 @@ function extractPagination(
  * 默认响应适配器 - 支持多种常见的API响应格式
  */
 export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => {
-  // 定义支持的字段
   const recordFields = tableConfig.recordFields
 
   if (!response) {
@@ -97,7 +96,6 @@ export const defaultResponseAdapter = <T>(response: unknown): ApiResponse<T> => 
   let total = 0
   let pagination: Pick<ApiResponse<unknown>, 'current' | 'size'> | undefined
 
-  // 处理标准格式或直接列表
   records = extractRecords(res, recordFields)
   total = extractTotal(res, records, tableConfig.totalFields)
   pagination = extractPagination(res)
@@ -155,76 +153,58 @@ export const updatePaginationFromResponse = <T>(
   }
 }
 
-/**
- * 创建智能防抖函数 - 支持取消和立即执行
- */
 export const createSmartDebounce = <T extends (...args: any[]) => Promise<any>>(
   fn: T,
   delay: number
 ): T & { cancel: () => void; flush: () => Promise<any> } => {
-  let timeoutId: NodeJS.Timeout | null = null
-  let lastArgs: Parameters<T> | null = null
-  let lastResolve: ((value: any) => void) | null = null
-  let lastReject: ((reason: any) => void) | null = null
+  let pending: {
+    timer: ReturnType<typeof setTimeout>
+    args: Parameters<T>
+    resolve: (value: any) => void
+    reject: (reason: any) => void
+  } | null = null
+
+  const clearPending = () => {
+    if (!pending) return
+    clearTimeout(pending.timer)
+    pending = null
+  }
 
   const debouncedFn = (...args: Parameters<T>): Promise<any> => {
+    clearPending()
     return new Promise((resolve, reject) => {
-      if (timeoutId) clearTimeout(timeoutId)
-      lastArgs = args
-      lastResolve = resolve
-      lastReject = reject
-      timeoutId = setTimeout(async () => {
-        try {
-          const result = await fn(...args)
-          resolve(result)
-        } catch (error) {
-          reject(error)
-        } finally {
-          timeoutId = null
-          lastArgs = null
-          lastResolve = null
-          lastReject = null
-        }
-      }, delay)
+      pending = {
+        timer: setTimeout(() => {
+          const current = pending
+          clearPending()
+          if (current) fn(...current.args).then(current.resolve, current.reject)
+        }, delay),
+        args,
+        resolve,
+        reject
+      }
     })
   }
 
-  debouncedFn.cancel = () => {
-    if (timeoutId) clearTimeout(timeoutId)
-    timeoutId = null
-    lastArgs = null
-    lastResolve = null
-    lastReject = null
-  }
+  debouncedFn.cancel = clearPending
 
   debouncedFn.flush = async () => {
-    if (timeoutId && lastArgs && lastResolve && lastReject) {
-      clearTimeout(timeoutId)
-      timeoutId = null
-      const args = lastArgs
-      const resolve = lastResolve
-      const reject = lastReject
-      lastArgs = null
-      lastResolve = null
-      lastReject = null
-      try {
-        const result = await fn(...args)
-        resolve(result)
-        return result
-      } catch (error) {
-        reject(error)
-        throw error
-      }
+    if (!pending) return
+    const { timer, args, resolve, reject } = pending
+    clearPending()
+    try {
+      const result = await fn(...args)
+      resolve(result)
+      return result
+    } catch (error) {
+      reject(error)
+      throw error
     }
-    return Promise.resolve()
   }
 
   return debouncedFn as any
 }
 
-/**
- * 生成错误处理函数
- */
 export const createErrorHandler = (
   onError?: (error: TableError) => void,
   enableLog: boolean = false

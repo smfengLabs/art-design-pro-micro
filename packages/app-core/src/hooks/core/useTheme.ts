@@ -110,9 +110,6 @@ export function useTheme() {
   }
 }
 
-/**
- * 初始化主题系统
- */
 export function initializeTheme() {
   const settingStore = useSettingStore()
   const prefersDark = usePrefersDark()

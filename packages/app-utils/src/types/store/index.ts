@@ -12,7 +12,6 @@ export interface SystemThemeType {
   className: string
 }
 
-// 定义包含多个主题的类型
 export type SystemThemeTypes = {
   [key in Exclude<SystemThemeEnum, SystemThemeEnum.AUTO>]: SystemThemeType
 }
@@ -33,7 +32,6 @@ export interface MenuThemeType {
   img?: string
 }
 
-// 设置中心
 export interface SettingState {
   /** 主题 */
   theme: string
@@ -93,7 +91,6 @@ export interface UserState {
   permissions: string[]
 }
 
-// 设置Store状态
 export interface SettingStoreState extends SettingState {
   // 额外的设置状态
   /** 菜单是否折叠 */

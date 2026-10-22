@@ -40,7 +40,6 @@
     legendPosition: 'bottom'
   })
 
-  // 判断是否为多数据
   const isMultipleData = computed(() => {
     return (
       Array.isArray(props.data) &&
@@ -50,7 +49,6 @@
     )
   })
 
-  // 获取颜色配置
   const getColor = (customColor?: string, index?: number) => {
     if (customColor) return customColor
 
@@ -71,7 +69,6 @@
     ])
   }
 
-  // 创建渐变色
   const createGradientColor = (color: string) => {
     return new graphic.LinearGradient(0, 0, 1, 0, [
       {
@@ -85,7 +82,6 @@
     ])
   }
 
-  // 获取基础样式配置
   const getBaseItemStyle = (
     color: string | InstanceType<typeof graphic.LinearGradient> | undefined
   ) => ({
@@ -93,7 +89,6 @@
     color: typeof color === 'string' ? createGradientColor(color) : color
   })
 
-  // 创建系列配置
   const createSeriesItem = (config: {
     name?: string
     data: number[]
@@ -128,13 +123,11 @@
   } = useChartComponent({
     props,
     checkEmpty: () => {
-      // 检查单数据情况
       if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
         const singleData = props.data as number[]
         return !singleData.length || singleData.every((val) => val === 0)
       }
 
-      // 检查多数据情况
       if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
         const multiData = props.data as BarDataItem[]
         return (
@@ -170,12 +163,10 @@
         }
       }
 
-      // 添加图例配置
       if (props.showLegend && isMultipleData.value) {
         options.legend = getLegendStyle(props.legendPosition)
       }
 
-      // 生成系列数据
       if (isMultipleData.value) {
         const multiData = props.data as BarDataItem[]
         options.series = multiData.map((item, index) => {

@@ -108,42 +108,24 @@
     ElMessage.success(`成功导入 ${formattedData.length} 条数据`)
   }
 
-  /**
-   * 处理 Excel 导入错误
-   * @param error 错误对象
-   */
   const handleImportError = (error: Error) => {
     console.error('导入失败:', error)
     ElMessage.error(`导入失败: ${error.message}`)
   }
 
-  /**
-   * 处理 Excel 导出成功
-   */
   const handleExportSuccess = () => {
     console.log('导出成功')
     ElMessage.success('Excel 导出成功')
   }
 
-  /**
-   * 处理 Excel 导出错误
-   * @param error 错误对象
-   */
   const handleExportError = (error: Error) => {
     ElMessage.error(`导出失败: ${error.message}`)
   }
 
-  /**
-   * 处理导出进度
-   * @param progress 导出进度百分比
-   */
   const handleProgress = (progress: number) => {
     console.log('导出进度:', progress)
   }
 
-  /**
-   * 清空表格数据
-   */
   const handleClear = () => {
     tableData.value = []
     ElMessage.info('已清空数据')

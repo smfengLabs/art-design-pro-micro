@@ -76,11 +76,6 @@
   // 使用快速入口配置
   const { enabledApplications, enabledQuickLinks } = useFastEnter()
 
-  /**
-   * 处理导航跳转
-   * @param routeName 路由名称
-   * @param link 外部链接
-   */
   const handleNavigate = (routeName?: string, link?: string): void => {
     const targetPath = routeName || link
 
@@ -98,18 +93,10 @@
     popoverRef.value?.hide()
   }
 
-  /**
-   * 处理应用项点击
-   * @param application 应用配置对象
-   */
   const handleApplicationClick = (application: FastEnterApplication): void => {
     handleNavigate(application.routeName, application.link)
   }
 
-  /**
-   * 处理快速链接点击
-   * @param quickLink 快速链接配置对象
-   */
   const handleQuickLinkClick = (quickLink: FastEnterQuickLink): void => {
     handleNavigate(quickLink.routeName, quickLink.link)
   }

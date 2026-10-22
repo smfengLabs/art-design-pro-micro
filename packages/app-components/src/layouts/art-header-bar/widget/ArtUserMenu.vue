@@ -101,9 +101,6 @@
     window.open(WEB_LINKS.GITHUB)
   }
 
-  /**
-   * 打开锁屏功能
-   */
   const lockScreen = (): void => {
     mittBus.emit('openLockScreen')
   }
@@ -113,14 +110,17 @@
    */
   const loginOut = (): void => {
     closeUserMenu()
-    setTimeout(() => {
-      ElMessageBox.confirm(t('common.logOutTips'), t('common.tips'), {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        customClass: 'login-out-dialog'
-      }).then(() => {
-        userStore.logOut()
-      })
+    setTimeout(async () => {
+      try {
+        await ElMessageBox.confirm(t('common.logOutTips'), t('common.tips'), {
+          confirmButtonText: t('common.confirm'),
+          cancelButtonText: t('common.cancel'),
+          customClass: 'login-out-dialog'
+        })
+      } catch {
+        return
+      }
+      userStore.logOut()
     }, 200)
   }
 

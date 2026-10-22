@@ -86,18 +86,12 @@ export class RouteRegistry {
     })
   }
 
-  /**
-   * 移除所有动态路由
-   */
   unregister(): void {
     this.removeRouteFns.forEach((fn) => fn())
     this.removeRouteFns = []
     this.registered = false
   }
 
-  /**
-   * 检查是否已注册
-   */
   isRegistered(): boolean {
     return this.registered
   }

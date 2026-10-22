@@ -43,13 +43,11 @@
     })
   }
 
-  // 定义 emits
   const emit = defineEmits<{
     'import-success': [data: Array<Record<string, unknown>>]
     'import-error': [error: Error]
   }>()
 
-  // 处理文件导入
   const handleFileChange = async (uploadFile: UploadFile) => {
     try {
       if (!uploadFile.raw) return

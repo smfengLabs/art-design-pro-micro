@@ -16,18 +16,22 @@ export function initRemoteHmr(dynamicRemotes: DynamicRemote[]) {
   const closers: Array<() => void> = []
 
   for (const { alias, manifestUrl } of dynamicRemotes) {
-    // 1) 注册（幂等）；2) 连接 → 3) 事件驱动
+    // registerManifestRemote 幂等，重复注册同一 alias 安全
     registerManifestRemote(alias, manifestUrl)
 
     const hmr = connectRuntimeRemoteHmr(alias, manifestUrl)
     closers.push(() => hmr.close())
 
-    window.addEventListener('vite-plugin-federation:remote-expose-update', ((e: any) => {
+    const onUpdate = ((e: any) => {
       const expose: string = e?.detail?.expose ?? ''
       refreshRemote(alias, { invalidateManifest: true })
       // 若 routes 的 expose 需要重新装配补齐（D2 第 2 条）
       if (expose === './routes') resetRouterState(0)
-    }) as EventListener)
+    }) as EventListener
+    window.addEventListener('vite-plugin-federation:remote-expose-update', onUpdate)
+    closers.push(() =>
+      window.removeEventListener('vite-plugin-federation:remote-expose-update', onUpdate)
+    )
   }
 
   if (import.meta.hot) import.meta.hot.dispose(() => closers.forEach((c) => c()))

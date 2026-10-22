@@ -32,27 +32,22 @@ function withTimeout<T>(
   label: string,
   timeout = REMOTE_LOAD_TIMEOUT
 ): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      reject(
-        new Error(
-          `${label} 超时（>${timeout}ms）：远端应用不可达或 dev server 正在重新预构建依赖；` +
-            '本次加载已中止（可刷新页面重试）'
-        )
-      )
-    }, timeout)
-
-    task().then(
-      (value) => {
-        clearTimeout(timer)
-        resolve(value)
-      },
-      (error) => {
-        clearTimeout(timer)
-        reject(error)
-      }
+  let timer: ReturnType<typeof setTimeout>
+  const started = task()
+  const timedOut = new Promise<never>((_, reject) => {
+    timer = setTimeout(
+      () =>
+        reject(
+          new Error(
+            `${label} 超时（>${timeout}ms）：远端应用不可达或 dev server 正在重新预构建依赖；` +
+              '本次加载已中止（可刷新页面重试）'
+          )
+        ),
+      timeout
     )
   })
+
+  return Promise.race([started, timedOut]).finally(() => clearTimeout(timer))
 }
 
 /**

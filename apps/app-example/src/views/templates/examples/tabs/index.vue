@@ -82,10 +82,6 @@
     ElMessage.success('标签页标题已重置')
   }
 
-  /**
-   * 获取指定路径的标签页信息
-   * @param path 标签页路径
-   */
   const handleGetCurrentTabTitle = (path: string): void => {
     const tab = worktabStore.getTabTitle(path)
     if (tab) {

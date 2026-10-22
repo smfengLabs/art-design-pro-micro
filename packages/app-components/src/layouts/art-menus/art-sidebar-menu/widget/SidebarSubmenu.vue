@@ -150,7 +150,7 @@
           return false
         }
 
-        if (item.children && item.children.length > 0) {
+        if (item.children?.length) {
           const filteredChildren = filterRoutes(item.children)
           // 目录菜单必须有可见子菜单；子节点全部被过滤时，父级不得降级为可点击叶子
           return filteredChildren.length > 0

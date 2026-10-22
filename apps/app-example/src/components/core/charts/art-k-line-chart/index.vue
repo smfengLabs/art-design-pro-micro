@@ -29,7 +29,6 @@
     dataZoomEnd: 100
   })
 
-  // 获取实际使用的颜色
   const getActualColors = () => {
     const defaultUpColor = '#4C87F3'
     const defaultDownColor = '#8BD8FC'

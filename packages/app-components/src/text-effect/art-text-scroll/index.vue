@@ -257,12 +257,10 @@
     }
   }
 
-  // 监听容器尺寸变化
   watch([containerWidth, containerHeight], () => {
     debouncedMeasure()
   })
 
-  // 监听属性变化
   watch(
     () => [props.direction, props.speed, props.text],
     () => {

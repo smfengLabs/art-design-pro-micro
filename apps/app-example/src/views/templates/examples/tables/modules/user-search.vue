@@ -29,7 +29,6 @@
     set: (val) => emit('update:modelValue', val)
   })
 
-  // 校验规则
   const rules = {
     // userName: [{ required: true, message: '请输入用户名', trigger: 'blur' }]
   }

@@ -222,19 +222,19 @@
     currentRoleData.value = row
   }
 
-  const deleteRole = (row: RoleListItem) => {
-    ElMessageBox.confirm(`确定删除角色"${row.roleName}"吗？此操作不可恢复！`, '删除确认', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
-      .then(() => {
-        // TODO: 调用删除接口
-        ElMessage.success('删除成功')
-        refreshData()
+  const deleteRole = async (row: RoleListItem) => {
+    try {
+      await ElMessageBox.confirm(`确定删除角色"${row.roleName}"吗？此操作不可恢复！`, '删除确认', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
-      .catch(() => {
-        ElMessage.info('已取消删除')
-      })
+    } catch {
+      ElMessage.info('已取消删除')
+      return
+    }
+    // TODO: 调用删除接口
+    ElMessage.success('删除成功')
+    refreshData()
   }
 </script>

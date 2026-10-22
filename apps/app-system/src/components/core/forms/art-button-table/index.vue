@@ -43,12 +43,10 @@
     more: { icon: 'ri:more-2-fill', class: '' }
   } as const
 
-  // 获取图标内容
   const iconContent = computed(() => {
     return props.icon || (props.type ? defaultButtons[props.type]?.icon : '') || ''
   })
 
-  // 获取按钮样式类
   const buttonClass = computed(() => {
     return props.iconClass || (props.type ? defaultButtons[props.type]?.class : '') || ''
   })

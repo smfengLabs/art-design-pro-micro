@@ -425,7 +425,7 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, watch, nextTick } from 'vue'
+  import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
   import {
     Plus,
     Delete,
@@ -483,7 +483,6 @@
     fixedHeight: false // 新增：是否固定高度的开关
   })
 
-  // 计算实际的表格高度
   const computedTableHeight = computed(() => {
     return tableConfig.value.fixedHeight ? '500px' : ''
   })
@@ -491,7 +490,6 @@
   // 搜索表单 ref
   const searchBarRef = ref()
 
-  // 校验规则
   const rules = {
     name: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
     phone: [
@@ -578,7 +576,6 @@
     }
   ])
 
-  // 导出列配置
   const exportColumns = computed(() => ({
     userName: { title: '用户名', width: 15 },
     userEmail: { title: '邮箱', width: 20 },
@@ -592,7 +589,6 @@
     }
   }))
 
-  // 获取用户状态配置
   const getUserStatusConfig = (status: string) => {
     return (
       USER_STATUS_CONFIG[status as keyof typeof USER_STATUS_CONFIG] || {
@@ -612,22 +608,6 @@
       endTime
     }
   }
-
-  // 模拟网络请求
-  // const simulateNetworkRequest = (): Promise<void> => {
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       resolve()
-  //     }, 500)
-  //   })
-  // }
-
-  // 模拟网络请求完成后加载数据
-  // onMounted(async () => {
-  //   // 等待模拟的网络请求完成
-  //   await simulateNetworkRequest()
-  //   await fetchData({ name: 'ricky', phone: 19388828388 })
-  // })
 
   /**
    * 使用 useTable Hook 管理表格数据
@@ -819,7 +799,6 @@
       maxCacheSize: 100
     },
 
-    // 生命周期钩子
     hooks: {
       onSuccess: (data, response) => {
         console.log('📊 响应详情:', response)
@@ -874,18 +853,11 @@
     logEvent('表头点击', `点击了 ${column.label} 列表头`)
   }
 
-  /**
-   * 排序信息类型
-   */
   interface SortInfo {
     prop: string
     order: 'ascending' | 'descending' | null
   }
 
-  /**
-   * 排序变更事件处理
-   * @param sortInfo 排序信息
-   */
   const handleSortChange = (sortInfo: SortInfo) => {
     console.log('排序事件:', sortInfo)
     console.log('排序字段:', sortInfo.prop)
@@ -906,7 +878,6 @@
     }
   }
 
-  // 获取事件类型样式
   const getEventType = (type: string): 'primary' | 'success' | 'warning' | 'info' | 'danger' => {
     const typeMap: Record<string, 'primary' | 'success' | 'warning' | 'info' | 'danger'> = {
       行点击: 'primary',
@@ -1052,7 +1023,6 @@
     }
   }
 
-  // 导入导出
   const handleExportSuccess = (filename: string, count: number) => {
     ElMessage.success(`导出 ${count} 条数据成功`)
   }
@@ -1096,17 +1066,21 @@
     ElMessage.info('数据已清空')
   }
 
+  let cacheTestTimer: ReturnType<typeof setInterval> | null = null
+
   const handleTestCache = () => {
     // 模拟快速切换页面来测试缓存
-    const testPages = [1, 2, 3, 2, 1] // 测试页面序列
+    const testPages = [1, 2, 3, 2, 1]
 
+    if (cacheTestTimer) clearInterval(cacheTestTimer)
     ElMessage.info('开始缓存测试...')
     addCacheLog('🧪 开始缓存测试')
 
     let index = 0
-    const testInterval = setInterval(() => {
+    cacheTestTimer = setInterval(() => {
       if (index >= testPages.length) {
-        clearInterval(testInterval)
+        if (cacheTestTimer) clearInterval(cacheTestTimer)
+        cacheTestTimer = null
         addCacheLog('✅ 缓存测试完成')
         ElMessage.success('缓存测试完成！观察缓存统计的变化')
         return
@@ -1114,19 +1088,17 @@
 
       const page = testPages[index]
       addCacheLog(`📄 测试切换到第 ${page} 页`)
-      // 更新请求参数
       requestParams.value = { ...requestParams.value, current: page }
 
-      // 切换到测试页面
       handleCurrentChange(page)
       index++
     }, 1000)
   }
 
-  /**
-   * 添加缓存调试日志
-   * @param message 日志消息
-   */
+  onUnmounted(() => {
+    if (cacheTestTimer) clearInterval(cacheTestTimer)
+  })
+
   const addCacheLog = (message: string): void => {
     const timestamp = new Date().toLocaleTimeString()
     cacheDebugLogs.value.unshift(`[${timestamp}] ${message}`)
@@ -1135,11 +1107,6 @@
     }
   }
 
-  /**
-   * 更新缓存键列表
-   * @param key 缓存键
-   * @param operation 操作类型
-   */
   const updateCacheKeys = (key: string, operation: 'add' | 'remove' = 'add'): void => {
     if (operation === 'add' && !cacheKeys.value.includes(key)) {
       cacheKeys.value.push(key)
@@ -1153,11 +1120,6 @@
     }
   }
 
-  /**
-   * 获取缓存键摘要信息
-   * @param key 缓存键
-   * @returns 缓存键摘要
-   */
   const getCacheKeySummary = (key: string): string => {
     try {
       const params = JSON.parse(key)
@@ -1183,7 +1145,6 @@
     })
   }
 
-  // 监听分页和搜索状态变化
   watch(
     () => [pagination.current, pagination.size, searchFormState.value],
     ([current, size, search]) => {
@@ -1196,9 +1157,6 @@
     { deep: true, immediate: true }
   )
 
-  /**
-   * 处理动态列配置命令
-   */
   const handleColumnCommand = (command: string): void => {
     switch (command) {
       case 'addColumn': {
@@ -1253,7 +1211,6 @@
       }
 
       case 'removeColumn': {
-        // 删除单个列
         removeColumn?.('status')
         ElMessage.success('已删除状态列')
         break
@@ -1267,7 +1224,6 @@
       }
 
       case 'updateColumn': {
-        // 更新单个列
         updateColumn?.('userPhone', {
           label: '联系电话',
           width: 140

@@ -12,7 +12,6 @@
   import { computed, watch, nextTick, onUnmounted, shallowRef } from 'vue'
   import { useTransition, TransitionPresets } from '@vueuse/core'
 
-  // 类型定义
   interface CountToProps {
     /** 目标值 */
     target: number
@@ -79,7 +78,6 @@
 
   const emit = defineEmits<CountToEmits>()
 
-  // 工具函数
   const validateNumber = (value: number, name: string, defaultValue: number): number => {
     if (!Number.isFinite(value)) {
       console.warn(`[CountTo] Invalid ${name} value:`, value)
@@ -100,12 +98,10 @@
   ): string => {
     let result = decimals > 0 ? value.toFixed(decimals) : Math.floor(value).toString()
 
-    // 处理小数点符号
     if (decimal !== '.' && result.includes('.')) {
       result = result.replace('.', decimal)
     }
 
-    // 处理千分位分隔符
     if (separator) {
       const parts = result.split(decimal)
       parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, separator)
@@ -155,7 +151,6 @@
     }
   })
 
-  // 格式化显示值
   const formattedValue = computed(() => {
     const value = isPaused.value ? pausedValue.value : transitionValue.value
 
@@ -252,7 +247,6 @@
     }
   }
 
-  // 监听器
   watch(
     safeTarget,
     (newTarget) => {

@@ -107,7 +107,6 @@
   import { computed, ref, watch, type Ref, type ComputedRef } from 'vue'
   import { useI18n } from 'vue-i18n'
 
-  // 导入头像图片
   import avatar1 from '../../assets/images/avatar/avatar1.webp'
   import avatar2 from '../../assets/images/avatar/avatar2.webp'
   import avatar3 from '../../assets/images/avatar/avatar3.webp'
@@ -343,7 +342,6 @@
       barActiveIndex.value = index
     }
 
-    // 检查当前标签页是否为空
     const currentTabIsEmpty = computed(() => {
       const tabDataMap = [noticeList.value, msgList.value, pendingList.value]
 
@@ -406,7 +404,6 @@
     { handleNoticeAll, handleMsgAll, handlePendingAll }
   )
 
-  // 监听属性变化
   watch(
     () => props.value,
     (newValue) => {

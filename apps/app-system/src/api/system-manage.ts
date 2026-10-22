@@ -1,6 +1,5 @@
 import { http } from '@art/app-api'
 
-// 获取用户列表
 export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
   return http.get<Api.SystemManage.UserList>({
     url: '/api/user/list',
@@ -8,7 +7,6 @@ export function fetchGetUserList(params: Api.SystemManage.UserSearchParams) {
   })
 }
 
-// 获取角色列表
 export function fetchGetRoleList(params: Api.SystemManage.RoleSearchParams) {
   return http.get<Api.SystemManage.RoleList>({
     url: '/api/role/list',

@@ -101,7 +101,6 @@
 
   defineOptions({ name: 'ArtWorkTab' })
 
-  // 类型定义
   interface ScrollState {
     translateX: number
     transition: string
@@ -142,7 +141,6 @@
 
   const clickedPath = ref('')
 
-  // 计算属性
   const list = computed(() => store.opened)
   const activeTab = computed(() => currentRoute.value.path)
   const activeTabIndex = computed(() => list.value.findIndex((tab) => tab.path === activeTab.value))
@@ -162,7 +160,6 @@
       }
     }
 
-    // 检查标签页是否固定
     const checkTabsFixedStatus = (clickedIndex: number) => {
       const leftTabs = list.value.slice(0, clickedIndex)
       const rightTabs = list.value.slice(clickedIndex + 1)
@@ -451,7 +448,6 @@
   const { clickTab, closeWorktab, showMenu, handleSelect } =
     useTabOperations(adjustPositionAfterClose)
 
-  // 生命周期
   onMounted(() => {
     setupEventListeners()
     autoPositionTab()
@@ -461,7 +457,6 @@
     cleanupEventListeners()
   })
 
-  // 监听器
   watch(
     () => currentRoute.value,
     () => {

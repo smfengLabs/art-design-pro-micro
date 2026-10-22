@@ -99,7 +99,7 @@ export class MenuProcessor {
     setRouteNameIndex(buildRouteNameIndex(candidates))
 
     let menuList = candidates
-    if (roles && roles.length > 0) {
+    if (roles?.length) {
       menuList = this.filterMenuByRoles(menuList, roles)
     }
 
@@ -251,7 +251,7 @@ export class MenuProcessor {
         return acc
       }
 
-      if (item.component && item.component !== '' && item.component !== RoutesAlias.Layout) {
+      if (item.component && item.component !== RoutesAlias.Layout) {
         acc.push(item)
       }
 

@@ -7,6 +7,16 @@ export interface RippleOptions {
 
 export type RippleDirective = Directive<HTMLElement, RippleOptions>
 
+const BASE_ANIMATION_TIME = 600
+const DIAMETER_SCALE_FACTOR = 0.5
+const RIPPLE_REMOVE_BUFFER = 500
+
+const COLORED_BUTTON_CLASSES = ['primary', 'info', 'warning', 'danger', 'success'].map(
+  (type) => `el-button--${type}`
+)
+
+const rippleHandlers = new WeakMap<HTMLElement, (e: MouseEvent) => void>()
+
 export const vRipple: RippleDirective = {
   mounted(el: HTMLElement, binding: DirectiveBinding) {
     const options: RippleOptions = binding.value || {}
@@ -14,35 +24,25 @@ export const vRipple: RippleDirective = {
     el.style.position = 'relative'
     el.style.overflow = 'hidden'
 
-    // 点击事件处理
-    el.addEventListener('mousedown', (e: MouseEvent) => {
+    const handler = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect()
-      const left = e.clientX - rect.left
-      const top = e.clientY - rect.top
-
-      const ripple = document.createElement('div')
       const diameter = Math.max(el.clientWidth, el.clientHeight)
       const radius = diameter / 2
+      // 直径越大扩散距离越长，按时长补偿避免大范围水波纹显得突兀
+      const animationDuration = BASE_ANIMATION_TIME + diameter * DIAMETER_SCALE_FACTOR
 
-      // 根据直径计算动画时间（直径越大，动画时间越长）
-      const baseTime = 600 // 基础动画时间（毫秒）
-      const scaleFactor = 0.5 // 缩放因子
-      const animationDuration = baseTime + diameter * scaleFactor
-
+      const ripple = document.createElement('div')
       ripple.style.width = ripple.style.height = `${diameter}px`
-      ripple.style.left = `${left - radius}px`
-      ripple.style.top = `${top - radius}px`
+      ripple.style.left = `${e.clientX - rect.left - radius}px`
+      ripple.style.top = `${e.clientY - rect.top - radius}px`
       ripple.style.position = 'absolute'
       ripple.style.borderRadius = '50%'
       ripple.style.pointerEvents = 'none'
 
-      const buttonTypes = ['primary', 'info', 'warning', 'danger', 'success'].map(
-        (type) => `el-button--${type}`
-      )
-      const isColoredButton = buttonTypes.some((type) => el.classList.contains(type))
+      const isColoredButton = COLORED_BUTTON_CLASSES.some((type) => el.classList.contains(type))
       const defaultColor = isColoredButton
-        ? 'rgba(255, 255, 255, 0.25)' // 有色按钮使用白色水波纹
-        : 'var(--el-color-primary-light-7)' // 默认按钮使用主题色水波纹
+        ? 'rgba(255, 255, 255, 0.25)'
+        : 'var(--el-color-primary-light-7)'
 
       ripple.style.backgroundColor = options.color || defaultColor
       ripple.style.transform = 'scale(0)'
@@ -56,10 +56,19 @@ export const vRipple: RippleDirective = {
         ripple.style.opacity = '0'
       })
 
-      setTimeout(() => {
-        ripple.remove()
-      }, animationDuration + 500) // 增加500ms缓冲时间
-    })
+      setTimeout(() => ripple.remove(), animationDuration + RIPPLE_REMOVE_BUFFER)
+    }
+
+    rippleHandlers.set(el, handler)
+    el.addEventListener('mousedown', handler)
+  },
+
+  unmounted(el: HTMLElement) {
+    const handler = rippleHandlers.get(el)
+    if (handler) {
+      el.removeEventListener('mousedown', handler)
+      rippleHandlers.delete(el)
+    }
   }
 }
 

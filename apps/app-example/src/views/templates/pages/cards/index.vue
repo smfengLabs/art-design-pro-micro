@@ -411,9 +411,6 @@
     }
   ]
 
-  /**
-   * 处理查看更多按钮点击
-   */
   const handleMore = () => {
     ElMessage.info('查看更多')
   }
@@ -432,10 +429,6 @@
     date: string
   }
 
-  /**
-   * 处理图片卡片点击事件
-   * @param card 卡片数据
-   */
   const handleImageCardClick = (card: ImageCard) => {
     console.log('点击卡片:', card)
   }

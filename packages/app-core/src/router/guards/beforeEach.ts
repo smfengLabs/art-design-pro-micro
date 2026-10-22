@@ -168,7 +168,7 @@ function isStaticRoute(path: string): boolean {
       if (regex.test(targetPath)) {
         return true
       }
-      if (route.children && route.children.length > 0) {
+      if (route.children?.length) {
         return checkRoute(route.children, targetPath, fullPath)
       }
       return false

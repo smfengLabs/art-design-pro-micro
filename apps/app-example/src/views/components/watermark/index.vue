@@ -65,9 +65,6 @@
    */
   const watermarkImage = ref('https://element-plus.org/images/element-plus-logo.svg')
 
-  /**
-   * 切换全局水印显示状态
-   */
   const handleWatermarkVisible = () => {
     useSettingStore().setWatermarkVisible(!settingStore.watermarkVisible)
     ElMessage.success(settingStore.watermarkVisible ? '已显示全局水印' : '已隐藏全局水印')

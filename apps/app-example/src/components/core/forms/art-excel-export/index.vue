@@ -163,7 +163,6 @@
       return column.formatter(value, row, index)
     }
 
-    // 处理特殊值
     if (value === null || value === undefined) {
       return ''
     }
@@ -184,14 +183,11 @@
     const processedData = data.map((item, index) => {
       const processedItem: Record<string, string> = {}
 
-      // 添加序号列
       if (props.autoIndex) {
         processedItem[props.indexColumnTitle] = String(index + 1)
       }
 
-      // 处理数据列
       Object.entries(item).forEach(([key, value]) => {
-        // 获取列标题
         let columnTitle = key
         if (props.columns[key]?.title) {
           columnTitle = props.columns[key].title
@@ -199,7 +195,6 @@
           columnTitle = props.headers[key]
         }
 
-        // 格式化值
         processedItem[columnTitle] = formatCellValue(value, key, item, index)
       })
 
@@ -245,14 +240,11 @@
     try {
       emit('export-progress', 10)
 
-      // 处理数据
       const processedData = processData(data)
       emit('export-progress', 30)
 
-      // 创建工作簿
       const workbook = XLSX.utils.book_new()
 
-      // 设置工作簿属性
       if (props.workbookOptions) {
         workbook.Props = {
           Title: filename,
@@ -270,27 +262,22 @@
 
       emit('export-progress', 50)
 
-      // 创建工作表
       const worksheet = XLSX.utils.json_to_sheet(processedData)
 
-      // 设置列宽度
       worksheet['!cols'] = calculateColumnWidths(processedData)
 
       emit('export-progress', 70)
 
-      // 添加工作表到工作簿
       XLSX.utils.book_append_sheet(workbook, worksheet, sheetName)
 
       emit('export-progress', 85)
 
-      // 生成 Excel 文件
       const excelBuffer = XLSX.write(workbook, {
         bookType: 'xlsx',
         type: 'array',
         compression: true
       })
 
-      // 创建 Blob 并下载
       const blob = new Blob([excelBuffer], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       })
@@ -324,13 +311,10 @@
       // 验证数据
       validateData(props.data)
 
-      // 触发导出前事件
       emit('before-export', props.data)
 
-      // 执行导出
       await exportToExcel(props.data, props.filename, props.sheetName)
 
-      // 触发成功事件
       emit('export-success', props.filename, props.data.length)
 
       // 显示成功消息
@@ -346,7 +330,6 @@
           ? error
           : new ExportError(`导出失败: ${(error as Error).message}`, 'UNKNOWN_ERROR', error)
 
-      // 触发错误事件
       emit('export-error', exportError)
 
       // 显示错误消息

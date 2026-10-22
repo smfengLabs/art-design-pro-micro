@@ -180,7 +180,6 @@
     })
   }
 
-  // 初始化裁剪器
   async function initImgCutter() {
     if (props.imgUrl) {
       try {
@@ -196,7 +195,6 @@
     }
   }
 
-  // 生命周期钩子
   onMounted(() => {
     if (props.imgUrl) {
       temImgPath.value = props.imgUrl
@@ -204,7 +202,6 @@
     }
   })
 
-  // 监听图片URL变化
   watch(
     () => props.imgUrl,
     (newVal) => {

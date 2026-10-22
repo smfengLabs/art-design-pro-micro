@@ -49,7 +49,6 @@ export interface GlobalComponentConfig {
   key: string
   /** 组件 */
   component: any
-  /** 是否启用 */
   enabled?: boolean
   /** 组件描述 */
   description?: string

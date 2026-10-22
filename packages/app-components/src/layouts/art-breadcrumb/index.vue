@@ -53,12 +53,10 @@
     const { matched } = route
     const matchedLength = matched.length
 
-    // 处理首页情况
     if (!matchedLength || isHomeRoute(matched[0])) {
       return []
     }
 
-    // 处理一级菜单和普通路由
     const firstRoute = matched[0]
     const isFirstLevel = firstRoute.meta?.isFirstLevel
     const lastIndex = matchedLength - 1
@@ -112,7 +110,6 @@
   // 辅助函数：构建完整路径
   const buildFullPath = (childPath: string): string => `/${childPath}`.replace('//', '/')
 
-  // 处理面包屑点击事件
   async function handleBreadcrumbClick(item: BreadcrumbItem, index: number): Promise<void> {
     // 如果是最后一项或外部链接，不处理
     if (isLastItem(index) || item.path === '/outside') {

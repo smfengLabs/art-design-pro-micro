@@ -183,9 +183,6 @@
     })
   }
 
-  /**
-   * 获取用户等级数据
-   */
   const getLevelOptions = async (): Promise<void> => {
     levelOptions.value = await fetchLevelOptions()
     if (levelOptions.value.length) {
@@ -205,9 +202,6 @@
     [key: string]: any
   }
 
-  /**
-   * 创建表单项的工厂函数
-   */
   const createFormItem = (config: FormItemConfig) => config
 
   // 基础表单项配置
@@ -708,26 +702,17 @@
     }
   ])
 
-  /**
-   * 处理表单重置事件
-   */
   const handleReset = (): void => {
     console.log('重置表单')
     emit('reset')
   }
 
-  /**
-   * 处理表单提交事件
-   */
   const handleSubmit = async (params: Record<string, any>): Promise<void> => {
     await formRef.value.validate()
     emit('search', params)
     console.log('表单数据', params)
   }
 
-  /**
-   * 校验表单
-   */
   const validateForm = () => formRef.value.validate()
 
   /**
@@ -735,9 +720,6 @@
    */
   const resetForm = () => formRef.value.reset()
 
-  /**
-   * 更新用户名字段配置
-   */
   const updateUserName = (): void => {
     userItem.value = {
       ...userItem.value,
@@ -748,9 +730,6 @@
     }
   }
 
-  /**
-   * 删除用户名字段
-   */
   const deleteUserName = (): void => {
     showUserName.value = false
     formData.value.name = undefined

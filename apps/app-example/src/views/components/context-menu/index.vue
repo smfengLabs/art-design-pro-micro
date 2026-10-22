@@ -97,10 +97,6 @@
     }
   ])
 
-  /**
-   * 处理菜单项选择
-   * @param item 选中的菜单项
-   */
   const handleSelect = (item: MenuItemType) => {
     lastAction.value = `${item.label} (${item.key})`
     ElMessage.success(`执行操作: ${item.label}`)

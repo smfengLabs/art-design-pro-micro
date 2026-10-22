@@ -4,6 +4,5 @@ export interface LoginFormData {
   username: string
   /** 密码 */
   password: string
-  /** 是否记住密码 */
   rememberPassword: boolean
 }

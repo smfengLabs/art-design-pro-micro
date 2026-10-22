@@ -196,9 +196,6 @@
     })
   }
 
-  /**
-   * 获取用户等级数据
-   */
   const getLevelOptions = async (): Promise<void> => {
     levelOptions.value = await fetchLevelOptions()
     if (levelOptions.value.length) {
@@ -219,9 +216,6 @@
     [key: string]: any
   }
 
-  /**
-   * 创建表单项的工厂函数
-   */
   const createFormItem = (config: FormItemConfig) => config
 
   // 基础表单项配置
@@ -627,12 +621,6 @@
     }
   ])
 
-  /**
-   * 创建统一的表单处理函数
-   * @param ref 表单引用
-   * @param formData 表单数据
-   * @param type 表单类型描述
-   */
   const createFormHandler = (ref: Ref<any>, formData: Record<string, any>, type: string) => ({
     reset: () => {
       console.log(`重置${type}表单`)
@@ -660,29 +648,14 @@
     createFormHandler(searchBarAdvancedRef, formDataAdvanced, '完整')
   )
 
-  /**
-   * 处理基础表单重置事件
-   */
   const handleBasicReset = () => basicFormHandler.value.reset()
 
-  /**
-   * 处理基础表单搜索事件
-   */
   const handleBasicSearch = () => basicFormHandler.value.search()
 
-  /**
-   * 处理完整表单重置事件
-   */
   const handleAdvancedReset = () => advancedFormHandler.value.reset()
 
-  /**
-   * 处理完整表单搜索事件
-   */
   const handleAdvancedSearch = () => advancedFormHandler.value.search()
 
-  /**
-   * 校验完整表单
-   */
   const advancedValidate = () => advancedFormHandler.value.validate()
 
   /**
@@ -690,9 +663,6 @@
    */
   const advancedReset = () => searchBarAdvancedRef.value.reset()
 
-  /**
-   * 更新用户名字段配置
-   */
   const updateUserName = (): void => {
     userItem.value = {
       ...userItem.value,
@@ -703,9 +673,6 @@
     }
   }
 
-  /**
-   * 删除用户名字段
-   */
   const deleteUserName = (): void => {
     showUserName.value = false
     formDataAdvanced.value.name = undefined

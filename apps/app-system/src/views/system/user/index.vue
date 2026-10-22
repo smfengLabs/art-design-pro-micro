@@ -205,14 +205,17 @@
     })
   }
 
-  const deleteUser = (row: UserListItem): void => {
-    ElMessageBox.confirm(`确定要注销该用户吗？`, '注销用户', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'error'
-    }).then(() => {
-      ElMessage.success('注销成功')
-    })
+  const deleteUser = async (row: UserListItem): Promise<void> => {
+    try {
+      await ElMessageBox.confirm('确定要注销该用户吗？', '注销用户', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
+      })
+    } catch {
+      return
+    }
+    ElMessage.success('注销成功')
   }
 
   const handleDialogSubmit = async () => {

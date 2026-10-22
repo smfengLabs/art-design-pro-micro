@@ -384,18 +384,16 @@
 
   const toggleExpand = (): void => {
     isExpanded.value = !isExpanded.value
+    if (!tableRef.value?.elTableRef || !filteredTableData.value) return
     nextTick(() => {
-      if (tableRef.value?.elTableRef && filteredTableData.value) {
-        const processRows = (rows: AppRouteRecord[]) => {
-          rows.forEach((row) => {
-            if (row.children?.length) {
-              tableRef.value.elTableRef.toggleRowExpansion(row, isExpanded.value)
-              processRows(row.children)
-            }
-          })
-        }
-        processRows(filteredTableData.value)
+      const processRows = (rows: AppRouteRecord[]) => {
+        rows.forEach((row) => {
+          if (!row.children?.length) return
+          tableRef.value!.elTableRef!.toggleRowExpansion(row, isExpanded.value)
+          processRows(row.children)
+        })
       }
+      processRows(filteredTableData.value!)
     })
   }
 </script>

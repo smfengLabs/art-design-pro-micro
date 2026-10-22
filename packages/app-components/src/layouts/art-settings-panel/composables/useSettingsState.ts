@@ -1,9 +1,6 @@
 import { useSettingStore } from '@art/app-core'
 import { MenuThemeEnum, MenuTypeEnum } from '@art/app-utils'
 
-/**
- * 设置状态管理
- */
 export function useSettingsState() {
   const settingStore = useSettingStore()
 

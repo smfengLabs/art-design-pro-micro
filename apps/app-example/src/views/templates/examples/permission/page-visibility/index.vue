@@ -243,7 +243,6 @@
   // 当前用户信息
   const currentUser = computed(() => userStore.info)
 
-  // 获取角色显示名称
   const getRoleDisplayName = (role: string) => {
     const roleMap: Record<string, string> = {
       R_SUPER: '超级管理员',

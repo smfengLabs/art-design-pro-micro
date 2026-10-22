@@ -51,7 +51,6 @@
       maxFileSize?: number
       maxNumberOfFiles?: number
       server?: string
-      // 是否开启自定义上传
       isCustomUpload?: boolean
     }
   }
@@ -83,7 +82,6 @@
     () => props.uploadConfig?.server || `${VITE_API_URL}/api/common/upload/wangeditor`
   )
 
-  // 合并上传配置
   const mergedUploadConfig = computed(() => ({
     ...DEFAULT_UPLOAD_CONFIG,
     ...props.uploadConfig
@@ -94,7 +92,7 @@
     const config: Partial<IToolbarConfig> = {}
 
     // 完全自定义工具栏
-    if (props.toolbarKeys && props.toolbarKeys.length > 0) {
+    if (props.toolbarKeys?.length) {
       config.toolbarKeys = props.toolbarKeys
     }
 
@@ -170,7 +168,6 @@
   const onCreateEditor = (editor: IDomEditor) => {
     editorRef.value = editor
 
-    // 监听全屏事件
     editor.on('fullScreen', () => {
       console.log('编辑器进入全屏模式')
     })
@@ -195,7 +192,6 @@
         return
       }
 
-      // 获取当前编辑器的工具栏容器
       const editorContainer = editor.getEditableContainer().closest('.editor-wrapper')
       if (!editorContainer) {
         if (retryCount < maxRetries) {
@@ -239,7 +235,6 @@
     focus: () => editorRef.value?.focus()
   })
 
-  // 生命周期
   onMounted(() => {
     // 图标替换已在 onCreateEditor 中处理
   })

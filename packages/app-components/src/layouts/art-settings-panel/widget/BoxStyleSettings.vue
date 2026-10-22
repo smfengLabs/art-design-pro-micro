@@ -31,7 +31,6 @@
   const { boxStyleOptions } = useSettingsConfig()
   const { boxStyleHandlers } = useSettingsHandlers()
 
-  // 判断当前选项是否激活
   const isActive = (type: 'border-mode' | 'shadow-mode') => {
     return type === 'border-mode' ? boxBorderMode.value : !boxBorderMode.value
   }

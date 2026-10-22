@@ -54,7 +54,6 @@ export default class WebSocketClient {
     if (!WebSocketClient.instance) {
       WebSocketClient.instance = new WebSocketClient(options)
     } else {
-      // 更新消息处理器
       WebSocketClient.instance.messageHandler = options.messageHandler
       // 如果提供了新的URL，则更新并重新连接
       if (options.url && WebSocketClient.instance.url !== options.url) {
@@ -66,7 +65,6 @@ export default class WebSocketClient {
     return WebSocketClient.instance
   }
 
-  // 初始化连接
   init(): void {
     this.connect(true)
   }
@@ -95,7 +93,6 @@ export default class WebSocketClient {
       }
       this.ws = new WebSocket(this.url)
 
-      // 设置连接超时检测
       this.clearTimer('connectionTimer')
       this.connectionTimer = setTimeout(() => {
         console.error(`WebSocket连接超时 (${this.connectionTimeout}ms)：${this.url}`)
@@ -113,7 +110,6 @@ export default class WebSocketClient {
     }
   }
 
-  // 处理连接超时
   private handleConnectionTimeout(): void {
     if (this.ws?.readyState !== WebSocket.OPEN) {
       console.error('WebSocket连接超时，强制关闭连接')
@@ -188,7 +184,6 @@ export default class WebSocketClient {
     }
   }
 
-  // 处理连接打开
   private handleOpen(event: Event): void {
     console.log('WebSocket连接成功', event)
     this.clearTimer('connectionTimer') // 清除连接超时定时器
@@ -202,14 +197,12 @@ export default class WebSocketClient {
     this.flushMessageQueue() // 发送队列中的消息
   }
 
-  // 处理收到的消息
   private handleMessage(event: MessageEvent): void {
     console.log('收到WebSocket消息:', event)
     this.resetHeartbeat()
     this.messageHandler(event)
   }
 
-  // 处理连接关闭
   private handleClose(event: CloseEvent): void {
     console.log(
       `WebSocket断开: 代码=${event.code}, 原因=${event.reason}, 干净关闭=${event.wasClean}`
@@ -265,7 +258,6 @@ export default class WebSocketClient {
     }
   }
 
-  // 转换连接状态为文本描述
   private getReadyStateText(state: number): string {
     switch (state) {
       case WebSocket.CONNECTING:
@@ -337,7 +329,6 @@ export default class WebSocketClient {
       return
     }
 
-    // 检查是否超过最大重连次数
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       console.error(`已达到最大重连次数(${this.maxReconnectAttempts})，停止重连`)
       this.close(true)
@@ -399,12 +390,10 @@ export default class WebSocketClient {
     this.clearTimer('connectionTimer')
   }
 
-  // 获取当前连接状态
   get isWebSocketConnected(): boolean {
     return this.isConnected
   }
 
-  // 获取当前连接状态文本
   get connectionStatusText(): string {
     if (this.isConnecting) return '正在连接'
     if (this.isConnected) return '已连接'

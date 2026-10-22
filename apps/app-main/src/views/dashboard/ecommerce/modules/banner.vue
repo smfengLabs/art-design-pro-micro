@@ -51,14 +51,8 @@
 
   const userStore = useUserStore()
 
-  /**
-   * 获取当前用户信息
-   */
   const userInfo = computed(() => userStore.getUserInfo)
 
-  /**
-   * 处理横幅点击事件
-   */
   const handleBannerClick = (): void => {
     // TODO: 添加横幅点击处理逻辑
   }

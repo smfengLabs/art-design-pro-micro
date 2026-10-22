@@ -151,23 +151,14 @@
 
   defineOptions({ name: 'TemplateBanners' })
 
-  /**
-   * 处理横幅点击事件
-   */
   const handleBannerClick = () => {
     console.log('banner clicked')
   }
 
-  /**
-   * 处理确认按钮点击事件
-   */
   const handleConfirm = () => {
     console.log('confirm clicked')
   }
 
-  /**
-   * 处理取消按钮点击事件
-   */
   const handleCancel = () => {
     console.log('cancel clicked')
   }

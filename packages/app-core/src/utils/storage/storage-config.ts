@@ -43,38 +43,22 @@ export class StorageConfig {
     return `${this.STORAGE_PREFIX}${version}`
   }
 
-  /**
-   * 创建存储键匹配的正则表达式
-   * @param storeId 存储ID
-   */
   static createKeyPattern(storeId: string): RegExp {
     return new RegExp(`^${this.STORAGE_PREFIX}[^-]+-${storeId}$`)
   }
 
-  /**
-   * 创建当前版本存储键匹配的正则表达式
-   */
   static createCurrentVersionPattern(): RegExp {
     return new RegExp(`^${this.STORAGE_PREFIX}${this.CURRENT_VERSION}-`)
   }
 
-  /**
-   * 创建任意版本存储键匹配的正则表达式
-   */
   static createVersionPattern(): RegExp {
     return new RegExp(`^${this.STORAGE_PREFIX}`)
   }
 
-  /**
-   * 检查是否为当前版本的键
-   */
   static isCurrentVersionKey(key: string): boolean {
     return key.startsWith(`${this.STORAGE_PREFIX}${this.CURRENT_VERSION}`)
   }
 
-  /**
-   * 检查是否为版本化的键
-   */
   static isVersionedKey(key: string): boolean {
     return key.startsWith(this.STORAGE_PREFIX)
   }

@@ -117,12 +117,6 @@ export function validateStrongPassword(value: string): boolean {
   return hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar
 }
 
-/**
- * 获取密码强度
- * @param value 密码字符串
- * @returns 返回密码强度：弱、中、强
- * @description 弱：纯数字/纯字母/纯特殊字符；中：两种组合；强：三种或以上组合
- */
 export function getPasswordStrength(value: string): PasswordStrength {
   if (!value || typeof value !== 'string') {
     return PasswordStrength.WEAK

@@ -239,7 +239,7 @@
   const handleDocumentClick = (e: Event) => {
     const target = e.target as Element
     const menuElement = document.querySelector('.context-menu')
-    if (menuElement && menuElement.contains(target)) {
+    if (menuElement?.contains(target)) {
       return
     }
     hide()

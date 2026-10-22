@@ -29,6 +29,15 @@ export function useCeremony() {
   const { holidayFireworksLoaded, isShowFireworks } = storeToRefs(settingStore)
 
   let fireworksInterval: { pause: () => void } | null = null
+  let pendingTimers: ReturnType<typeof setTimeout>[] = []
+
+  const later = (fn: () => void, delay: number) => {
+    const timer = setTimeout(() => {
+      pendingTimers = pendingTimers.filter((t) => t !== timer)
+      fn()
+    }, delay)
+    pendingTimers.push(timer)
+  }
 
   /**
    * 获取当前日期对应的节日数据
@@ -36,16 +45,10 @@ export function useCeremony() {
    */
   const currentFestivalData = computed(() => findCurrentFestival())
 
-  /**
-   * 更新节日日期到 store
-   */
   const updateFestivalDate = () => {
     settingStore.setFestivalDate(currentFestivalData.value?.date || '')
   }
 
-  /**
-   * 触发烟花效果
-   */
   const triggerFirework = () => {
     mittBus.emit('triggerFireworks', currentFestivalData.value?.image)
   }
@@ -56,7 +59,7 @@ export function useCeremony() {
   const showFestivalText = () => {
     settingStore.setholidayFireworksLoaded(true)
 
-    setTimeout(() => {
+    later(() => {
       settingStore.setShowFestivalText(true)
       updateFestivalDate()
     }, FESTIVAL_CONFIG.TEXT_DELAY)
@@ -94,11 +97,9 @@ export function useCeremony() {
    * 开启节日庆祝
    */
   const openFestival = () => {
-    if (!currentFestivalData.value || !isShowFireworks.value) {
-      return
-    }
+    if (!currentFestivalData.value || !isShowFireworks.value) return
 
-    setTimeout(startFireworksLoop, FESTIVAL_CONFIG.INITIAL_DELAY)
+    later(startFireworksLoop, FESTIVAL_CONFIG.INITIAL_DELAY)
   }
 
   /**
@@ -109,6 +110,8 @@ export function useCeremony() {
       fireworksInterval.pause()
       fireworksInterval = null
     }
+    pendingTimers.forEach(clearTimeout)
+    pendingTimers = []
     settingStore.setShowFestivalText(false)
     updateFestivalDate()
   }

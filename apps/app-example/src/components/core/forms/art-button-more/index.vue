@@ -56,7 +56,6 @@
 
   const props = withDefaults(defineProps<Props>(), {})
 
-  // 检查是否有任何有权限的 item
   const hasAnyAuthItem = computed(() => {
     return props.list.some((item) => !item.auth || hasAuth(item.auth))
   })

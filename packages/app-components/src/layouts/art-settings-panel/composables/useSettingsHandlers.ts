@@ -2,15 +2,11 @@ import { useSettingStore } from '@art/app-core'
 import { storeToRefs } from 'pinia'
 import type { ContainerWidthEnum } from '@art/app-utils'
 
-/**
- * 设置项通用处理逻辑
- */
 export function useSettingsHandlers() {
   const settingStore = useSettingStore()
 
   // DOM 操作相关
   const domOperations = {
-    // 设置HTML类名
     setHtmlClass: (className: string, add: boolean) => {
       const el = document.getElementsByTagName('html')[0]
       if (add) {
@@ -20,13 +16,11 @@ export function useSettingsHandlers() {
       }
     },
 
-    // 设置根元素属性
     setRootAttribute: (attribute: string, value: string) => {
       const el = document.documentElement
       el.setAttribute(attribute, value)
     },
 
-    // 设置body类名
     setBodyClass: (className: string, add: boolean) => {
       const el = document.getElementsByTagName('body')[0]
       if (add) {
@@ -118,7 +112,6 @@ export function useSettingsHandlers() {
 
   // 盒子样式处理器
   const boxStyleHandlers = {
-    // 设置盒子模式
     setBoxMode: (type: 'border-mode' | 'shadow-mode') => {
       const { boxBorderMode } = storeToRefs(settingStore)
 
@@ -148,7 +141,6 @@ export function useSettingsHandlers() {
 
   // 容器设置处理器
   const containerHandlers = {
-    // 设置容器宽度
     setWidth: (type: ContainerWidthEnum) => {
       settingStore.setContainerWidth(type)
       settingStore.reload()

@@ -30,13 +30,11 @@
     isEmpty: false
   })
 
-  // 定义 emit
   const emit = defineEmits<{
     renderComplete: []
     regionClick: [region: { name: string; adcode: string; level: string }]
   }>()
 
-  // 检查是否为空数据
   const isEmpty = computed(() => {
     return props.isEmpty || (!props.mapData?.length && !chinaMapJson)
   })
@@ -54,7 +52,6 @@
     }))
   }
 
-  // 获取主题相关的样式配置
   const getThemeStyles = () => ({
     borderColor: isDark.value ? 'rgba(255,255,255,0.6)' : 'rgba(147,235,248,1)',
     shadowColor: isDark.value ? 'rgba(0,0,0,0.8)' : 'rgba(128,217,248,1)',
@@ -196,7 +193,6 @@
     }
   }
 
-  // 初始化并渲染地图
   const initMap = async (): Promise<void> => {
     if (!chinaMapRef.value) return
 
@@ -208,13 +204,11 @@
 
     chartInstance.value.setOption(option)
 
-    // 绑定事件
     chartInstance.value.on('click', handleMapClick)
 
     emit('renderComplete')
   }
 
-  // 处理地图点击事件
   const handleMapClick = (params: Record<string, unknown>) => {
     if (params.componentType === 'series') {
       const data = params.data as Record<string, unknown> | undefined
@@ -242,7 +236,6 @@
     chartInstance.value?.resize()
   }
 
-  // 处理组件销毁
   const cleanupChart = () => {
     if (chartInstance.value) {
       chartInstance.value.off('click', handleMapClick)
@@ -252,14 +245,11 @@
     window.removeEventListener('resize', resizeChart)
   }
 
-  // 生命周期钩子
-  onMounted(() => {
-    if (!isEmpty.value) {
-      initMap().then(() => {
-        setTimeout(resizeChart, 100)
-      })
-    }
+  onMounted(async () => {
     window.addEventListener('resize', resizeChart)
+    if (isEmpty.value) return
+    await initMap()
+    setTimeout(resizeChart, 100)
   })
 
   onUnmounted(cleanupChart)
@@ -276,7 +266,6 @@
     }
   })
 
-  // 监听数据变化
   watch(
     () => props.mapData,
     () => {

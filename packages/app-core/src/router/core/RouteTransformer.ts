@@ -18,9 +18,6 @@ export class RouteTransformer {
     this.iframeManager = IframeRouteManager.getInstance()
   }
 
-  /**
-   * 转换路由配置
-   */
   transform(route: AppRouteRecord, depth = 0): ConvertedRoute {
     const { component, children, ...routeConfig } = route
 
@@ -66,9 +63,6 @@ export class RouteTransformer {
     return component
   }
 
-  /**
-   * 处理 iframe 类型路由
-   */
   private handleIframeRoute(
     targetRoute: ConvertedRoute,
     sourceRoute: AppRouteRecord,
@@ -95,9 +89,6 @@ export class RouteTransformer {
     this.iframeManager.add(sourceRoute)
   }
 
-  /**
-   * 处理一级菜单路由
-   */
   private handleFirstLevelRoute(
     converted: ConvertedRoute,
     route: AppRouteRecord,
@@ -117,9 +108,6 @@ export class RouteTransformer {
     ]
   }
 
-  /**
-   * 处理普通路由
-   */
   private handleNormalRoute(converted: ConvertedRoute, component: AppRouteRecord['component']): void {
     if (component) {
       converted.component = this.resolveComponent(component)

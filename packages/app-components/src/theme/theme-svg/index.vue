@@ -22,7 +22,6 @@
 
   const svgContent = ref('')
 
-  // 计算样式
   const sizeStyle = computed(() => {
     const sizeValue = typeof props.size === 'number' ? `${props.size}px` : props.size
     return {
@@ -57,7 +56,6 @@
     )
   }
 
-  // 加载 SVG 文件内容
   const loadSvgContent = async () => {
     if (!props.src) {
       svgContent.value = ''

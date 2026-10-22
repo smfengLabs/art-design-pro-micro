@@ -43,7 +43,6 @@
     legendPosition: 'bottom'
   })
 
-  // 创建系列配置的辅助函数
   const createSeriesConfig = (config: {
     name: string
     data: number[]

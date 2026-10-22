@@ -136,7 +136,6 @@
     }
   ])
 
-  // 获取角色标签类型
   const getRoleTagType = (role?: string): 'info' | 'warning' | 'primary' | 'success' | 'danger' => {
     if (!role) return 'info'
     const roleMap: Record<string, 'info' | 'warning' | 'primary' | 'success' | 'danger'> = {
@@ -147,7 +146,6 @@
     return roleMap[role] || 'info'
   }
 
-  // 获取角色显示名称
   const getRoleDisplayName = (role?: string): string => {
     if (!role) return '未知角色'
     const roleMap: Record<string, string> = {
@@ -169,10 +167,6 @@
     [key: string]: any
   }
 
-  /**
-   * 切换角色
-   * @param account 账号信息
-   */
   const switchRole = async (account: AccountInfo) => {
     try {
       switching.value = true

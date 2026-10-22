@@ -54,11 +54,6 @@
   const timerRef = ref<ReturnType<typeof setInterval> | null>(null)
   const isLaunching = ref(false)
 
-  /**
-   * 触发连续礼花效果
-   * @param count 发射次数
-   * @param src 图片资源路径
-   */
   const triggerFireworks = (count: number, src: string) => {
     // 清除之前的定时器
     if (timerRef.value) {

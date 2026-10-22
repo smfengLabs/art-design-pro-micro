@@ -64,6 +64,5 @@
     maxCount: DEFAULT_MAX_COUNT
   })
 
-  // 计算最大高度
   const maxHeight = computed(() => `${ITEM_HEIGHT * props.maxCount}px`)
 </script>

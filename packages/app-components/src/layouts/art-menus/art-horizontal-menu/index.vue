@@ -77,7 +77,7 @@
         }
 
         // 如果有子菜单，递归过滤子菜单
-        if (item.children && item.children.length > 0) {
+        if (item.children?.length) {
           const filteredChildren = filterMenuItems(item.children)
           // 如果所有子菜单都被过滤掉了，则隐藏父菜单
           return filteredChildren.length > 0

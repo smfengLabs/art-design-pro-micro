@@ -122,19 +122,18 @@
   const highlightedIndex = ref(0)
   const historyHIndex = ref(0)
   const searchResultScrollbar = ref<ScrollbarInstance>()
-  const isKeyboardNavigating = ref(false) // 新增状态：是否正在使用键盘导航
+  const isKeyboardNavigating = ref(false)
 
-  // 生命周期钩子
   onMounted(() => {
     mittBus.on('openSearchDialog', openSearchDialog)
     document.addEventListener('keydown', handleKeydown)
   })
 
   onUnmounted(() => {
+    mittBus.off('openSearchDialog', openSearchDialog)
     document.removeEventListener('keydown', handleKeydown)
   })
 
-  // 键盘快捷键处理
   const handleKeydown = (event: KeyboardEvent) => {
     const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0
     const isCommandKey = isMac ? event.metaKey : event.ctrlKey
@@ -187,14 +186,14 @@
 
       const lowerItemTitle = formatMenuTitle(item.meta.title).toLowerCase()
 
-      if (item.children && item.children.length > 0) {
+      if (item.children?.length) {
         item.children.forEach(flattenAndMatch)
         return
       }
 
       if (
         lowerItemTitle.includes(lowerVal) &&
-        ((item.path && item.path.trim()) || item.meta.link || item.meta.isIframe)
+        (item.path?.trim() || item.meta.link || item.meta.isIframe)
       ) {
         result.push({ ...item, children: undefined })
       }

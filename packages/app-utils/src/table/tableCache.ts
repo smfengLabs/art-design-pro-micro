@@ -57,7 +57,6 @@ export class TableCache<T> {
     }
   }
 
-  // 生成稳定的缓存键
   private generateKey(params: unknown): string {
     return hash(params)
   }
@@ -66,7 +65,6 @@ export class TableCache<T> {
   private generateTags(params: Record<string, unknown>): Set<string> {
     const tags = new Set<string>()
 
-    // 添加搜索条件标签
     const searchKeys = Object.keys(params).filter(
       (key) =>
         !['current', 'size', 'total'].includes(key) &&
@@ -82,7 +80,6 @@ export class TableCache<T> {
       tags.add('search:default')
     }
 
-    // 添加分页标签
     tags.add(`pagination:${params.size || 10}`)
     // 添加通用分页标签，用于清理所有分页缓存
     tags.add('pagination')
@@ -116,7 +113,6 @@ export class TableCache<T> {
     }
   }
 
-  // 设置缓存
   set(params: unknown, data: T[], response: ApiResponse<T>): void {
     const key = this.generateKey(params)
     const tags = this.generateTags(params as Record<string, unknown>)
@@ -136,20 +132,17 @@ export class TableCache<T> {
     })
   }
 
-  // 获取缓存
   get(params: unknown): CacheItem<T> | null {
     const key = this.generateKey(params)
     const item = this.cache.get(key)
 
     if (!item) return null
 
-    // 检查是否过期
     if (Date.now() - item.timestamp > this.cacheTime) {
       this.cache.delete(key)
       return null
     }
 
-    // 更新访问统计
     item.accessCount++
     item.lastAccessTime = Date.now()
 
@@ -161,7 +154,6 @@ export class TableCache<T> {
     let clearedCount = 0
 
     for (const [key, item] of this.cache.entries()) {
-      // 检查是否包含任意一个标签
       const hasMatchingTag = tags.some((tag) =>
         Array.from(item.tags).some((itemTag) => itemTag.includes(tag))
       )
@@ -187,12 +179,10 @@ export class TableCache<T> {
     return this.clearByTags(['pagination'])
   }
 
-  // 清空所有缓存
   clear(): void {
     this.cache.clear()
   }
 
-  // 获取缓存统计信息
   getStats(): { total: number; size: string; hitRate: string } {
     const total = this.cache.size
     let totalSize = 0
@@ -204,7 +194,6 @@ export class TableCache<T> {
       totalAccess += item.accessCount
     }
 
-    // 转换为人类可读的大小
     const sizeInKB = (totalSize / 1024).toFixed(2)
     const avgHits = total > 0 ? (totalAccess / total).toFixed(1) : '0'
 

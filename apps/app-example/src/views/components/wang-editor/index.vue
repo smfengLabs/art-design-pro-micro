@@ -315,26 +315,17 @@ function createEditor() {
 
 <p>简化版编辑器专注于基础功能，适合简单的内容编辑需求。</p>`)
 
-  /**
-   * 清空完整编辑器内容
-   */
   const clearFullEditor = () => {
     fullEditorRef.value?.clear()
     ElMessage.success('完整编辑器已清空')
   }
 
-  /**
-   * 获取完整编辑器内容
-   */
   const getFullEditorContent = () => {
     const content = fullEditorRef.value?.getHtml()
     console.log('完整编辑器内容:', content)
     ElMessage.success('完整编辑器内容已输出到控制台')
   }
 
-  /**
-   * 设置完整编辑器演示内容
-   */
   const setFullEditorDemo = () => {
     const demoContent = `<h2>🎉 完整编辑器演示内容</h2>
 <p>这是通过方法设置的演示内容，展示完整编辑器的强大功能。</p>
@@ -353,26 +344,17 @@ function createEditor() {
     ElMessage.success('已设置完整编辑器演示内容')
   }
 
-  /**
-   * 清空简化编辑器内容
-   */
   const clearSimpleEditor = () => {
     simpleEditorRef.value?.clear()
     ElMessage.success('简化编辑器已清空')
   }
 
-  /**
-   * 获取简化编辑器内容
-   */
   const getSimpleEditorContent = () => {
     const content = simpleEditorRef.value?.getHtml()
     console.log('简化编辑器内容:', content)
     ElMessage.success('简化编辑器内容已输出到控制台')
   }
 
-  /**
-   * 设置简化编辑器演示内容
-   */
   const setSimpleEditorDemo = () => {
     const demoContent = `<h2>⚡ 简化编辑器演示内容</h2>
 <p>这是通过方法设置的演示内容，展示简化编辑器的核心功能。</p>

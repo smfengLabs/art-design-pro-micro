@@ -4,9 +4,6 @@ import { ContainerWidthEnum } from '@art/app-utils'
 import { AppConfig } from '@art/app-core'
 import { headerBarConfig } from '@art/app-core'
 
-/**
- * 设置项配置选项管理
- */
 export function useSettingsConfig() {
   const { t } = useI18n()
 
@@ -101,7 +98,6 @@ export function useSettingsConfig() {
 
   // 基础设置项配置
   const basicSettingsConfig = computed(() => {
-    // 定义所有基础设置项
     const allSettings = [
       {
         key: 'showWorkTab',
@@ -242,7 +238,6 @@ export function useSettingsConfig() {
     boxStyleOptions,
     configOptions,
 
-    // 设置项配置
     basicSettingsConfig
   }
 }

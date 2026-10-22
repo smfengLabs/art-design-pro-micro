@@ -113,7 +113,6 @@
     return primaryColor.value
   }
 
-  // 生成区域样式
   const generateAreaStyle = (item: LineDataItem, color: string) => {
     // 如果有 areaStyle 配置，或者显式开启了区域颜色，则显示区域样式
     if (!item.areaStyle && !item.showAreaColor && !props.showAreaColor) return undefined
@@ -135,7 +134,6 @@
     }
   }
 
-  // 生成单数据区域样式
   const generateSingleAreaStyle = () => {
     if (!props.showAreaColor) return undefined
 
@@ -154,7 +152,6 @@
     }
   }
 
-  // 创建系列配置
   const createSeriesItem = (config: {
     name?: string
     data: number[]
@@ -187,7 +184,6 @@
     }
   }
 
-  // 生成图表配置
   const generateChartOptions = (isInitial = false): EChartsOption => {
     const options: EChartsOption = {
       animation: true,
@@ -217,12 +213,10 @@
       }
     }
 
-    // 添加图例配置
     if (props.showLegend && isMultipleData.value) {
       options.legend = getLegendStyle(props.legendPosition)
     }
 
-    // 生成系列数据
     if (isMultipleData.value) {
       const multiData = animatedData.value as LineDataItem[]
       options.series = multiData.map((item, index) => {
@@ -257,7 +251,6 @@
     return options
   }
 
-  // 更新图表
   const updateChartOptions = (options: EChartsOption) => {
     initChart(options)
   }
@@ -267,7 +260,6 @@
     clearAnimationTimers()
     isAnimating.value = true
 
-    // 初始化为0值数据
     animatedData.value = initAnimationData()
     updateChartOptions(generateChartOptions(true))
 
@@ -307,13 +299,11 @@
 
   // 空数据检查函数
   const checkIsEmpty = () => {
-    // 检查单数据情况
     if (Array.isArray(props.data) && typeof props.data[0] === 'number') {
       const singleData = props.data as number[]
       return !singleData.length || singleData.every((val) => val === 0)
     }
 
-    // 检查多数据情况
     if (Array.isArray(props.data) && typeof props.data[0] === 'object') {
       const multiData = props.data as LineDataItem[]
       return (
@@ -360,7 +350,6 @@
   // 使用 VueUse 的 watchDebounced 优化数据监听（避免频繁更新）
   watch([() => props.data, () => props.xAxisData, () => props.colors], renderChart, { deep: true })
 
-  // 生命周期
   onMounted(() => {
     renderChart()
   })

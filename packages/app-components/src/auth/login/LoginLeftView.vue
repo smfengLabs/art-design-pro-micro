@@ -77,7 +77,6 @@
   import loginIcon from '../../assets/images/svg/login_icon.svg'
   import { themeAnimation } from '@art/app-core'
 
-  // 定义 props
   defineProps<{
     hideContent?: boolean // 是否隐藏内容，只显示 logo
   }>()

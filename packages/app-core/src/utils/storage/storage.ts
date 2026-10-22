@@ -99,7 +99,6 @@ class StorageCompatibilityManager {
   }
 
   isStorageEmpty(): boolean {
-    // 检查新版本存储结构
     if (this.hasCurrentVersionStorage()) {
       return false
     }

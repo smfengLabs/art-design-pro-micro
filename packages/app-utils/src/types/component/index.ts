@@ -36,28 +36,19 @@ export interface ColumnOption<T = any> {
   minWidth?: string | number
   // 固定列
   fixed?: boolean | 'left' | 'right'
-  // 是否可排序
   sortable?: boolean | 'custom'
-  // 过滤器选项
   filters?: any[]
-  // 过滤方法
   filterMethod?: (value: any, row: any) => boolean
-  // 过滤器位置
   filterPlacement?: string
-  // 是否禁用
   disabled?: boolean
-  // 是否显示列
   visible?: boolean
-  // 是否选中显示
   checked?: boolean
   // 自定义渲染函数
   formatter?: (row: T) => any
   // 插槽相关配置
-  // 是否使用插槽渲染内容
   useSlot?: boolean
   // 插槽名称（默认为 prop 值）
   slotName?: string
-  // 是否使用表头插槽
   useHeaderSlot?: boolean
   // 表头插槽名称（默认为 `${prop}-header`）
   headerSlotName?: string
@@ -77,17 +68,14 @@ export interface PaginationConfig {
   pageSizes?: number[]
   // 组件布局
   layout?: string
-  // 是否为小型分页
   small?: boolean
 }
 
 // 表单规则
 export interface FormRule {
-  // 是否必填
   required?: boolean
   // 错误提示信息
   message?: string
-  // 触发方式
   trigger?: string | string[]
   // 最小长度
   min?: number
@@ -103,7 +91,6 @@ export interface FormRule {
 export interface DialogConfig {
   // 标题
   title: string
-  // 是否显示
   visible: boolean
   // 宽度
   width?: string | number
@@ -111,11 +98,8 @@ export interface DialogConfig {
   closeOnClickModal?: boolean
   // 是否可以通过按下 ESC 关闭
   closeOnPressEscape?: boolean
-  // 是否显示关闭按钮
   showClose?: boolean
-  // 是否在 Dialog 出现时将 body 滚动锁定
   lockScroll?: boolean
-  // 是否显示遮罩层
   modal?: boolean
   // 自定义类名
   customClass?: string

@@ -51,7 +51,6 @@ export class RouteValidator {
         const currentPath = route.path || ''
         const fullPath = this.resolvePath(parentPath, currentPath)
 
-        // 名称重复检测
         if (route.name) {
           const routeName = String(route.name)
           if (routeNameMap.has(routeName)) {
@@ -61,20 +60,16 @@ export class RouteValidator {
           }
         }
 
-        // 组件路径重复检测
-        if (route.component && typeof route.component === 'string') {
-          const componentPath = route.component
-          if (componentPath !== RoutesAlias.Layout) {
-            const componentKey = `${parentPath}:${componentPath}`
-            if (componentPathMap.has(componentKey)) {
-              warnings.push(`组件路径重复: "${componentPath}" (${fullPath})`)
-            } else {
-              componentPathMap.set(componentKey, fullPath)
-            }
+        const componentPath = route.component
+        if (typeof componentPath === 'string' && componentPath !== RoutesAlias.Layout) {
+          const componentKey = `${parentPath}:${componentPath}`
+          if (componentPathMap.has(componentKey)) {
+            warnings.push(`组件路径重复: "${componentPath}" (${fullPath})`)
+          } else {
+            componentPathMap.set(componentKey, fullPath)
           }
         }
 
-        // 递归处理子路由
         if (route.children?.length) {
           checkRoutes(route.children, fullPath)
         }
@@ -134,7 +129,6 @@ export class RouteValidator {
    */
   private checkNestedIndexComponent(routes: AppRouteRecord[], level = 1): void {
     routes.forEach((route) => {
-      // 检查二级及以下菜单是否错误使用了 Layout
       if (level > 1 && route.component === RoutesAlias.Layout) {
         this.logLayoutError(route, level)
       }
@@ -146,9 +140,6 @@ export class RouteValidator {
     })
   }
 
-  /**
-   * 输出 Layout 组件配置错误日志
-   */
   private logLayoutError(route: AppRouteRecord, level: number): void {
     const routeName = String(route.name || route.path || '未知路由')
     const routeKey = `${routeName}_${route.path}`

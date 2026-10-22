@@ -40,7 +40,6 @@
 
   defineOptions({ name: 'ArtCardBanner' })
 
-  // 定义卡片横幅组件的属性接口
   interface CardBannerProps {
     /** 高度 */
     height?: string
@@ -96,7 +95,6 @@
     })
   })
 
-  // 定义组件事件
   const emit = defineEmits<{
     (e: 'click'): void // 主按钮点击事件
     (e: 'cancel'): void // 取消按钮点击事件
@@ -107,7 +105,6 @@
     emit('click')
   }
 
-  // 取消按钮点击处理函数
   const handleCancel = () => {
     emit('cancel')
   }

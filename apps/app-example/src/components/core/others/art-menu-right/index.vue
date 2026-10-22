@@ -145,7 +145,6 @@
   let showTimer: number | null = null
   let eventListenersAdded = false
 
-  // 计算菜单样式
   const menuStyle = computed(
     (): CSSProperties => ({
       position: 'fixed' as const,
@@ -156,14 +155,12 @@
     })
   )
 
-  // 计算菜单列表样式
   const menuListStyle = computed(
     (): CSSProperties => ({
       padding: `${props.menuPadding}px`
     })
   )
 
-  // 计算菜单项样式
   const menuItemStyle = computed(
     (): CSSProperties => ({
       height: `${props.itemHeight}px`,
@@ -172,7 +169,6 @@
     })
   )
 
-  // 计算子菜单列表样式
   const submenuListStyle = computed(
     (): CSSProperties => ({
       minWidth: `${props.submenuWidth}px`,
@@ -227,7 +223,6 @@
     return { x, y }
   }
 
-  // 添加事件监听器
   const addEventListeners = () => {
     if (eventListenersAdded) return
 
@@ -237,7 +232,6 @@
     eventListenersAdded = true
   }
 
-  // 移除事件监听器
   const removeEventListeners = () => {
     if (!eventListenersAdded) return
 
@@ -247,23 +241,19 @@
     eventListenersAdded = false
   }
 
-  // 处理文档点击事件
   const handleDocumentClick = (e: Event) => {
-    // 检查点击是否在菜单内部
     const target = e.target as Element
     const menuElement = document.querySelector('.context-menu')
-    if (menuElement && menuElement.contains(target)) {
+    if (menuElement?.contains(target)) {
       return
     }
     hide()
   }
 
-  // 处理文档右键事件
   const handleDocumentContextmenu = () => {
     hide()
   }
 
-  // 处理键盘事件
   const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
       hide()
@@ -280,7 +270,6 @@
       showTimer = null
     }
 
-    // 计算位置
     position.value = calculatePosition(e)
     visible.value = true
 
@@ -307,7 +296,6 @@
       showTimer = null
     }
 
-    // 移除事件监听器
     removeEventListeners()
   }
 
@@ -341,7 +329,6 @@
     }
   })
 
-  // 导出方法供父组件调用
   defineExpose({
     show,
     hide,

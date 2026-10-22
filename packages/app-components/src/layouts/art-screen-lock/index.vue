@@ -163,9 +163,7 @@
     )
   }
 
-  // 添加禁用控制台的函数
   const disableDevTools = () => {
-    // 禁用右键菜单
     const handleContextMenu = (e: Event) => {
       if (isLock.value) {
         e.preventDefault()
@@ -175,11 +173,9 @@
     }
     document.addEventListener('contextmenu', handleContextMenu, true)
 
-    // 禁用开发者工具相关快捷键
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isLock.value) return
 
-      // 禁用 F12
       if (e.key === 'F12') {
         e.preventDefault()
         e.stopPropagation()
@@ -268,7 +264,6 @@
     }
     document.addEventListener('keydown', handleKeyDown, true)
 
-    // 禁用选择文本
     const handleSelectStart = (e: Event) => {
       if (isLock.value) {
         e.preventDefault()
@@ -277,7 +272,6 @@
     }
     document.addEventListener('selectstart', handleSelectStart, true)
 
-    // 禁用拖拽
     const handleDragStart = (e: Event) => {
       if (isLock.value) {
         e.preventDefault()
@@ -312,7 +306,6 @@
       devToolsInterval = setInterval(checkDevTools, 500)
     }
 
-    // 返回清理函数
     return () => {
       document.removeEventListener('contextmenu', handleContextMenu, true)
       document.removeEventListener('keydown', handleKeyDown, true)
@@ -324,7 +317,6 @@
     }
   }
 
-  // 工具函数
   const verifyPassword = (inputPassword: string, storedPassword: string): boolean => {
     try {
       const decryptedPassword = CryptoJS.AES.decrypt(storedPassword, ENCRYPT_KEY).toString(
@@ -385,7 +377,6 @@
             console.error('更新store失败:', error)
           }
         } else {
-          // 触发抖动动画
           const inputElement = unlockInputRef.value?.$el
           if (inputElement) {
             inputElement.classList.add('shake-animation')
@@ -410,7 +401,6 @@
     visible.value = true
   }
 
-  // 监听锁屏状态变化
   watch(isLock, (newValue) => {
     if (newValue) {
       document.body.style.overflow = 'hidden'
@@ -426,7 +416,6 @@
   // 存储清理函数
   let cleanupDevTools: (() => void) | null = null
 
-  // 生命周期钩子
   onMounted(() => {
     mittBus.on('openLockScreen', openLockScreen)
     document.addEventListener('keydown', handleKeydown)
@@ -438,14 +427,13 @@
       }, 100)
     }
 
-    // 初始化禁用开发者工具功能
     cleanupDevTools = disableDevTools()
   })
 
   onUnmounted(() => {
+    mittBus.off('openLockScreen', openLockScreen)
     document.removeEventListener('keydown', handleKeydown)
     document.body.style.overflow = 'auto'
-    // 清理禁用开发者工具的事件监听器
     if (cleanupDevTools) {
       cleanupDevTools()
       cleanupDevTools = null

@@ -142,13 +142,6 @@ export function colourBlend(color1: string, color2: string, ratio: number): stri
   return rgbToHex(blendedRgb[0], blendedRgb[1], blendedRgb[2])
 }
 
-/**
- * 获取变浅的颜色
- * @param color 原始颜色
- * @param level 变浅程度 (0-1)
- * @param isDark 是否为暗色主题
- * @returns 变浅后的颜色
- */
 export function getLightColor(color: string, level: number, isDark: boolean = false): string {
   if (!isValidHexColor(color)) {
     triggerErrorMessage('输入错误的hex颜色值')
@@ -165,12 +158,6 @@ export function getLightColor(color: string, level: number, isDark: boolean = fa
   return rgbToHex(lightRgb[0], lightRgb[1], lightRgb[2])
 }
 
-/**
- * 获取变深的颜色
- * @param color 原始颜色
- * @param level 变深程度 (0-1)
- * @returns 变深后的颜色
- */
 export function getDarkColor(color: string, level: number): string {
   if (!isValidHexColor(color)) {
     triggerErrorMessage('输入错误的hex颜色值')
@@ -183,11 +170,6 @@ export function getDarkColor(color: string, level: number): string {
   return rgbToHex(darkRgb[0], darkRgb[1], darkRgb[2])
 }
 
-/**
- * 处理 Element Plus 主题颜色
- * @param theme 主题颜色
- * @param isDark 是否为暗色主题
- */
 export function handleElementThemeColor(theme: string, isDark: boolean = false): void {
   document.documentElement.style.setProperty('--el-color-primary', theme)
 
@@ -206,10 +188,6 @@ export function handleElementThemeColor(theme: string, isDark: boolean = false):
   }
 }
 
-/**
- * 设置 Element Plus 主题颜色
- * @param color 主题颜色
- */
 export function setElementThemeColor(color: string, isDark: boolean = false): void {
   const mixColor = '#ffffff'
   const elStyle = document.documentElement.style
@@ -217,7 +195,6 @@ export function setElementThemeColor(color: string, isDark: boolean = false): vo
   elStyle.setProperty('--el-color-primary', color)
   handleElementThemeColor(color, isDark)
 
-  // 生成更淡一点的颜色
   for (let i = 1; i < 16; i++) {
     const itemColor = colourBlend(color, mixColor, i / 16)
     elStyle.setProperty(`--el-color-primary-custom-${i}`, itemColor)

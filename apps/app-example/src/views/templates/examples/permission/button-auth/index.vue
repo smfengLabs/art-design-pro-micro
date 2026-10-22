@@ -447,7 +447,6 @@
     return Array.isArray(route.meta.authList) ? (route.meta.authList as AuthItem[]) : []
   })
 
-  // 是否拥有批量操作权限
   const hasBatchPermissions = computed(() => {
     return hasAuth('edit') || hasAuth('delete') || hasAuth('export')
   })
@@ -481,7 +480,6 @@
     }
   ])
 
-  // 获取角色标签类型
   const getRoleTagType = (role: string): 'primary' | 'success' | 'info' | 'warning' | 'danger' => {
     const roleMap: Record<string, 'primary' | 'success' | 'info' | 'warning' | 'danger'> = {
       R_SUPER: 'warning',
@@ -491,7 +489,6 @@
     return roleMap[role] || 'info'
   }
 
-  // 获取角色显示名称
   const getRoleDisplayName = (role: string) => {
     const roleMap: Record<string, string> = {
       R_SUPER: '超级管理员',
@@ -501,7 +498,6 @@
     return roleMap[role] || '未知角色'
   }
 
-  // 处理发布操作
   const handlePublish = () => {
     if (hasAuth('publish')) {
       ElMessage.success('发布成功！')
@@ -510,7 +506,6 @@
     }
   }
 
-  // 处理批量操作
   const handleBatchAction = (command: string) => {
     const actions: Record<string, string> = {
       batchEdit: '批量编辑',

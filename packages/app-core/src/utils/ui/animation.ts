@@ -11,7 +11,6 @@ const { LIGHT, DARK } = SystemThemeEnum
 export const themeAnimation = (e: any) => {
   const x = e.clientX
   const y = e.clientY
-  // 计算鼠标点击位置距离视窗的最大圆半径
   const endRadius = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y))
 
   document.documentElement.style.setProperty('--x', x + 'px')
@@ -25,18 +24,11 @@ export const themeAnimation = (e: any) => {
   }
 }
 
-/**
- * 切换主题
- */
 const toggleTheme = () => {
   useTheme().switchThemeStyles(useSettingStore().systemThemeType === LIGHT ? DARK : LIGHT)
   useCommon().refresh()
 }
 
-/**
- * 切换主题过渡效果
- * @param enable 是否启用过渡效果
- */
 export const toggleTransition = (enable: boolean) => {
   const body = document.body
 

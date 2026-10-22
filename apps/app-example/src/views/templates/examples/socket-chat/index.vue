@@ -229,16 +229,12 @@
     }>
   >([])
 
-  // 计算属性
   const connectionTagType = computed(() => {
     if (isConnecting.value) return 'warning'
     if (isConnected.value) return 'success'
     return 'danger'
   })
 
-  /**
-   * 添加日志
-   */
   const addLog = (type: 'info' | 'success' | 'warning' | 'error', message: string) => {
     logList.value.unshift({
       type,
@@ -252,9 +248,6 @@
     }
   }
 
-  /**
-   * 添加消息记录
-   */
   const addMessage = (type: 'sent' | 'received', content: string) => {
     messageList.value.unshift({
       type,
@@ -268,9 +261,6 @@
     }
   }
 
-  /**
-   * 处理WebSocket消息
-   */
   const handleSocketMessage = (event: MessageEvent) => {
     messageCount.value++
     addMessage('received', event.data)
@@ -309,7 +299,6 @@
 
       wsClient.value.init()
 
-      // 监听连接状态变化
       stopWatchConnection = watch(
         () => wsClient.value?.isWebSocketConnected,
         (connected) => {
@@ -324,7 +313,6 @@
         { immediate: true }
       )
 
-      // 监听连接状态文本变化
       stopWatchStatus = watch(
         () => wsClient.value?.connectionStatusText,
         (status) => {
@@ -414,23 +402,14 @@
     }
   }
 
-  /**
-   * 清空消息表单
-   */
   const clearMessageForm = () => {
     messageForm.value.content = ''
   }
 
-  /**
-   * 清空消息记录
-   */
   const clearMessages = () => {
     messageList.value = []
   }
 
-  /**
-   * 清空日志
-   */
   const clearLogs = () => {
     logList.value = []
   }
@@ -438,19 +417,19 @@
   /**
    * 页面卸载时清理连接
    */
-  onUnmounted(() => {
-    handleDisconnect()
+  const handleVisibilityChange = () => {
+    if (document.hidden && isConnected.value) {
+      addLog('info', '页面隐藏，保持连接')
+    }
+  }
+
+  onMounted(() => {
+    document.addEventListener('visibilitychange', handleVisibilityChange)
   })
 
-  /**
-   * 监听页面可见性变化，页面隐藏时断开连接
-   */
-  onMounted(() => {
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && isConnected.value) {
-        addLog('info', '页面隐藏，保持连接')
-      }
-    })
+  onUnmounted(() => {
+    document.removeEventListener('visibilitychange', handleVisibilityChange)
+    handleDisconnect()
   })
 </script>
 

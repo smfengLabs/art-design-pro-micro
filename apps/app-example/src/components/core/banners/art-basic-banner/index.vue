@@ -160,13 +160,11 @@
     imageConfig: () => ({ src: '', width: '12rem', bottom: '-3rem', right: '0' })
   })
 
-  // 定义组件事件
   const emit = defineEmits<{
     (e: 'click'): void // 整体点击事件
     (e: 'buttonClick'): void // 按钮点击事件
   }>()
 
-  // 计算按钮样式属性
   const buttonColor = computed(() => props.buttonConfig?.color ?? '#fff')
   const buttonTextColor = computed(() => props.buttonConfig?.textColor ?? '#333')
   const buttonRadius = computed(() => props.buttonConfig?.radius ?? '6px')
@@ -179,16 +177,9 @@
     }
   })
 
-  /**
-   * 生成流星数据数组
-   * @param count 流星数量
-   * @returns 流星数据数组
-   */
   function generateMeteors(count: number): Meteor[] {
-    // 计算每个流星的区域宽度
     const segmentWidth = 100 / count
     return Array.from({ length: count }, (_, index) => {
-      // 计算流星起始位置
       const segmentStart = index * segmentWidth
       // 在区域内随机生成x坐标
       const x = segmentStart + Math.random() * segmentWidth

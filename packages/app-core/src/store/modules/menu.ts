@@ -18,49 +18,26 @@ export const useMenuStore = defineStore('menuStore', () => {
   /** 存储路由移除函数的数组 */
   const removeRouteFns = ref<(() => void)[]>([])
 
-  /**
-   * 设置菜单列表
-   * @param list 菜单路由记录数组
-   */
   const setMenuList = (list: AppRouteRecord[]) => {
     menuList.value = list
     setHomePath(getHomePagePath() || getFirstMenuPath(list))
   }
 
-  /**
-   * 获取首页路径
-   * @returns 首页路径字符串
-   */
   const getHomePath = () => homePath.value
 
-  /**
-   * 设置主页路径
-   * @param path 主页路径
-   */
   const setHomePath = (path: string) => {
     homePath.value = path
   }
 
-  /**
-   * 添加路由移除函数
-   * @param fns 要添加的路由移除函数数组
-   */
   const addRemoveRouteFns = (fns: (() => void)[]) => {
     removeRouteFns.value.push(...fns)
   }
 
-  /**
-   * 移除所有动态路由
-   * 执行所有存储的路由移除函数并清空数组
-   */
   const removeAllDynamicRoutes = () => {
     removeRouteFns.value.forEach((fn) => fn())
     removeRouteFns.value = []
   }
 
-  /**
-   * 清空路由移除函数数组
-   */
   const clearRemoveRouteFns = () => {
     removeRouteFns.value = []
   }
