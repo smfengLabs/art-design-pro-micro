@@ -73,6 +73,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable } from '@art/app-components/table'
   import { VueDraggable } from 'vue-draggable-plus'
 
   defineOptions({ name: 'TemplateDrag' })

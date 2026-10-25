@@ -54,6 +54,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable, ArtTableHeader } from '@art/app-components/table'
   import { useTable } from '@art/app-core'
   import { fetchGetUserList } from '@/api/system-manage'
   import UserSearch from './modules/user-search.vue'

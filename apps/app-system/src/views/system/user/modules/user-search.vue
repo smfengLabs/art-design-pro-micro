@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtSearchBar } from '@art/app-components/search'
   interface Props {
     modelValue: Api.SystemManage.UserSearchParams
   }

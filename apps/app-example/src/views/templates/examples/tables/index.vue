@@ -425,6 +425,9 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable, ArtTableHeader } from '@art/app-components/table'
+  import { ArtSearchBar } from '@art/app-components/search'
+  import { ArtButtonTable } from '@art/app-components/button'
   import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
   import {
     Plus,
@@ -519,7 +522,7 @@
   } as const
 
   // 搜索表单配置
-  // 日期选择器有多种类型，具体可以查看 src/components/core/forms/art-search-bar/widget/art-search-date/README.md 文档
+  // 日期选择器有多种类型，具体可以查看 packages/app-components/src/search/art-search-bar 文档
   const searchItems = computed(() => [
     {
       key: 'name',

@@ -61,8 +61,9 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtForm } from '@art/app-components/form'
   import ArtWangEditor from '@/components/core/forms/art-wang-editor/index.vue'
-  import { SearchFormItem } from '@/components/core/forms/art-search-bar/index.vue'
+  import type { SearchFormItem } from '@art/app-components/search'
   import { ElMessage, ElUpload, ElButton, ElIcon, ElInput } from 'element-plus'
   import type { UploadFile, UploadFiles, UploadUserFile } from 'element-plus'
   import { Plus } from '@element-plus/icons-vue'

@@ -99,49 +99,12 @@
 <script setup lang="ts">
   import { useWindowSize } from '@vueuse/core'
   import { useI18n } from 'vue-i18n'
-  import { toRaw, type Component } from 'vue'
-  import {
-    ElCascader,
-    ElCheckbox,
-    ElCheckboxGroup,
-    ElDatePicker,
-    ElInput,
-    ElInputTag,
-    ElInputNumber,
-    ElRadioGroup,
-    ElRate,
-    ElSelect,
-    ElSlider,
-    ElSwitch,
-    ElTimePicker,
-    ElTimeSelect,
-    ElTreeSelect,
-    type FormInstance
-  } from 'element-plus'
+  import { computed, ref, toRaw, toRefs, useTemplateRef, type Component, type VNode } from 'vue'
+  import { ElCheckbox, type FormInstance } from 'element-plus'
   import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@art/app-utils'
+  import { fieldTypes } from '../field-types'
 
   defineOptions({ name: 'ArtForm' })
-
-  const componentMap = {
-    input: ElInput, // 输入框
-    inputtag: ElInputTag, // 标签输入框
-    number: ElInputNumber, // 数字输入框
-    select: ElSelect, // 选择器
-    switch: ElSwitch, // 开关
-    checkbox: ElCheckbox, // 复选框
-    checkboxgroup: ElCheckboxGroup, // 复选框组
-    radiogroup: ElRadioGroup, // 单选框组
-    date: ElDatePicker, // 日期选择器
-    daterange: ElDatePicker, // 日期范围选择器
-    datetime: ElDatePicker, // 日期时间选择器
-    datetimerange: ElDatePicker, // 日期时间范围选择器
-    rate: ElRate, // 评分
-    slider: ElSlider, // 滑块
-    cascader: ElCascader, // 级联选择器
-    timepicker: ElTimePicker, // 时间选择器
-    timeselect: ElTimeSelect, // 时间选择
-    treeselect: ElTreeSelect // 树选择器
-  }
 
   const { width } = useWindowSize()
   const { t } = useI18n()
@@ -157,7 +120,7 @@
     /** 表单项标签的宽度，会覆盖 Form 的 labelWidth */
     labelWidth?: string | number
     /** 表单项类型，支持预定义的组件类型 */
-    type?: keyof typeof componentMap | string
+    type?: keyof typeof fieldTypes | string
     /** 自定义渲染函数或组件，用于渲染自定义组件（优先级高于 type） */
     render?: (() => VNode) | Component
     /** 是否隐藏该表单项 */
@@ -434,7 +397,7 @@
       return item.render
     }
     const { type } = item
-    return componentMap[type as keyof typeof componentMap] || componentMap['input']
+    return fieldTypes[type as keyof typeof fieldTypes] || fieldTypes['input']
   }
 
   // 小屏幕按 24 格降级，避免表单项被压缩过小

@@ -24,7 +24,10 @@
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
   import { useAuth } from '@art/app-core'
+  import ArtIconButton from '../../widget/art-icon-button/index.vue'
+  import ArtSvgIcon from '../../base/art-svg-icon/index.vue'
 
   defineOptions({ name: 'ArtButtonMore' })
 

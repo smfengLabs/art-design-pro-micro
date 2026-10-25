@@ -25,6 +25,8 @@ catalog:
   # 运行时强耦合包（依赖宿主 Vue 的 currentInstance/onMounted/ref 归一化，须走 loadShare 单例）：
   '@iconify/vue': ^5.0.3
   vue-draggable-plus: ^0.6.0
+  # app-components 的表格/搜索/表单/布局均依赖它，纳入共享避免远端各打一份
+  '@vueuse/core': ^13.9.0
 
 # pnpm 10+ 默认阻止依赖执行构建脚本；以下为白名单（安装期需要 postinstall 的常用包）
 

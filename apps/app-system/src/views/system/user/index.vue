@@ -33,7 +33,8 @@
 </template>
 
 <script setup lang="ts">
-  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
+  import { ArtTable, ArtTableHeader } from '@art/app-components/table'
+  import { ArtButtonTable } from '@art/app-components/button'
   import { ACCOUNT_TABLE_DATA } from '@/mock/temp/formData'
   import { useTable, mittBus } from '@art/app-core'
   import { fetchGetUserList } from '@/api/system-manage'

@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtSearchBar } from '@art/app-components/search'
   type RoleSearchFormParams = Api.SystemManage.RoleSearchParams & {
     daterange?: string[]
   }
