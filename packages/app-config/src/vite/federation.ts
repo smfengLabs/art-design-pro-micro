@@ -73,6 +73,11 @@ export const mfSharedConfig = {
     singleton: true,
     requiredVersion: getCatalogVersion('vue-draggable-plus')
   },
+  // 组件库的表格/搜索/表单/布局都用它，远端各自预打包会出多份副本
+  '@vueuse/core': {
+    singleton: true,
+    requiredVersion: getCatalogVersion('@vueuse/core')
+  },
   axios: { singleton: true, requiredVersion: getCatalogVersion('axios') },
   '@art/app-utils': { singleton: true, allowNodeModulesSuffixMatch: true },
   '@art/app-api': { singleton: true, allowNodeModulesSuffixMatch: true },

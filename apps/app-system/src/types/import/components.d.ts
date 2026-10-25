@@ -11,14 +11,8 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    ArtButtonMore: typeof import('./../../components/core/forms/art-button-more/index.vue')['default']
-    ArtButtonTable: typeof import('./../../components/core/forms/art-button-table/index.vue')['default']
-    ArtForm: typeof import('./../../components/core/forms/art-form/index.vue')['default']
     ArtIconButton: typeof import('./../../components/core/widget/art-icon-button/index.vue')['default']
-    ArtSearchBar: typeof import('./../../components/core/forms/art-search-bar/index.vue')['default']
     ArtSvgIcon: typeof import('./../../components/core/base/art-svg-icon/index.vue')['default']
-    ArtTable: typeof import('./../../components/core/tables/art-table/index.vue')['default']
-    ArtTableHeader: typeof import('./../../components/core/tables/art-table-header/index.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']

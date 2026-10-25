@@ -1,15 +1,15 @@
-<!-- 表单组件 -->
+<!-- 表格搜索组件 -->
 <!-- 支持常用表单组件、自定义组件、插槽、校验、隐藏表单项 -->
 <!-- 写法同 ElementPlus 官方文档组件，把属性写在 props 里面就可以了 -->
 <template>
-  <section class="px-4 pb-0 pt-4 md:px-4 md:pt-4">
+  <section class="art-search-bar art-card-xs" :class="{ 'is-expanded': isExpanded }">
     <ElForm
       ref="formRef"
       :model="modelValue"
       :label-position="labelPosition"
       v-bind="{ ...$attrs }"
     >
-      <ElRow class="flex flex-wrap" :gutter="gutter">
+      <ElRow :gutter="gutter">
         <ElCol
           v-for="item in visibleFormItems"
           :key="item.key"
@@ -69,25 +69,31 @@
             </slot>
           </ElFormItem>
         </ElCol>
-        <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="max-w-full flex-1">
-          <div
-            class="mb-3 flex-c flex-wrap justify-end md:flex-row md:items-stretch md:gap-2"
-            :style="actionButtonsStyle"
-          >
-            <div class="flex gap-2 md:justify-center">
+        <ElCol :xs="24" :sm="24" :md="span" :lg="span" :xl="span" class="action-column">
+          <div class="action-buttons-wrapper" :style="actionButtonsStyle">
+            <div class="form-buttons">
               <ElButton v-if="showReset" class="reset-button" @click="handleReset" v-ripple>
-                {{ t('table.form.reset') }}
+                {{ t('table.searchBar.reset') }}
               </ElButton>
               <ElButton
-                v-if="showSubmit"
+                v-if="showSearch"
                 type="primary"
-                class="submit-button"
-                @click="handleSubmit"
+                class="search-button"
+                @click="handleSearch"
                 v-ripple
-                :disabled="disabledSubmit"
+                :disabled="disabledSearch"
               >
-                {{ t('table.form.submit') }}
+                {{ t('table.searchBar.search') }}
               </ElButton>
+            </div>
+            <div v-if="shouldShowExpandToggle" class="filter-toggle" @click="toggleExpand">
+              <span>{{ expandToggleText }}</span>
+              <div class="icon-wrapper">
+                <ElIcon>
+                  <ArrowUpBold v-if="isExpanded" />
+                  <ArrowDownBold v-else />
+                </ElIcon>
+              </div>
             </div>
           </div>
         </ElCol>
@@ -97,51 +103,15 @@
 </template>
 
 <script setup lang="ts">
+  import { ArrowUpBold, ArrowDownBold } from '@element-plus/icons-vue'
   import { useWindowSize } from '@vueuse/core'
   import { useI18n } from 'vue-i18n'
-  import { toRaw, type Component } from 'vue'
-  import {
-    ElCascader,
-    ElCheckbox,
-    ElCheckboxGroup,
-    ElDatePicker,
-    ElInput,
-    ElInputTag,
-    ElInputNumber,
-    ElRadioGroup,
-    ElRate,
-    ElSelect,
-    ElSlider,
-    ElSwitch,
-    ElTimePicker,
-    ElTimeSelect,
-    ElTreeSelect,
-    type FormInstance
-  } from 'element-plus'
+  import { computed, ref, toRaw, toRefs, useTemplateRef, type Component, type VNode } from 'vue'
+  import { ElCheckbox, type FormInstance } from 'element-plus'
   import { calculateResponsiveSpan, type ResponsiveBreakpoint } from '@art/app-utils'
+  import { fieldTypes } from '../../form/field-types'
 
-  defineOptions({ name: 'ArtForm' })
-
-  const componentMap = {
-    input: ElInput, // 输入框
-    inputtag: ElInputTag, // 标签输入框
-    number: ElInputNumber, // 数字输入框
-    select: ElSelect, // 选择器
-    switch: ElSwitch, // 开关
-    checkbox: ElCheckbox, // 复选框
-    checkboxgroup: ElCheckboxGroup, // 复选框组
-    radiogroup: ElRadioGroup, // 单选框组
-    date: ElDatePicker, // 日期选择器
-    daterange: ElDatePicker, // 日期范围选择器
-    datetime: ElDatePicker, // 日期时间选择器
-    datetimerange: ElDatePicker, // 日期时间范围选择器
-    rate: ElRate, // 评分
-    slider: ElSlider, // 滑块
-    cascader: ElCascader, // 级联选择器
-    timepicker: ElTimePicker, // 时间选择器
-    timeselect: ElTimeSelect, // 时间选择
-    treeselect: ElTreeSelect // 树选择器
-  }
+  defineOptions({ name: 'ArtSearchBar' })
 
   const { width } = useWindowSize()
   const { t } = useI18n()
@@ -149,7 +119,7 @@
 
   const formInstance = useTemplateRef<FormInstance>('formRef')
 
-  export interface FormItem {
+  export interface SearchFormItem {
     /** 表单项的唯一标识 */
     key: string
     /** 表单项的标签文本或自定义渲染函数 */
@@ -157,7 +127,7 @@
     /** 表单项标签的宽度，会覆盖 Form 的 labelWidth */
     labelWidth?: string | number
     /** 表单项类型，支持预定义的组件类型 */
-    type?: keyof typeof componentMap | string
+    type?: keyof typeof fieldTypes | string
     /** 自定义渲染函数或组件，用于渲染自定义组件（优先级高于 type） */
     render?: (() => VNode) | Component
     /** 是否隐藏该表单项 */
@@ -175,26 +145,32 @@
     /** 更多属性配置请参考 ElementPlus 官方文档 */
   }
 
-  interface FormProps {
+  interface SearchBarProps {
     /** 表单数据 */
-    items: FormItem[]
+    items: SearchFormItem[]
     /** 每列的宽度（基于 24 格布局） */
     span?: number
     /** 表单控件间隙 */
     gutter?: number
+    /** 展开/收起 */
+    isExpand?: boolean
+    /** 默认是否展开（仅在 showExpand 为 true 且 isExpand 为 false 时生效） */
+    defaultExpanded?: boolean
     /** 表单域标签的位置 */
     labelPosition?: 'left' | 'right' | 'top'
     /** 文字宽度 */
     labelWidth?: string | number
+    /** 是否需要展示，收起 */
+    showExpand?: boolean
     /** 按钮靠左对齐限制（表单项小于等于该值时） */
     buttonLeftLimit?: number
     /** 是否显示重置按钮 */
     showReset?: boolean
-    /** 是否显示提交按钮 */
-    showSubmit?: boolean
-    /** 是否禁用提交按钮 */
-    disabledSubmit?: boolean
-    /** 提交时是否清洗空值 */
+    /** 是否显示搜索按钮 */
+    showSearch?: boolean
+    /** 是否禁用搜索按钮 */
+    disabledSearch?: boolean
+    /** 搜索时是否清洗空值 */
     sanitizeOutput?: Partial<SanitizeOutputOptions>
   }
 
@@ -207,36 +183,39 @@
     removeEmptyObject: boolean
     /** 移除空富文本占位内容，如 <p><br></p> */
     removeEmptyRichText: boolean
-    /** 保留数字 0 这类有效值 */
+    /** 保留数字 0 这类有效筛选值 */
     keepZero: boolean
-    /** 保留 false 这类有效值 */
+    /** 保留 false 这类有效筛选值 */
     keepFalse: boolean
   }
 
-  const props = withDefaults(defineProps<FormProps>(), {
+  const props = withDefaults(defineProps<SearchBarProps>(), {
     items: () => [],
     span: 6,
     gutter: 12,
+    isExpand: false,
     labelPosition: 'right',
     labelWidth: '70px',
+    showExpand: true,
+    defaultExpanded: false,
     buttonLeftLimit: 2,
     showReset: true,
-    showSubmit: true,
-    disabledSubmit: false,
+    showSearch: true,
+    disabledSearch: false,
     sanitizeOutput: () => ({})
   })
 
-  interface FormEmits {
+  interface SearchBarEmits {
     reset: []
-    submit: [Record<string, any>]
+    search: [Record<string, any>]
   }
 
-  const emit = defineEmits<FormEmits>()
+  const emit = defineEmits<SearchBarEmits>()
 
   const modelValue = defineModel<Record<string, any>>({ default: () => ({}) })
   const initialModelValue = ref<Record<string, any>>({})
 
-  // 保存组件初始化时的表单快照，用于 reset 时恢复默认值。
+  // 保存组件初始化时的表单快照，用于 reset 时恢复默认筛选条件。
   const cloneModelValue = (value: Record<string, any> | undefined) => {
     if (!value) return {}
 
@@ -261,8 +240,10 @@
 
   initialModelValue.value = cloneModelValue(modelValue.value)
 
+  const isExpanded = ref(props.defaultExpanded)
+
   const rootProps = ['label', 'labelWidth', 'key', 'type', 'hidden', 'span', 'slots']
-  // 输出时的清洗策略默认偏“接口友好”，但允许按业务覆盖。
+  // 搜索参数默认更激进地去掉空值，减少无效 query 参数。
   const sanitizeOutputOptions = computed<SanitizeOutputOptions>(() => ({
     removeEmptyString: true,
     removeEmptyArray: true,
@@ -273,74 +254,44 @@
     ...props.sanitizeOutput
   }))
 
-  const PATH_NUMBER_RE = /^\d+$/
-
-  // 兼容 a.b、a.0.b 这类路径写法，数字段会被当作数组索引处理。
-  const parsePath = (path: string) => {
-    return path
-      .split('.')
-      .filter(Boolean)
-      .map((segment) => (PATH_NUMBER_RE.test(segment) ? Number(segment) : segment))
+  const getProps = (item: SearchFormItem) => {
+    if (item.props) return item.props
+    const props = { ...item }
+    rootProps.forEach((key) => delete (props as Record<string, any>)[key])
+    return props
   }
 
-  const getFieldValue = (path: string) => {
-    return parsePath(path).reduce<any>((currentValue, segment) => {
-      if (currentValue == null) return undefined
-      return currentValue[segment]
-    }, modelValue.value)
+  const getSlots = (item: SearchFormItem) => {
+    if (!item.slots) return {}
+    const validSlots: Record<string, () => any> = {}
+    Object.entries(item.slots).forEach(([key, slotFn]) => {
+      if (slotFn) {
+        validSlots[key] = slotFn
+      }
+    })
+    return validSlots
   }
 
-  // 清空字段时只删除路径的最后一段，避免误删同级数据。
-  const deleteFieldValue = (path: string) => {
-    const segments = parsePath(path)
-    if (!segments.length) return
-
-    const lastSegment = segments.pop()
-    const parent = segments.reduce<any>((currentValue, segment) => {
-      if (currentValue == null) return undefined
-      return currentValue[segment]
-    }, modelValue.value)
-
-    if (parent != null && lastSegment !== undefined) {
-      delete parent[lastSegment]
-    }
+  const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
+    return calculateResponsiveSpan(itemSpan, span.value, breakpoint)
   }
 
-  // 表单清空输入时不保留空字符串，同时按路径自动补齐中间对象或数组。
-  const setFieldValue = (path: string, value: unknown) => {
-    const normalizedValue = value === '' ? undefined : value
-    const segments = parsePath(path)
+  // 搜索表单清空输入时不保留空字符串，避免后续请求携带空字段。
+  const normalizeFieldValue = (value: unknown) => {
+    return value === '' ? undefined : value
+  }
 
-    if (!segments.length) return
+  const getFieldValue = (key: string) => modelValue.value[key]
+
+  const setFieldValue = (key: string, value: unknown) => {
+    const normalizedValue = normalizeFieldValue(value)
 
     if (normalizedValue === undefined) {
-      deleteFieldValue(path)
+      delete modelValue.value[key]
       return
     }
 
-    let currentValue: any = modelValue.value
-
-    segments.forEach((segment, index) => {
-      const isLast = index === segments.length - 1
-
-      if (isLast) {
-        currentValue[segment] = normalizedValue
-        return
-      }
-
-      const nextSegment = segments[index + 1]
-      const nextContainer = typeof nextSegment === 'number' ? [] : {}
-
-      if (
-        currentValue[segment] === null ||
-        currentValue[segment] === undefined ||
-        typeof currentValue[segment] !== 'object'
-      ) {
-        currentValue[segment] = nextContainer
-      }
-
-      currentValue = currentValue[segment]
-    })
+    modelValue.value[key] = normalizedValue
   }
 
   const isRichTextEmpty = (value: string) => {
@@ -358,7 +309,7 @@
     )
   }
 
-  // 提交时按配置清洗空值，但保留 0 和 false 这类有效值。
+  // 搜索时按配置清洗空值，但保留 0 和 false 这类有效筛选条件。
   const sanitizeOutputValue = (value: unknown): unknown => {
     const options = sanitizeOutputOptions.value
 
@@ -411,39 +362,33 @@
     return (sanitizeOutputValue(cloneModelValue(modelValue.value)) || {}) as Record<string, any>
   }
 
-  const getProps = (item: FormItem) => {
-    if (item.props) return item.props
-    const props = { ...item }
-    rootProps.forEach((key) => delete (props as Record<string, any>)[key])
-    return props
-  }
-
-  const getSlots = (item: FormItem) => {
-    if (!item.slots) return {}
-    const validSlots: Record<string, () => any> = {}
-    Object.entries(item.slots).forEach(([key, slotFn]) => {
-      if (slotFn) {
-        validSlots[key] = slotFn
-      }
-    })
-    return validSlots
-  }
-
-  const getComponent = (item: FormItem) => {
+  const getComponent = (item: SearchFormItem) => {
     if (item.render) {
       return item.render
     }
     const { type } = item
-    return componentMap[type as keyof typeof componentMap] || componentMap['input']
-  }
-
-  // 小屏幕按 24 格降级，避免表单项被压缩过小
-  const getColSpan = (itemSpan: number | undefined, breakpoint: ResponsiveBreakpoint): number => {
-    return calculateResponsiveSpan(itemSpan, span.value, breakpoint)
+    return fieldTypes[type as keyof typeof fieldTypes] || fieldTypes['input']
   }
 
   const visibleFormItems = computed(() => {
-    return props.items.filter((item) => !item.hidden)
+    const filteredItems = props.items.filter((item) => !item.hidden)
+    const shouldShowLess = !props.isExpand && !isExpanded.value
+    if (shouldShowLess) {
+      const maxItemsPerRow = Math.floor(24 / props.span) - 1
+      return filteredItems.slice(0, maxItemsPerRow)
+    }
+    return filteredItems
+  })
+
+  const shouldShowExpandToggle = computed(() => {
+    const filteredItems = props.items.filter((item) => !item.hidden)
+    return (
+      !props.isExpand && props.showExpand && filteredItems.length > Math.floor(24 / props.span) - 1
+    )
+  })
+
+  const expandToggleText = computed(() => {
+    return isExpanded.value ? t('table.searchBar.collapse') : t('table.searchBar.expand')
   })
 
   const actionButtonsStyle = computed(() => ({
@@ -454,10 +399,14 @@
         : 'flex-end'
   }))
 
+  const toggleExpand = () => {
+    isExpanded.value = !isExpanded.value
+  }
+
   const handleReset = () => {
     formInstance.value?.resetFields()
 
-    // 恢复初始表单值，保留默认值而不是简单清空。
+    // 恢复初始表单值，保留默认搜索条件而不是简单清空。
     Object.keys(modelValue.value).forEach((key) => {
       delete modelValue.value[key]
     })
@@ -466,9 +415,9 @@
     emit('reset')
   }
 
-  const handleSubmit = () => {
-    // 对外只抛出清洗后的结果，避免业务层重复过滤空值。
-    emit('submit', getSanitizedOutput())
+  const handleSearch = () => {
+    // 对外只抛出清洗后的查询参数，避免接口收到空数组/空字符串。
+    emit('search', getSanitizedOutput())
   }
 
   defineExpose({
@@ -480,3 +429,77 @@
 
   const { span, gutter, labelPosition, labelWidth } = toRefs(props)
 </script>
+
+<style lang="scss" scoped>
+  .art-search-bar {
+    padding: 15px 20px 0;
+
+    .action-column {
+      flex: 1;
+      max-width: 100%;
+
+      .action-buttons-wrapper {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-end;
+        margin-bottom: 12px;
+      }
+
+      .form-buttons {
+        display: flex;
+        gap: 8px;
+      }
+
+      .filter-toggle {
+        display: flex;
+        align-items: center;
+        margin-left: 10px;
+        line-height: 32px;
+        color: var(--theme-color);
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        &:hover {
+          color: var(--ElColor-primary);
+        }
+
+        span {
+          font-size: 14px;
+          user-select: none;
+        }
+
+        .icon-wrapper {
+          display: flex;
+          align-items: center;
+          margin-left: 4px;
+          font-size: 14px;
+          transition: transform 0.2s ease;
+        }
+      }
+    }
+  }
+
+  @media (width <= 768px) {
+    .art-search-bar {
+      padding: 16px 16px 0;
+
+      .action-column {
+        .action-buttons-wrapper {
+          flex-direction: column;
+          gap: 8px;
+          align-items: stretch;
+
+          .form-buttons {
+            justify-content: center;
+          }
+
+          .filter-toggle {
+            justify-content: center;
+            margin-left: 0;
+          }
+        }
+      }
+    }
+  }
+</style>

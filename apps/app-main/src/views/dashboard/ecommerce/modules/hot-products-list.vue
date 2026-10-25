@@ -55,6 +55,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable } from '@art/app-components/table'
   import product1 from '@/assets/images/3d/icon1.webp'
   import product2 from '@/assets/images/3d/icon2.webp'
   import product3 from '@/assets/images/3d/icon3.webp'

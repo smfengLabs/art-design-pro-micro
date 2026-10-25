@@ -1,6 +1,6 @@
 {
   "name": "@art/app-components",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "main": "src/index.ts",
@@ -10,6 +10,10 @@
     ".": "./src/index.ts",
     "./iconify": "./src/ui/iconify-loader.ts",
     "./layouts": "./src/layouts/index.ts",
+    "./table": "./src/table/index.ts",
+    "./form": "./src/form/index.ts",
+    "./search": "./src/search/index.ts",
+    "./button": "./src/button/index.ts",
     "./auth/login": "./src/auth/login/index.vue",
     "./auth/unified-login": "./src/auth/unified-login.vue",
     "./auth/register": "./src/auth/register/index.vue",
@@ -24,11 +28,12 @@
     "@art/app-utils": "workspace:*",
     "@element-plus/icons-vue": "^2.3.2",
     "@iconify/vue": "catalog:",
-    "@vueuse/core": "^13.9.0",
+    "@vueuse/core": "catalog:",
     "crypto-js": "^4.2.0",
     "element-plus": "catalog:",
     "mitt": "catalog:",
     "pinia": "catalog:",
+    "vue-draggable-plus": "catalog:",
     "vue-i18n": "catalog:"
   },
   "peerDependencies": {

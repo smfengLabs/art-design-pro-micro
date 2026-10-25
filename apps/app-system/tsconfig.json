@@ -11,6 +11,10 @@
       "@art/app-core/bootstrap": ["packages/app-core/src/bootstrap.ts"],
       "@art/app-components": ["packages/app-components/src/index.ts"],
       "@art/app-components/layouts": ["packages/app-components/src/layouts/index.ts"],
+      "@art/app-components/table": ["packages/app-components/src/table/index.ts"],
+      "@art/app-components/form": ["packages/app-components/src/form/index.ts"],
+      "@art/app-components/search": ["packages/app-components/src/search/index.ts"],
+      "@art/app-components/button": ["packages/app-components/src/button/index.ts"],
       "@art/app-base": ["packages/app-base/src/index.ts"],
       "@art/app-config": ["packages/app-config/src/index.ts"]
     }

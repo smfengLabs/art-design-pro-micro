@@ -13,6 +13,9 @@
 </template>
 
 <script setup lang="ts">
+  import { computed } from 'vue'
+  import ArtSvgIcon from '../../base/art-svg-icon/index.vue'
+
   defineOptions({ name: 'ArtButtonTable' })
 
   interface Props {

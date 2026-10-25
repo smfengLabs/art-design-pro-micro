@@ -19,6 +19,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable } from '@art/app-components/table'
   import { useTable } from '@art/app-core'
   import { fetchGetUserList } from '@/api/system-manage'
 

@@ -23,6 +23,22 @@ export default {
       from: { path: '^apps/app-system/' },
       to: { path: '^apps/(?!app-system/)' }
     },
+    {
+      name: 'no-cross-app-from-example',
+      severity: 'error',
+      from: { path: '^apps/app-example/' },
+      to: { path: '^apps/(?!app-example/)' }
+    },
+
+    // 表格/搜索/表单已收进 app-components，应用内不得再留副本
+    {
+      name: 'no-shared-component-copies',
+      severity: 'error',
+      from: { path: '^apps/' },
+      to: {
+        path: 'components/core/(?:tables|forms)/(?:art-table|art-table-header|art-form|art-search-bar|art-button-table|art-button-more)/'
+      }
+    },
 
     // 外部依赖黑名单：能力包不得反向绑定 UI 框架/运行时
     {

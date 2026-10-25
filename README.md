@@ -28,7 +28,7 @@
 - **极细粒度 Monorepo**：`apps` + `packages` 架构，通过 `dependency-cruiser` 强约束依赖拓扑，拒绝分布式单体。
 - **统一门户与独立单飞**：主应用（Host）聚合所有子应用；子应用（Remote）自带完整 Layout 壳与独立登录页，支持独立域名部署。
 - **彻底的状态共享**：基于 MF 2.0 `shared: singleton`，全局唯一 `Vue` / `Pinia` / `Vue-Router` 实例，Token 与权限数据完美互通。
-- **全链路防雷**：全面剔除 `@vueuse/core` 等易导致双实例的第三方 Hook，手写原生 `ResizeObserver`，解决微前端样式/高度计算断裂问题。
+- **全链路防雷**：`@vueuse/core` 不剔除，改为 pnpm catalog 锁版本 + MF `shared: singleton`，杜绝远端各打一份 Hook 出现双实例；高度计算等关键路径仍手写原生 `ResizeObserver`（见 `packages/app-core/src/hooks/core/useLayoutHeight.ts`），解决微前端样式/高度计算断裂问题。
 - **全局实时数据同步**：内建全局 WebSocket 单例与 `mitt` 事件总线，跨浏览器、跨微应用实现数据变更的自动刷新。
 - **开箱即用**：已解决自动导入 `d.ts` 的 Fresh Clone 报错问题，拉取代码后直接可跑，零配置烦恼。
 

@@ -46,8 +46,10 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable, ArtTableHeader } from '@art/app-components/table'
+  import { ArtSearchBar } from '@art/app-components/search'
   import { formatMenuTitle } from '@art/app-core'
-  import ArtButtonTable from '@/components/core/forms/art-button-table/index.vue'
+  import { ArtButtonTable } from '@art/app-components/button'
   import { useTableColumns } from '@art/app-core'
   import type { AppRouteRecord } from '@art/app-utils'
   import MenuDialog from './modules/menu-dialog.vue'

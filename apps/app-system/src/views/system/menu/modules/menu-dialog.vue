@@ -42,8 +42,7 @@
   import { QuestionFilled } from '@element-plus/icons-vue'
   import { formatMenuTitle } from '@art/app-core'
   import type { AppRouteRecord } from '@art/app-utils'
-  import type { FormItem } from '@/components/core/forms/art-form/index.vue'
-  import ArtForm from '@/components/core/forms/art-form/index.vue'
+  import { ArtForm, type FormItem } from '@art/app-components/form'
   import { useWindowSize } from '@vueuse/core'
 
   const { width } = useWindowSize()

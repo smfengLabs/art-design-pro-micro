@@ -53,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable } from '@art/app-components/table'
   import avatar1 from '@/assets/images/avatar/avatar1.webp'
   import avatar2 from '@/assets/images/avatar/avatar2.webp'
   import avatar3 from '@/assets/images/avatar/avatar3.webp'

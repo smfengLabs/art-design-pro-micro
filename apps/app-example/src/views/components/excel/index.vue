@@ -34,6 +34,7 @@
 </template>
 
 <script setup lang="ts">
+  import { ArtTable } from '@art/app-components/table'
   defineOptions({ name: 'WidgetsExcel' })
 
   /**
